@@ -89,12 +89,13 @@ export class Midi implements IParser {
   private getTrackScene(trackPlayer: INotePlayer[]) {
     var notes: INoteScene[] = [], tempNotes = {};
     trackPlayer.forEach(function (e, i) {
-      if (e.on && e.velocity > 0) {
+      if (e.on && e.velocity > 0 && !tempNotes[e.id]) {
         tempNotes[e.id] = [e.time, e.velocity];
       } else if (!e.on) {
         var tn = tempNotes[e.id];
         if (tn) {
           notes.push({ timeOn: tn[0], timeOff: e.time, id: e.id, velocityOn: tn[1], velocityOff: e.velocity });
+          tempNotes[e.id] = undefined;
         }
       }
     });
