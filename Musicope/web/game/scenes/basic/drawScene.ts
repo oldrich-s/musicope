@@ -74,25 +74,25 @@ function drawPianoWhiteNotes(loc: Local) {
   });
 }
 
-function drawPianoTimeBar(loc: Local) {
+function drawPianoTimeBarColor(loc: Local) {
   var color = hexToRgb(loc.input.params.v_colTime);
   loc.input.drawRect(0, loc.pianoHeight - 5, 1, loc.pianoHeight, [151, 152, 152, 151], color, color);
 }
 
-function drawPianoBackWhite(loc: Local) {
+function drawPianoTimeBarWhite(loc: Local) {
   var y0 = loc.pianoHeight - 5;
   var y1 = y0 + 5;
   loc.input.drawRect(0, y0, loc.input.sceneWidth, y1, [151], white, white);
 }
 
 function drawPianoBackBlack(loc: Local) {
-  loc.input.drawRect(0, 0, loc.input.sceneWidth + 1, loc.pianoHeight, [150], black, black);
+  loc.input.drawRect(0, 0, loc.input.sceneWidth + 1, loc.pianoHeight - 8, [150], black, black);
 }
 
 function drawPiano(loc: Local) {
   drawPianoBackBlack(loc);
-  drawPianoBackWhite(loc);
-  drawPianoTimeBar(loc);
+  drawPianoTimeBarWhite(loc);
+  drawPianoTimeBarColor(loc);
   drawPianoWhiteNotes(loc);
   drawPianoBlackNotes(loc);
 }

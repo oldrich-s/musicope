@@ -31,7 +31,7 @@ export class Midi implements IParser {
   timePerSong: number;
   noteValuePerBeat: number; // denominator in time signature: 2, 4, 8, 16 ...
   tracksPlayer: INotePlayer[][] = [];
-  tracksViewer: INoteScene[][];
+  tracksScene: INoteScene[][];
     
   params: IParserParams;
 
@@ -59,7 +59,9 @@ export class Midi implements IParser {
     o.tracksPlayer = o.params.f_trackIds.map((trackId) => { return o.tracksPlayer[trackId]; });
 
     if (o.params.f_normalize) { o.normalize(); }
-    o.tracksViewer = o.tracksPlayer.map(o.getTrackViewer);
+
+    o.tracksScene = o.tracksPlayer.map(o.getTrackScene);
+    o.tracksPlayer = o.tracksScene.map(o.getTrackPlayer);
 
     o.timePerSong = 0;
     o.tracksPlayer.forEach((notes) => {
@@ -84,7 +86,7 @@ export class Midi implements IParser {
     });
   }
 
-  private getTrackViewer (trackPlayer: INotePlayer[]) {
+  private getTrackScene(trackPlayer: INotePlayer[]) {
     var notes: INoteScene[] = [], tempNotes = {};
     trackPlayer.forEach(function (e, i) {
       if (e.on && e.velocity > 0) {
@@ -92,11 +94,20 @@ export class Midi implements IParser {
       } else if (!e.on) {
         var tn = tempNotes[e.id];
         if (tn) {
-          notes.push({ timeOn: tn[0], timeOff: e.time, id: e.id, velocityOn: tn[0], velocityOff: e.velocity });
+          notes.push({ timeOn: tn[0], timeOff: e.time, id: e.id, velocityOn: tn[1], velocityOff: e.velocity });
         }
       }
     });
     return notes;
+  }
+
+  private getTrackPlayer(notes: INoteScene[]) {
+    var notesPlayer: INotePlayer[] = [];
+    notes.forEach((note) => {
+      notesPlayer.push({on: true, time: note.timeOn, id: note.id, velocity: note.velocityOn});
+      notesPlayer.push({on: false, time: note.timeOff, id: note.id, velocity: note.velocityOff});
+    });
+    return notesPlayer.sort((a, b) => { return a.time - b.time; });
   }
 
   private parseHeader() {

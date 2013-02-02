@@ -107,7 +107,7 @@ export class Basic implements IScene {
       pixelsPerTime: o.pixelsPerTime,
       sceneWidth: o.canvas.width,
       sceneHeight: o.canvas.height,
-      tracks: o.parser.tracksViewer
+      tracks: o.parser.tracksScene
     };
     drawScene.drawScene(input);
     var bufferData = Basic.concat(bag);

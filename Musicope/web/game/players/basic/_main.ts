@@ -66,14 +66,14 @@ export class Basic implements IPlayer {
 
   private previousTime: number;
   private elapTime: number;
-  private wait = false;
+  private waits = [false, false];
   private updateTime() {
     var o = this;
     var currentTime = Date.now();
     if (!o.previousTime) { o.previousTime = currentTime; }
     var duration = currentTime - o.previousTime;
     o.previousTime = currentTime;
-    if (!o.params.p_isPaused && !o.wait && duration < 100) {
+    if (!o.params.p_isPaused && !o.waits[0] && !o.waits[1] && duration < 100) {
       o.params.p_elapsedTime = o.elapTime = o.params.p_elapsedTime + o.params.p_speed * duration;
       if (o.params.p_elapsedTime > o.parser.timePerSong + 500) {
         o.params.p_elapsedTime = o.elapTime = o.parser.timePerSong;
@@ -93,42 +93,54 @@ export class Basic implements IPlayer {
         o.notes[i][j].userTime = undefined;
       }
     }
+
     if (o.params.p_volumes[i] === 0 && o.params.p_waits[i]) { // user playback
-      o.wait = false;
+      o.waits[i] = false;
       while (o.notes[i][o.lastIds[i]] && o.notes[i][o.lastIds[i]].time < o.params.p_elapsedTime - o.params.p_radiuses[i]) {
         var note = o.notes[i][o.lastIds[i]];
-        if (!note.userTime && note.on && note.id !== -1) { o.wait = true; break; }
+        if (!note.userTime && note.on && note.id !== -1) { o.waits[i] = true; break; }
         o.lastIds[i]++;
       }
-    } else if (o.params.p_volumes[i] > 0 || o.params.p_sustain) { // pc playback
-      var suspends = [176, 177];
+    }
+    
+    if (o.params.p_volumes[i] > 0 || o.params.p_sustain) { // pc playback
       var ons = [144, 145];
-      while (o.notes[i][o.lastIds[i]] && o.params.p_elapsedTime > o.notes[i][o.lastIds[i]].time) {
-        var note = o.notes[i][o.lastIds[i]];
+      while (o.notes[i][o.lastIdsPC[i]] && o.params.p_elapsedTime > o.notes[i][o.lastIdsPC[i]].time) {
+        var note = o.notes[i][o.lastIdsPC[i]];
         if (note.on) {
           if (note.id == -1) {
-            o.device.out(suspends[i], 64, note.velocity);
+            o.device.out(176, 64, 127);
+            o.device.out(177, 64, 127);
           } else if (o.params.p_volumes[i] > 0) { 
             o.device.out(ons[i], note.id, Math.min(127, o.params.p_volumes[i] * note.velocity));
             o.viewer.setPressedNote(note.id);
           }
         } else {
           if (note.id == -1) {
-            o.device.out(suspends[i], 64, 0);
+            o.device.out(176, 64, 0);
+            o.device.out(177, 64, 0);
           } else if (o.params.p_volumes[i] > 0) { 
             o.device.out(ons[i], note.id, 0);
             o.viewer.unsetPressedNote(note.id);
           }
         }
-        o.lastIds[i]++;
+        o.lastIdsPC[i]++;
       }
     }
   }
 
+  private initDevice() {
+    var o = this;
+    var midiOut = o.params.p_deviceOut;
+    var midiIn = o.params.p_deviceIn;
+    o.device.outOpen(midiOut);
+    o.device.out(0x80, 0, 0);
+    o.device.inOpen(midiIn, o.deviceIn());
+  }
+
   private deviceIn() {
     var o = this;
-
-    function callback (timeStamp, kind, noteId, velocity) {
+    return function callback(timeStamp, kind, noteId, velocity) {
       o.device.out(kind, noteId, velocity);
       var isNoteOn = kind > 143 && kind < 160 && velocity > 0;
       var isNoteOff = (kind > 127 && kind < 144) || (kind > 143 && kind < 160 && velocity == 0);
@@ -139,8 +151,9 @@ export class Basic implements IPlayer {
           if (vol === 0 && !found) {
             var id = o.lastIds[i];
             while (o.notes[i][id] && o.notes[i][id].time < o.params.p_elapsedTime + o.params.p_radiuses[i]) {
-              if ( o.notes[i][id].id === noteId && isNoteOn == o.notes[i][id].on &&
-                    Math.abs(o.notes[i][id].time - o.params.p_elapsedTime) - 20 < o.params.p_radiuses[i]) {
+              var note = o.notes[i][id];
+              var radius = Math.abs(o.notes[i][id].time - o.params.p_elapsedTime) - 50;
+              if (note.id === noteId && isNoteOn == note.on && radius < o.params.p_radiuses[i]) {
                 o.notes[i][id].userTime = o.params.p_elapsedTime;
                 found = true; break;
               }
@@ -158,16 +171,6 @@ export class Basic implements IPlayer {
         }
       }
     }
-    return callback;
-  }
-
-  private initDevice() {
-    var o = this;
-    var midiOut = o.params.p_deviceOut;
-    var midiIn = o.params.p_deviceIn;
-    o.device.outOpen(midiOut);
-    o.device.out(0x80, 0, 0);
-    o.device.inOpen(midiIn, o.deviceIn());
   }
 
 }
