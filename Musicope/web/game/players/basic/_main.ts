@@ -129,6 +129,7 @@ export class Basic implements IPlayer {
     var o = this;
 
     function callback (timeStamp, kind, noteId, velocity) {
+      o.device.out(kind, noteId, velocity);
       var isNoteOn = kind > 143 && kind < 160 && velocity > 0;
       var isNoteOff = (kind > 127 && kind < 144) || (kind > 143 && kind < 160 && velocity == 0);
       if (isNoteOn) { o.viewer.setPressedNote(noteId); } else if (isNoteOff) { o.viewer.unsetPressedNote(noteId); }
