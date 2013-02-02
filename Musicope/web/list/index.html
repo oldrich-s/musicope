@@ -1,0 +1,33 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Musicope the Game</title>
+  <link rel="stylesheet" href="index.css" />
+</head>
+<body>
+
+  <input class="params" data-bind="value: params, valueUpdate:'afterkeydown'" placeholder="parameters" />
+  <input autofocus="autofocus" class="query" data-bind="value: query, valueUpdate:'afterkeydown'" placeholder="Search" />
+  <div data-bind="foreach: filteredSongs">
+    <div align="center">
+      <a class="el" data-bind="attr: { href: $parent.constructURL(url) }">
+        <span class="elName" data-bind="html: name"></span>
+        <span class="elPath" data-bind="html: path"></span>
+      </a>
+    </div>
+  </div>
+  
+
+  <script src="../common/lib/jquery/jquery-1.8.2.js"></script>
+  <script src="../common/lib/knockout/knockout-2.2.1.js"></script>
+  <script src="../common/lib/purl/purl.js"></script>
+  <script src="../common/services.params.js"></script>
+  <script src="inputs/keyboard.js"></script>
+  <script src="inputs/mouse.js"></script>
+  <script src="../common/device/jazz.js"></script>
+  <script src="controller.js"></script>
+
+</body>
+</html>

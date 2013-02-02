@@ -1,0 +1,3 @@
+interface IInput {
+  _init();
+}

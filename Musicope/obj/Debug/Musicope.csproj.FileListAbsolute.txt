@@ -1,0 +1,4 @@
+d:\Code\musicope\source\Musicope\obj\Debug\Musicope.dll
+d:\Code\musicope\source\Musicope\obj\Debug\Musicope.pdb
+d:\Code\musicope\source\Musicope\bin\Musicope.dll
+d:\Code\musicope\source\Musicope\bin\Musicope.pdb

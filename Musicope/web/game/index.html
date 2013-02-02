@@ -1,0 +1,31 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Musicope the Game</title>
+  <link rel="stylesheet" type="text/css" href="index.css" />
+</head>
+<body>
+  <div id="overlayDiv" style="position:absolute; color:white"></div>
+  <canvas id="canvas"></canvas>
+  <object id="Jazz" type="audio/x-jazz" style="visibility: hidden">
+    <div id="noJazz"><br />Please install <a style="color:red" href="http://jazz-soft.net/download/Jazz-Plugin/">JAZZ</a> plugin to make the game function. Thank you :-)</div>
+  </object>
+
+  <script src="../common/lib/jquery/jquery-1.8.2.js"></script>
+  <script src="../common/lib/purl/purl.js"></script>
+
+  <script src="../common/services.params.js"></script>
+
+  <script src="player/player/default.js"></script>
+  <script src="player/metronome/default.js"></script>
+  <script src="viewer/webgl/webgl.js"></script>
+  <script src="parser/midi.js"></script>
+  <script src="inputs/keyboard.js"></script>
+  <script src="../common/device/jazz.js"></script>
+  <script src="../game/_params.default.js"></script>
+
+  <script src="controller.js"></script>
+</body>
+</html>

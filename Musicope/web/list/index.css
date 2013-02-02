@@ -1,0 +1,60 @@
+﻿body {
+  background-color: #8f0404;
+  text-align: center;
+}
+
+.search-match {
+  background-color: #0080dc;
+}
+
+.query {
+  font-size: xx-large;
+  width: 90%;
+  margin: 10px;
+  margin-bottom: 30px;
+  padding: 10px;
+  border: 0px solid #ffe555;
+  background-color: #fbeea5;
+}
+
+.params {
+  color: #cbb645;
+  background-color: #ae2020;
+  font-size: medium;
+  width: 90%;
+  margin: 10px;
+  padding: 10px;
+  border: 0px solid #632525;
+}
+
+.el {
+  display: block;
+  width: 50%;
+  border: 3px outset #ffe555;
+  border-radius: 10px;
+  margin: 20px;
+  padding: 10px;
+  font-size: xx-large;
+  font-family: Century Gothic, sans-serif;
+  background-color: #650404;
+}
+
+.el:link, .el:visited {
+  text-decoration:none;
+  color:#fbeea5;
+}
+
+.el:hover {
+  color: red;
+  border-color: #b7a43a;
+}
+
+.elName {
+  display: block;
+}
+
+.elPath {
+  display: block;
+  font-size: small;
+  color:#cbb645;
+}

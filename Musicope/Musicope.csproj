@@ -1,0 +1,120 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <ProjectGuid>{2943442C-A6DA-44DC-AB95-F83D3DDFC961}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <OutputPath>bin</OutputPath>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>4.0</OldToolsVersion>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UpgradeBackupLocation />
+  </PropertyGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace>Musicope</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>3366</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:3263/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <TypeScriptTarget>ES3</TypeScriptTarget>
+    <TypeScriptIncludeComments>true</TypeScriptIncludeComments>
+    <TypeScriptSourceMap>true</TypeScriptSourceMap>
+    <PublishDatabases>false</PublishDatabases>
+    <PackageAsSingleFile>false</PackageAsSingleFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <TypeScriptTarget>ES3</TypeScriptTarget>
+    <TypeScriptIncludeComments>false</TypeScriptIncludeComments>
+    <TypeScriptSourceMap>false</TypeScriptSourceMap>
+  </PropertyGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="web\common\devices\jazz\_main.ts" />
+    <Content Include="web\common\devices\_interfaces.ts" />
+    <TypeScriptCompile Include="web\common\devices\_load.ts" />
+    <TypeScriptCompile Include="web\common\services.params.ts" />
+    <TypeScriptCompile Include="web\game\controller.ts" />
+    <Content Include="web\game\index.css" />
+    <Content Include="web\game\index.html" />
+    <TypeScriptCompile Include="web\game\inputs\keyboard\_main.ts" />
+    <Content Include="web\game\inputs\_interfaces.ts" />
+    <TypeScriptCompile Include="web\game\inputs\_load.ts" />
+    <TypeScriptCompile Include="web\game\metronomes\basic\_main.ts" />
+    <Content Include="web\game\metronomes\_interfaces.ts" />
+    <TypeScriptCompile Include="web\game\metronomes\_load.ts" />
+    <TypeScriptCompile Include="web\game\parsers\midi\_main.ts" />
+    <Content Include="web\game\parsers\_interfaces.ts" />
+    <TypeScriptCompile Include="web\game\parsers\_load.ts" />
+    <TypeScriptCompile Include="web\game\players\basic\_main.ts" />
+    <Content Include="web\game\players\_interfaces.ts" />
+    <TypeScriptCompile Include="web\game\players\_load.ts" />
+    <TypeScriptCompile Include="web\game\scenes\basic\drawScene.ts" />
+    <TypeScriptCompile Include="web\game\scenes\basic\webgl.ts" />
+    <TypeScriptCompile Include="web\game\scenes\basic\_main.ts" />
+    <Content Include="web\game\scenes\_interfaces.ts" />
+    <TypeScriptCompile Include="web\game\scenes\_load.ts" />
+    <TypeScriptCompile Include="web\game\_paramsDefault.ts" />
+    <Content Include="web\game\_paramsInterfaces.ts" />
+    <Content Include="web\game\_references.ts" />
+    <TypeScriptCompile Include="web\list\controller.ts" />
+    <Content Include="web\list\index.css" />
+    <Content Include="web\list\index.html" />
+    <TypeScriptCompile Include="web\list\inputs\keyboard\_main.ts" />
+    <TypeScriptCompile Include="web\list\inputs\mouse\_main.ts" />
+    <TypeScriptCompile Include="web\list\inputs\piano\_main.ts" />
+    <Content Include="web\list\inputs\_interfaces.ts" />
+    <TypeScriptCompile Include="web\list\inputs\_load.ts" />
+    <TypeScriptCompile Include="web\list\_paramsDefault.ts" />
+    <Content Include="web\list\_paramsInterfaces.ts" />
+    <Content Include="web\list\_references.ts" />
+    <Content Include="web\_lib\jquery\jquery.d.ts" />
+    <Content Include="web\_lib\jquery\jquery.js" />
+    <Content Include="web\_lib\knockout\knockout.d.ts" />
+    <Content Include="web\_lib\knockout\knockout.js" />
+    <Content Include="web\_lib\purl\purl.d.ts" />
+    <Content Include="web\_lib\purl\purl.js" />
+    <Content Include="web\_lib\webgl\webgl.d.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="web\game\scenes\basic\assets\fragment.glsl" />
+    <Content Include="web\game\scenes\basic\assets\vertex.glsl" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy "$(ProjectDir)web"  "$(ProjectDir)..\..\web" /s /e /y &gt; nul
+del /s /q "$(ProjectDir)web\*.js" &gt;nul
+del /s /q "$(ProjectDir)web\*.js.map" &gt;nul</PostBuildEvent>
+  </PropertyGroup>
+</Project>

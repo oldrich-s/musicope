@@ -1,0 +1,21 @@
+﻿html, body {
+  width:  100%;
+  height: 100%;
+  margin: 0px;
+  overflow: hidden;
+}
+
+#noJazz {
+  visibility: visible;
+  display:block;
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  text-align: center;
+  vertical-align:middle;
+  font-size: xx-large;
+  background-color: black;
+  color: #ffe44c;
+}
