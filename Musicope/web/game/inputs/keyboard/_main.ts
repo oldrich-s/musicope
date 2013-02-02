@@ -1,6 +1,6 @@
 /// <reference path="../../_references.ts" />
 
-export class Keyboard implements IInput2 {
+export class Keyboard implements IGameInput {
 
   private oldText;
   private player: IPlayer;

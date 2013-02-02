@@ -53,15 +53,16 @@ export class WebGL {
     o.assignAttribPointers();
   }
 
-  setClearColor(r: number, g: number, b: number, a: number) {
-    this.gl.clearColor(r, g, b, a);
+  setClearColor(rgba: number[]) {
+    var o = this;
+    o.gl.clearColor(rgba[0], rgba[1], rgba[2], rgba[3]);
   }
 
   private initShaders() {
     var o = this;
 
-    var vertexShader = WebGL.getShader("viewer/webgl/assets/vertex.glsl");
-    var fragmentShader = WebGL.getShader("viewer/webgl/assets/fragment.glsl");
+    var vertexShader = o.getShader("scenes/basic/assets/vertex.glsl");
+    var fragmentShader = o.getShader("scenes/basic/assets/fragment.glsl");
     var shaderProgram = this.gl.createProgram();
     this.gl.attachShader(shaderProgram, vertexShader);
     this.gl.attachShader(shaderProgram, fragmentShader);
@@ -97,21 +98,22 @@ export class WebGL {
     return canvas.getContext("experimental-webgl", { antialias: true });
   }
 
-  static private getShader(path: string) {
+  private getShader(path: string) {
+    var o = this;
     var xhr = new XMLHttpRequest();
     xhr.open('GET', path, false);
     xhr.send();
     var shader: IWebGL.WebGLShader;
     if (path.indexOf("fragment.glsl") > 0) {
-      shader = this.gl.createShader(this.gl.FRAGMENT_SHADER);
+      shader = o.gl.createShader(o.gl.FRAGMENT_SHADER);
     } else if (path.indexOf("vertex.glsl") > 0) {
-      shader = this.gl.createShader(this.gl.VERTEX_SHADER);
+      shader = o.gl.createShader(o.gl.VERTEX_SHADER);
     }
-    this.gl.shaderSource(shader, xhr.responseText);
-    this.gl.compileShader(shader);
-    if (!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) {
-      var lastError = this.gl.getShaderInfoLog(shader);
-      this.gl.deleteShader(shader);
+    o.gl.shaderSource(shader, xhr.responseText);
+    o.gl.compileShader(shader);
+    if (!o.gl.getShaderParameter(shader, o.gl.COMPILE_STATUS)) {
+      var lastError = o.gl.getShaderInfoLog(shader);
+      o.gl.deleteShader(shader);
       alert("Error compiling shader '" + shader + "':" + lastError);
     }
     return shader;

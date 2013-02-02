@@ -1,4 +1,4 @@
-/// <reference path="lib/purl/purl.d.ts" />
+/// <reference path="../_lib/purl/purl.d.ts" />
 
 export function getUrlParams(): any {
   var params = $.url().param();

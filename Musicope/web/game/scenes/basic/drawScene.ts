@@ -58,7 +58,7 @@ function drawPianoBlackNotes(loc: Local) {
     var x0 = blackNoteSpots[i] * loc.whiteWidth - loc.blackWidth + 2;
     var x1 = x0 + 2 * loc.blackWidth - 3;
     var y0 = Math.floor(loc.pianoHeight * 0.4);
-    var y1 = y0 + loc.pianoHeight - 8 - y0;
+    var y1 = loc.pianoHeight - 8;
     var activeColor = hexToRgb(loc.input.params.v_colPianoBlack);
     loc.input.drawRect(x0, y0, x1, y1, [id], black, activeColor);
   });
@@ -76,7 +76,7 @@ function drawPianoWhiteNotes(loc: Local) {
 
 function drawPianoTimeBar(loc: Local) {
   var color = hexToRgb(loc.input.params.v_colTime);
-  loc.input.drawRect(0, loc.pianoHeight - 5, 1, 5, [151, 152, 152, 151], color, color);
+  loc.input.drawRect(0, loc.pianoHeight - 5, 1, loc.pianoHeight, [151, 152, 152, 151], color, color);
 }
 
 function drawPianoBackWhite(loc: Local) {
@@ -86,7 +86,7 @@ function drawPianoBackWhite(loc: Local) {
 }
 
 function drawPianoBackBlack(loc: Local) {
-  loc.input.drawRect(0, 0, loc.input.sceneWidth, loc.pianoHeight, [150], black, black);
+  loc.input.drawRect(0, 0, loc.input.sceneWidth + 1, loc.pianoHeight, [150], black, black);
 }
 
 function drawPiano(loc: Local) {

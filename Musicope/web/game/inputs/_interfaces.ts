@@ -1,5 +1,5 @@
 /// <reference path="../_references.ts" />
 
-interface IInput2 {
+interface IGameInput {
   _init(player: IPlayer, parser: IParser): void;
 }

@@ -2,8 +2,8 @@
 
 import defParams = module("../../_paramsDefault");
 import paramService = module("../../../common/services.params");
-import drawScene = module("drawScene");
-import webgl = module("webgl");
+import drawScene = module("./drawScene");
+import webgl = module("./webgl");
 
 export class Basic implements IScene {
 
@@ -26,22 +26,8 @@ export class Basic implements IScene {
     o.parser = parser;
     o.canvas = o.getCanvas();
     o.setCanvasDim();
-
+    o.setupWebGL();
     o.setupScene();
-      
-    var uniforms = [
-      { name: "u_dx", type: "number" },
-      { name: "u_dy", type: "number" },
-      { name: "u_active", type: "Int32Array" }];
-
-    var attributes = [
-      { name: "a_position", dim: 2 },
-      { name: "a_color", dim: 4 },
-      { name: "a_id", dim: 1 },
-      { name: "a_activeColor", dim: 4 }
-    ];
-
-    o.webgl = new webgl.WebGL(o.canvas, uniforms, attributes);
 
   }
     
@@ -71,10 +57,10 @@ export class Basic implements IScene {
     var o = this;
     if (isPaused) {
       var color = drawScene.hexToRgb(o.params.v_colPaused);
-      o.webgl.setClearColor.call(null, color);
+      o.webgl.setClearColor(color);
     } else {
       var color = drawScene.hexToRgb(o.params.v_colUnPaused);
-      o.webgl.setClearColor.call(null, color);
+      o.webgl.setClearColor(color);
     }
   }
 
@@ -93,6 +79,21 @@ export class Basic implements IScene {
       o.canvas.height = window.innerHeight;
     });
   }
+
+  private setupWebGL() {
+    var o = this;
+    var uniforms = [
+      { name: "u_dx", type: "number" },
+      { name: "u_dy", type: "number" },
+      { name: "u_active", type: "Int32Array" }];
+    var attributes = [
+      { name: "a_position", dim: 2 },
+      { name: "a_color", dim: 4 },
+      { name: "a_id", dim: 1 },
+      { name: "a_activeColor", dim: 4 }
+    ];
+    o.webgl = new webgl.WebGL(o.canvas, uniforms, attributes);
+  }
       
   private setupScene() {
     var o = this;
@@ -100,12 +101,12 @@ export class Basic implements IScene {
       
     var input: drawScene.Input = {
       drawRect: (x0, y0, x1, y1, ids, color, activeColor) => {
-        bag.push(o.rect(x0, y0, x1, x1, ids, [color], [activeColor]));
+        bag.push(o.rect(x0, y0, x1, y1, ids, [color], [activeColor]));
       },
       params: o.params,
       pixelsPerTime: o.pixelsPerTime,
       sceneWidth: o.canvas.width,
-      sceneHeight: o.canvas.width,
+      sceneHeight: o.canvas.height,
       tracks: o.parser.tracksViewer
     };
     drawScene.drawScene(input);

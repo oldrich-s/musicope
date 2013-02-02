@@ -2,7 +2,7 @@
 
 import defParams = module("../../_paramsDefault");
 import paramService = module("../../../common/services.params");
-import metronomes = module("../metronomes/_load");
+import metronomes = module("../../metronomes/_load");
 
 interface INote extends INotePlayer {
   userTime: number;
@@ -37,7 +37,7 @@ export class Basic implements IPlayer {
     });
 
     o.initDevice();
-    o.metronome = new metronomes.basic();
+    o.metronome = new metronomes.Basic();
     o.metronome._init(parser.timePerBeat, parser.timePerBar / parser.timePerBeat, device, <any>params);
     o.step();
   }

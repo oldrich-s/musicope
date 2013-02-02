@@ -1,3 +1,3 @@
 
-import jazzM = module("jazz/_main");
-export var jazz = jazzM.Jazz;
+import jazzM = module("./jazz/_main");
+export var Jazz = jazzM.Jazz;

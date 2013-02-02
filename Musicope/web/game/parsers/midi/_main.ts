@@ -30,7 +30,7 @@ export class Midi implements IParser {
   timePerBar: number;
   timePerSong: number;
   noteValuePerBeat: number; // denominator in time signature: 2, 4, 8, 16 ...
-  tracksPlayer: INotePlayer[][] = [[],[],[],[]];
+  tracksPlayer: INotePlayer[][] = [];
   tracksViewer: INoteScene[][];
     
   params: IParserParams;
@@ -54,9 +54,9 @@ export class Midi implements IParser {
 
     var trackIndexes = indexesOf(o.midi, [77, 84, 114, 107]);
 
-    trackIndexes.forEach((index, i) => { this.parseTrack(i, index + 4, i == 0); });
+    trackIndexes.forEach((index, i) => { o.parseTrack(i, index + 4); });
     if (o.tracksPlayer[0].length == 0) { o.tracksPlayer.shift(); }
-    o.tracksPlayer = o.params.f_trackIds.map((trackId) => { o.tracksPlayer[trackId]; });
+    o.tracksPlayer = o.params.f_trackIds.map((trackId) => { return o.tracksPlayer[trackId]; });
 
     if (o.params.f_normalize) { o.normalize(); }
     o.tracksViewer = o.tracksPlayer.map(o.getTrackViewer);
@@ -108,8 +108,9 @@ export class Midi implements IParser {
     if (o.ticksPerQuarter & 0x8000) { alert("ticksPerBeat not implemented"); }
   }
 
-  private parseTrack(trackId: number, index: number, isFirstTrack: bool) {
+  private parseTrack(trackId: number, index: number) {
     var o = this, ticks = 0;
+    o.tracksPlayer.push([]);
     var trackLength = o.midi[index++] * 256 * 256 * 256 + o.midi[index++] * 256 * 256 + o.midi[index++] * 256 + o.midi[index++];
     var end = index + trackLength;
     while (index < end) {
@@ -121,13 +122,13 @@ export class Midi implements IParser {
         var ob1 = o.readVarLength(index);
         index = ob1.newIndex + ob1.value;
       } else if (typeChannel === 255) { // Meta
-        index = o.processMeta(index, isFirstTrack && ticks == 0);
+        index = o.processMeta(index, trackId == 0 && ticks == 0);
       } else {
         var time = ticks * o.timePerTick;
         index = o.processMessage(trackId, index, typeChannel, time);
       }
     }
-    if (isFirstTrack) {
+    if (trackId == 0) {
       o.timePerBeat = o.timePerQuarter * 4 / o.noteValuePerBeat;
       o.timePerTick = o.timePerQuarter / o.ticksPerQuarter;
       o.timePerBar = o.timePerBeat * o.beatsPerBar;

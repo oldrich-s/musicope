@@ -50,6 +50,7 @@
   </ProjectExtensions>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <TypeScriptTarget>ES3</TypeScriptTarget>
+    <TypeScriptModuleKind>AMD</TypeScriptModuleKind>
     <TypeScriptIncludeComments>true</TypeScriptIncludeComments>
     <TypeScriptSourceMap>true</TypeScriptSourceMap>
     <PublishDatabases>false</PublishDatabases>
@@ -65,7 +66,7 @@
     <Content Include="web\common\devices\_interfaces.ts" />
     <TypeScriptCompile Include="web\common\devices\_load.ts" />
     <TypeScriptCompile Include="web\common\services.params.ts" />
-    <TypeScriptCompile Include="web\game\controller.ts" />
+    <TypeScriptCompile Include="web\game\_main.ts" />
     <Content Include="web\game\index.css" />
     <Content Include="web\game\index.html" />
     <TypeScriptCompile Include="web\game\inputs\keyboard\_main.ts" />
@@ -88,7 +89,7 @@
     <TypeScriptCompile Include="web\game\_paramsDefault.ts" />
     <Content Include="web\game\_paramsInterfaces.ts" />
     <Content Include="web\game\_references.ts" />
-    <TypeScriptCompile Include="web\list\controller.ts" />
+    <TypeScriptCompile Include="web\list\_main.ts" />
     <Content Include="web\list\index.css" />
     <Content Include="web\list\index.html" />
     <TypeScriptCompile Include="web\list\inputs\keyboard\_main.ts" />
@@ -105,6 +106,8 @@
     <Content Include="web\_lib\knockout\knockout.js" />
     <Content Include="web\_lib\purl\purl.d.ts" />
     <Content Include="web\_lib\purl\purl.js" />
+    <Content Include="web\_lib\requirejs\require.d.ts" />
+    <Content Include="web\_lib\requirejs\require.js" />
     <Content Include="web\_lib\webgl\webgl.d.ts" />
   </ItemGroup>
   <ItemGroup>
@@ -114,7 +117,11 @@
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy "$(ProjectDir)web"  "$(ProjectDir)..\..\web" /s /e /y &gt; nul
-del /s /q "$(ProjectDir)web\*.js" &gt;nul
-del /s /q "$(ProjectDir)web\*.js.map" &gt;nul</PostBuildEvent>
+del /s /q "$(ProjectDir)web\common\*.js" &gt;nul
+del /s /q "$(ProjectDir)web\common\*.js.map" &gt;nul
+del /s /q "$(ProjectDir)web\game\*.js" &gt;nul
+del /s /q "$(ProjectDir)web\game\*.js.map" &gt;nul
+del /s /q "$(ProjectDir)web\list\*.js" &gt;nul
+del /s /q "$(ProjectDir)web\list\*.js.map" &gt;nul</PostBuildEvent>
   </PropertyGroup>
 </Project>

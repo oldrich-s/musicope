@@ -4,10 +4,10 @@ import defParams = module("_paramsDefault");
 import paramService = module("../common/services.params");
 
 import devices = module("../common/devices/_load");
-import parsers = module("parsers/_load");
-import scenes = module("scenes/_load");
-import players = module("players/_load");
-import inputs = module("inputs/_load");
+import parsers = module("./parsers/_load");
+import scenes = module("./scenes/_load");
+import players = module("./players/_load");
+import inputs = module("./inputs/_load");
 
 var params: IParams = paramService.getUrlParams();
 var ctrlParams: ICtrlParams = paramService.copy(params, defParams.iCtrlParams);
@@ -35,7 +35,7 @@ if (!ctrlParams.c_songUrl) {
         scene._init(parser, params);
         player._init(device, scene, parser, params);
         for (var prop in inputs) {
-          (<IInput2> new inputs[prop]())._init(player, parser);
+          (<IGameInput> new inputs[prop]())._init(player, parser);
         }
       }
     }

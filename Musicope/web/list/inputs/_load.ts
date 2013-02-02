@@ -1,9 +1,9 @@
 
 import keyboardM = module("keyboard/_main");
-export var keyboard = keyboardM.Keyboard;
+export var Keyboard = keyboardM.Keyboard;
 
 import mouseM = module("mouse/_main");
-export var mouse = mouseM.Mouse;
+export var Mouse = mouseM.Mouse;
 
 import pianoM = module("piano/_main");
-export var piano = pianoM.Piano;
+export var Piano = pianoM.Piano;

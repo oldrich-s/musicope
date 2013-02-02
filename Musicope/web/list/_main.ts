@@ -1,8 +1,8 @@
 /// <reference path="_references.ts" />
 
-import defParams = module("_paramsDefault");
+import defParams = module("./_paramsDefault");
 import paramService = module("../common/services.params");
-import inputs = module("inputs/_load");
+import inputs = module("./inputs/_load");
 
 var params: IParams = paramService.getUrlParams();
 var ctrlParams: IListParams = paramService.copy(params, defParams.iListParams);
