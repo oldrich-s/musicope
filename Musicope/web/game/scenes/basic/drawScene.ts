@@ -22,7 +22,7 @@ export function hexToRgb(hex: string) {
   var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
   hex = hex.replace(shorthandRegex, function(m, r, g, b) { return r + r + g + g + b + b; });
   var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  return result ? [ parseInt(result[1], 16)/255, parseInt(result[2], 16)/255, parseInt(result[3], 16)/255, 1 ] : null;
+  return [ parseInt(result[1], 16)/255, parseInt(result[2], 16)/255, parseInt(result[3], 16)/255, 1 ];
 }
 
 var black = [0, 0, 0, 1];
@@ -115,7 +115,7 @@ function drawTrack(loc: Local, trackId: number) {
       if (pos >= 0) {
         var x0 = blackNoteSpots[pos] * loc.whiteWidth - loc.blackWidth + 2;
         var x1 = x0 + 2 * loc.blackWidth - 3;
-        loc.input.drawRect(x0, y0, x1, y1, [trackId + 202], black, black);
+        loc.input.drawRect(x0, y0, x1, y1, [trackId + 202], blackNoteColor, blackNoteColor);
       }
     }
   });
