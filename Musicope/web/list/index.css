@@ -17,14 +17,23 @@
   background-color: #fbeea5;
 }
 
+.templates {
+  color: #cbb645;
+  background-color: #ae2020;
+  font-size: x-large;
+  margin: 10px;
+  border: 0px solid #632525;
+  padding: 5px;
+}
+
 .params {
   color: #cbb645;
   background-color: #ae2020;
   font-size: medium;
-  width: 90%;
   margin: 10px;
   padding: 10px;
   border: 0px solid #632525;
+  width: 70%;
 }
 
 .el {
