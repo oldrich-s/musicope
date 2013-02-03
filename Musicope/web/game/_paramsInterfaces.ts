@@ -29,6 +29,7 @@ interface IMetronomeParams {
 
 interface ISceneParams {
   v_views: string[];
+  v_quartersPerHeight: number;
   v_colWhites: string[];
   v_colBlacks: string[];
   v_colTime: string;

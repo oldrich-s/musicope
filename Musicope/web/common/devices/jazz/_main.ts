@@ -55,4 +55,7 @@ export class Jazz implements IDevice {
     this.jazz.MidiOutOpen(<string>name);
   }
 
+  time() {
+    return this.jazz.Time();
+  }
 }

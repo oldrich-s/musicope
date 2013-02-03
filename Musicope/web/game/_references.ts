@@ -6,4 +6,4 @@
 /// <reference path="inputs/_interfaces.ts" />
 /// <reference path="../common/devices/_interfaces.ts" />
 /// <reference path="../_lib/jquery/jquery.d.ts" />
-/// <reference path="../_lib/webgl/webgl.d.ts" />
+// <reference path="../_lib/webgl/webgl.d.ts" />

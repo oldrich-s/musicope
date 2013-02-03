@@ -9,14 +9,15 @@ export class Basic implements IScene {
 
   params: ISceneParams;
 
-  private quartersPerHeight = 10;
-
   private parser: IParser;
   private pixelsPerTime: number;
-  private pressedNoteIds = new Int32Array(127);
+  private pressedNotes = new Int32Array(127);
 
   private canvas: HTMLCanvasElement;
   private webgl: webgl.WebGL;
+
+  private pausedColor: Int32Array;
+  private unpausedColor: Int32Array;
 
   constructor() { }
 
@@ -24,6 +25,7 @@ export class Basic implements IScene {
     var o = this;
     o.params = paramService.copy(params, defParams.iSceneParams);
     o.parser = parser;
+    o.setBackgrColors();
     o.canvas = o.getCanvas();
     o.setCanvasDim();
     o.setupWebGL();
@@ -32,35 +34,39 @@ export class Basic implements IScene {
   }
     
   setPressedNote(noteId: number) {
-    this.pressedNoteIds[noteId] = 1;
+    this.pressedNotes[noteId] = 1;
   }
 
   unsetPressedNote(noteId: number) {
-    this.pressedNoteIds[noteId] = 0;
+    this.pressedNotes[noteId] = 0;
   }
 
   unsetAllPressedNotes() {
-    for (var i = 0; i < this.pressedNoteIds.length; i++) {
-      this.pressedNoteIds[i] = 0;
+    for (var i = 0; i < this.pressedNotes.length; i++) {
+      this.pressedNotes[i] = 0;
     }
   }
-
+  
   redraw(time: number, isPaused: bool) {
     var o = this;
     o.setPausedState(isPaused);
     var dx = 2 * time / o.parser.timePerSong;
     var dy = -time * o.pixelsPerTime / o.canvas.height * 2;
-    o.webgl.redraw([dx, dy, o.pressedNoteIds]);
+    o.webgl.redraw(dx, dy, o.pressedNotes);
+  }
+
+  private setBackgrColors() {
+    var o = this;
+    o.pausedColor = new Int32Array(drawScene.hexToRgb(o.params.v_colPaused));
+    o.unpausedColor = new Int32Array(drawScene.hexToRgb(o.params.v_colUnPaused));
   }
 
   private setPausedState(isPaused: bool) {
     var o = this;
     if (isPaused) {
-      var color = drawScene.hexToRgb(o.params.v_colPaused);
-      o.webgl.setClearColor(color);
+      o.webgl.setClearColor(o.pausedColor);
     } else {
-      var color = drawScene.hexToRgb(o.params.v_colUnPaused);
-      o.webgl.setClearColor(color);
+      o.webgl.setClearColor(o.unpausedColor);
     }
   }
 
@@ -73,7 +79,7 @@ export class Basic implements IScene {
     var o = this;
     o.canvas.width = window.innerWidth;
     o.canvas.height = window.innerHeight;
-    o.pixelsPerTime = o.canvas.height * 4 / (o.parser.noteValuePerBeat * o.quartersPerHeight * o.parser.timePerBeat);
+    o.pixelsPerTime = o.canvas.height * 4 / (o.parser.noteValuePerBeat * o.params.v_quartersPerHeight * o.parser.timePerBeat);
     $(window).resize(() => {
       o.canvas.width = window.innerWidth;
       o.canvas.height = window.innerHeight;
@@ -82,17 +88,13 @@ export class Basic implements IScene {
 
   private setupWebGL() {
     var o = this;
-    var uniforms = [
-      { name: "u_dx", type: "number" },
-      { name: "u_dy", type: "number" },
-      { name: "u_active", type: "Int32Array" }];
     var attributes = [
       { name: "a_position", dim: 2 },
       { name: "a_color", dim: 4 },
       { name: "a_id", dim: 1 },
       { name: "a_activeColor", dim: 4 }
     ];
-    o.webgl = new webgl.WebGL(o.canvas, uniforms, attributes);
+    o.webgl = new webgl.WebGL(o.canvas, attributes);
   }
       
   private setupScene() {

@@ -60,8 +60,12 @@ export class Midi implements IParser {
 
     if (o.params.f_normalize) { o.normalize(); }
 
-    o.tracksScene = o.tracksPlayer.map(o.getTrackScene);
-    o.tracksPlayer = o.tracksScene.map(o.getTrackPlayer);
+    o.tracksScene = o.tracksPlayer.map((notes) => {
+      return o.getTrackScene(notes);
+    });
+    o.tracksPlayer = o.tracksScene.map((notes) => {
+      return o.getTrackPlayer(notes);
+    });
 
     o.timePerSong = 0;
     o.tracksPlayer.forEach((notes) => {
@@ -87,19 +91,35 @@ export class Midi implements IParser {
   }
 
   private getTrackScene(trackPlayer: INotePlayer[]) {
+    var o = this;
     var notes: INoteScene[] = [], tempNotes = {};
-    trackPlayer.forEach(function (e, i) {
-      if (e.on && e.velocity > 0 && !tempNotes[e.id]) {
-        tempNotes[e.id] = [e.time, e.velocity];
-      } else if (!e.on) {
-        var tn = tempNotes[e.id];
+    trackPlayer.forEach(function (note, i) {
+      if (note.on) {
+        if (tempNotes[note.id]) {
+          var noteScene = o.getSceneNote(tempNotes[note.id], note);
+          notes.push(noteScene);
+        }
+        tempNotes[note.id] = note;
+      } else if (!note.on) {
+        var tn = tempNotes[note.id];
         if (tn) {
-          notes.push({ timeOn: tn[0], timeOff: e.time, id: e.id, velocityOn: tn[1], velocityOff: e.velocity });
-          tempNotes[e.id] = undefined;
+          var noteScene = o.getSceneNote(tempNotes[note.id], note);
+          notes.push(noteScene);
+          tempNotes[note.id] = undefined;
         }
       }
     });
     return notes;
+  }
+
+  private getSceneNote(noteOn: INotePlayer, noteOff: INotePlayer) {
+    return {
+      timeOn: noteOn.time,
+      timeOff: noteOff.time,
+      id: noteOn.id,
+      velocityOn: noteOn.velocity,
+      velocityOff: noteOff.velocity
+    };
   }
 
   private getTrackPlayer(notes: INoteScene[]) {

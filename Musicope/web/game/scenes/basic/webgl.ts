@@ -1,10 +1,5 @@
 /// <reference path="../../_references.ts" />
 
-export interface IUniform {
-  name: string;
-  type: string;
-}
-
 export interface IAttribute {
   name: string;
   dim: number;
@@ -12,31 +7,27 @@ export interface IAttribute {
 
 export class WebGL {
 
-  private gl: IWebGL.WebGLRenderingContext;
-  private buffer: IWebGL.WebGLBuffer;
-  private uniformLocs: IWebGL.WebGLUniformLocation[];
+  private gl: any;
+  private buffer: any;
   private attributeLocs: number[];
   private attrLength: number;
+  private udx;
+  private udy;
+  private uactive;
 
-  constructor(canvas: HTMLCanvasElement, private uniforms: IUniform[], private attributes: IAttribute[]) {
+  constructor(canvas: HTMLCanvasElement, private attributes: IAttribute[]) {
     var o = this;
     o.gl = WebGL.getContext(canvas);
     o.initShaders();
   }
 
-  redraw(uniforms: any[]) {
+  redraw(dx: number, dy: number, pressedNotes: Int32Array) {
     var o = this;
-    this.gl.clear(this.gl.COLOR_BUFFER_BIT);
-    uniforms.forEach((uniform, i) => {
-      if (o.uniforms[i].type == "number") {
-        this.gl.uniform1f(o.uniformLocs[i], uniform);
-      } else if (o.uniforms[i].type == "Int32Array") {
-        this.gl.uniform1iv(o.uniformLocs[i], uniform);
-      } else {
-        alert("I do not understand the type");
-      }
-    });
-    this.gl.drawArrays(this.gl.TRIANGLES, 0, o.attrLength);
+    o.gl.clear(o.gl.COLOR_BUFFER_BIT);
+    o.gl.uniform1f(o.udx, dx);
+    o.gl.uniform1f(o.udy, dy);
+    o.gl.uniform1iv(o.uactive, pressedNotes);
+    o.gl.drawArrays(o.gl.TRIANGLES, 0, o.attrLength);
   }
 
   setBuffer(bufferData: Float32Array) {
@@ -53,7 +44,7 @@ export class WebGL {
     o.assignAttribPointers();
   }
 
-  setClearColor(rgba: number[]) {
+  setClearColor(rgba: Int32Array) {
     var o = this;
     o.gl.clearColor(rgba[0], rgba[1], rgba[2], rgba[3]);
   }
@@ -71,9 +62,11 @@ export class WebGL {
       alert("Unable to initialize the shader program.");
     }
     this.gl.useProgram(shaderProgram);
-    o.uniformLocs = o.uniforms.map((uni) => {
-      return o.gl.getUniformLocation(shaderProgram, uni.name);
-    });
+
+    o.udx = o.gl.getUniformLocation(shaderProgram, "u_dx");
+    o.udy = o.gl.getUniformLocation(shaderProgram, "u_dy");
+    o.uactive = o.gl.getUniformLocation(shaderProgram, "u_active");
+
     o.attributeLocs = o.attributes.map((attr) => {
       return o.gl.getAttribLocation(shaderProgram, attr.name);
     });
@@ -94,7 +87,7 @@ export class WebGL {
     });
   }
 
-  static getContext(canvas: HTMLCanvasElement) {
+  static getContext(canvas: any) {
     return canvas.getContext("experimental-webgl", { antialias: true });
   }
 
@@ -103,7 +96,7 @@ export class WebGL {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', path, false);
     xhr.send();
-    var shader: IWebGL.WebGLShader;
+    var shader;
     if (path.indexOf("fragment.glsl") > 0) {
       shader = o.gl.createShader(o.gl.FRAGMENT_SHADER);
     } else if (path.indexOf("vertex.glsl") > 0) {

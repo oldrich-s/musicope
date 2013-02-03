@@ -28,6 +28,7 @@ export var iParserParams: IParserParams = {
 
 export var iSceneParams: ISceneParams = {
   v_views: ["full", "full"],
+  v_quartersPerHeight: 5,
   v_colWhites: ["#ff5252", "#ffd800"],
   v_colBlacks: ["#b73f3f", "#a78d00"],
   v_colTime: "#0094ff",

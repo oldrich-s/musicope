@@ -8,4 +8,5 @@ interface IDevice {
   outClose(): void;
   outList(): string[];
   outOpen(name: any): void;
+  time(): number;
 }

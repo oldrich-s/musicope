@@ -79,6 +79,7 @@
     <Content Include="web\game\parsers\_interfaces.ts" />
     <TypeScriptCompile Include="web\game\parsers\_load.ts" />
     <TypeScriptCompile Include="web\game\players\basic\_main.ts" />
+    <TypeScriptCompile Include="web\game\players\basic\benchmark.ts" />
     <Content Include="web\game\players\_interfaces.ts" />
     <TypeScriptCompile Include="web\game\players\_load.ts" />
     <TypeScriptCompile Include="web\game\scenes\basic\drawScene.ts" />
@@ -98,12 +99,16 @@
     <Content Include="web\list\inputs\_interfaces.ts" />
     <TypeScriptCompile Include="web\list\inputs\_load.ts" />
     <TypeScriptCompile Include="web\list\_paramsDefault.ts" />
+    <TypeScriptCompile Include="web\list\lastPlayedSongs.ts" />
+    <TypeScriptCompile Include="web\list\_interfaces.ts" />
     <Content Include="web\list\_paramsInterfaces.ts" />
     <Content Include="web\list\_references.ts" />
     <Content Include="web\_lib\jquery\jquery.d.ts" />
     <Content Include="web\_lib\jquery\jquery.js" />
     <Content Include="web\_lib\knockout\knockout.d.ts" />
     <Content Include="web\_lib\knockout\knockout.js" />
+    <Content Include="web\_lib\pouch\pouch.d.ts" />
+    <Content Include="web\_lib\pouch\pouch.js" />
     <Content Include="web\_lib\purl\purl.d.ts" />
     <Content Include="web\_lib\purl\purl.js" />
     <Content Include="web\_lib\requirejs\require.d.ts" />

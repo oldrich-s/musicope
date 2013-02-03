@@ -3,6 +3,7 @@
 import defParams = module("../../_paramsDefault");
 import paramService = module("../../../common/services.params");
 import metronomes = module("../../metronomes/_load");
+import benchmark = module("./benchmark");
 
 interface INote extends INotePlayer {
   userTime: number;
@@ -21,6 +22,8 @@ export class Basic implements IPlayer {
   private unknownNotes: INotePlayer[] = [];
   private theEnd: bool = false;
 
+  private benchmark: benchmark.Benchmark;
+
   constructor() { }
 
   _init(device: IDevice, viewer: IScene, parser: IParser, params: IPlayerParams) {
@@ -36,6 +39,8 @@ export class Basic implements IPlayer {
       });
     });
 
+    o.benchmark = new benchmark.Benchmark();
+
     o.initDevice();
     o.metronome = new metronomes.Basic();
     o.metronome._init(parser.timePerBeat, parser.timePerBar / parser.timePerBeat, device, <any>params);
@@ -47,6 +52,7 @@ export class Basic implements IPlayer {
     function _step() {
       if (!o.theEnd) {
         (<any>window).webkitRequestAnimationFrame(_step);
+        o.benchmark.collect();
       }
       var reseted = o.params.p_elapsedTime !== o.elapTime;
       if (reseted) {
@@ -69,7 +75,7 @@ export class Basic implements IPlayer {
   private waits = [false, false];
   private updateTime() {
     var o = this;
-    var currentTime = Date.now();
+    var currentTime = o.device.time();
     if (!o.previousTime) { o.previousTime = currentTime; }
     var duration = currentTime - o.previousTime;
     o.previousTime = currentTime;
@@ -83,6 +89,7 @@ export class Basic implements IPlayer {
 
   private lastIds = [0,0];
   private lastIdsPC = [0,0];
+  private ons = [144, 145];
   private processNotes(i: number, reseted: bool) {
     var o = this;
     if (reseted) {
@@ -104,7 +111,6 @@ export class Basic implements IPlayer {
     }
     
     if (o.params.p_volumes[i] > 0 || o.params.p_sustain) { // pc playback
-      var ons = [144, 145];
       while (o.notes[i][o.lastIdsPC[i]] && o.params.p_elapsedTime > o.notes[i][o.lastIdsPC[i]].time) {
         var note = o.notes[i][o.lastIdsPC[i]];
         if (note.on) {
@@ -112,7 +118,7 @@ export class Basic implements IPlayer {
             o.device.out(176, 64, 127);
             o.device.out(177, 64, 127);
           } else if (o.params.p_volumes[i] > 0) { 
-            o.device.out(ons[i], note.id, Math.min(127, o.params.p_volumes[i] * note.velocity));
+            o.device.out(o.ons[i], note.id, Math.min(127, o.params.p_volumes[i] * note.velocity));
             o.viewer.setPressedNote(note.id);
           }
         } else {
@@ -120,7 +126,7 @@ export class Basic implements IPlayer {
             o.device.out(176, 64, 0);
             o.device.out(177, 64, 0);
           } else if (o.params.p_volumes[i] > 0) { 
-            o.device.out(ons[i], note.id, 0);
+            o.device.out(o.ons[i], note.id, 0);
             o.viewer.unsetPressedNote(note.id);
           }
         }
