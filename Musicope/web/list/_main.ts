@@ -19,7 +19,7 @@ class AppViewModel {
   selectedTemplate: KnockoutObservableString;
   filteredSongs: KnockoutObservableArray;
   searchQuery: KnockoutObservableString;
-  gameParams;
+  gameParams: KnockoutComputed;
   private songs: ISong[] = [];
   private pouch: ph.DB;
 
