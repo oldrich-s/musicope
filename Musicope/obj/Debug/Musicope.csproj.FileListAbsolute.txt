@@ -1,9 +1,0 @@
-d:\Code\musicope\source\Musicope\obj\Debug\Musicope.dll
-d:\Code\musicope\source\Musicope\obj\Debug\Musicope.pdb
-d:\Code\musicope\source\Musicope\bin\Musicope.dll
-d:\Code\musicope\source\Musicope\bin\Musicope.pdb
-d:\Windows\Documents\GitHub\game\Musicope\bin\Musicope.dll
-d:\Windows\Documents\GitHub\game\Musicope\bin\Musicope.pdb
-d:\Windows\Documents\GitHub\game\Musicope\obj\Debug\Musicope.csprojResolveAssemblyReference.cache
-d:\Windows\Documents\GitHub\game\Musicope\obj\Debug\Musicope.dll
-d:\Windows\Documents\GitHub\game\Musicope\obj\Debug\Musicope.pdb
