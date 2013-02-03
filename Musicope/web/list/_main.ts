@@ -44,6 +44,7 @@ class AppViewModel {
   private initTemplates() {
     var o = this;
     var defaultTemplates = [
+      {name: "none", value: "p_deviceIn=0&p_deviceOut=1&p_waits=[0,0]&p_volumes=[1,1]"},
       {name: "left", value: "p_deviceIn=0&p_deviceOut=1&p_waits=[0,0]&p_volumes=[0,1]"},
       {name: "right", value: "p_deviceIn=0&p_deviceOut=1&p_waits=[0,0]&p_volumes=[1,0]"},
       {name: "both", value: "p_deviceIn=0&p_deviceOut=1&p_waits=[0,0]&p_volumes=[0,0]"},
@@ -72,7 +73,9 @@ class AppViewModel {
       var selectedTemplates = o.templates().filter((templ) => {
         return templ["name"] == selectedName;
       });
-      return selectedTemplates[0]["value"];
+      if (selectedTemplates.length > 0) {
+        return selectedTemplates[0]["value"];
+      }
     });
     o.gameParams.subscribe((params) => { local.set("params", params); });
   }
