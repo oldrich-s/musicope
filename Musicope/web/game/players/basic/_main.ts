@@ -3,7 +3,9 @@
 import defParams = module("../../_paramsDefault");
 import paramService = module("../../../common/services.params");
 import metronomes = module("../../metronomes/_load");
-import benchmark = module("./benchmark");
+
+//import benchmarkM = module("./benchmark");
+//var benchmark = new benchmarkM.Benchmark();
 
 interface INote extends INotePlayer {
   userTime: number;
@@ -22,7 +24,6 @@ export class Basic implements IPlayer {
   private unknownNotes: INotePlayer[] = [];
   private theEnd: bool = false;
 
-  private benchmark: benchmark.Benchmark;
 
   constructor() { }
 
@@ -39,8 +40,6 @@ export class Basic implements IPlayer {
       });
     });
 
-    o.benchmark = new benchmark.Benchmark();
-
     o.initDevice();
     o.metronome = new metronomes.Basic();
     o.metronome._init(parser.timePerBeat, parser.timePerBar / parser.timePerBeat, device, <any>params);
@@ -52,7 +51,7 @@ export class Basic implements IPlayer {
     function _step() {
       if (!o.theEnd) {
         (<any>window).webkitRequestAnimationFrame(_step);
-        o.benchmark.collect();
+//        benchmark.collect();
       }
       var reseted = o.params.p_elapsedTime !== o.elapTime;
       if (reseted) {
@@ -90,6 +89,7 @@ export class Basic implements IPlayer {
     if (o.params.p_elapsedTime > o.parser.timePerSong + 1000) {
       if (o.params.p_callbackUrl) {
         window.location.href = o.params.p_callbackUrl;
+        o.theEnd = true;
       } else {
         o.params.p_elapsedTime = o.elapTime = o.parser.timePerSong;
       }

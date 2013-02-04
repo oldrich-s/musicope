@@ -36,8 +36,9 @@ class AppViewModel {
   redirect(song: ISong) {
     lastPlayedSongs.add(song.url).done(() => {
       var pars: string = o.gameParams();
+      if (!pars) { pars = ""; }
       if (pars.charAt(0) !== "&") { pars = "&" + pars; }
-      window.location.href = "../game/index.html?c_songUrl=" + decodeURIComponent(song.url) + pars;
+      window.location.href = "../game/index.html?g_songUrl=" + decodeURIComponent(song.url) + pars;
     });
   }
 

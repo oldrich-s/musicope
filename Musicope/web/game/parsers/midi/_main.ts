@@ -56,9 +56,9 @@ export class Midi implements IParser {
 
     trackIndexes.forEach((index, i) => { o.parseTrack(i, index + 4); });
     if (o.tracksPlayer[0].length == 0) { o.tracksPlayer.shift(); }
-    o.tracksPlayer = o.params.f_trackIds.map((trackId) => { return o.tracksPlayer[trackId]; });
 
-    if (o.params.f_normalize) { o.normalize(); }
+    o.sortTracksPlayer()
+    o.normalize();
 
     o.tracksScene = o.tracksPlayer.map((notes) => {
       return o.getTrackScene(notes);
@@ -76,18 +76,27 @@ export class Midi implements IParser {
 
   }
 
+  private sortTracksPlayer() {
+    var o = this;
+    o.tracksPlayer = o.params.f_trackIds.map((trackId) => {
+      return o.tracksPlayer[trackId] || [];
+    });
+  }
+
   private normalize() {
     var o = this;
-    var sumVelocity = 0, n = 0;
-    o.tracksPlayer.forEach((notes) => {
-      notes.forEach((note) => {
-        if (note.on) { n++; sumVelocity += note.velocity; }
+    if (o.params.f_normalize) {
+      var sumVelocity = 0, n = 0;
+      o.tracksPlayer.forEach((notes) => {
+        notes.forEach((note) => {
+          if (note.on) { n++; sumVelocity += note.velocity; }
+        });
       });
-    });
-    var scaleVel = o.params.f_normalize / (sumVelocity / n);
-    o.tracksPlayer.forEach((notes) => {
-      notes.forEach((note) => { note.velocity = Math.max(0, Math.min(127, scaleVel * note.velocity)); });
-    });
+      var scaleVel = o.params.f_normalize / (sumVelocity / n);
+      o.tracksPlayer.forEach((notes) => {
+        notes.forEach((note) => { note.velocity = Math.max(0, Math.min(127, scaleVel * note.velocity)); });
+      });
+    }
   }
 
   private getTrackScene(trackPlayer: INotePlayer[]) {
