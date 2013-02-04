@@ -66,7 +66,7 @@
     <Content Include="web\common\devices\_interfaces.ts" />
     <TypeScriptCompile Include="web\common\devices\_load.ts" />
     <TypeScriptCompile Include="web\common\services.params.ts" />
-    <TypeScriptCompile Include="web\game\_main.ts" />
+    <TypeScriptCompile Include="web\game\_index.ts" />
     <TypeScriptCompile Include="web\common\services.local.ts" />
     <Content Include="web\common\services.local.js">
       <DependentUpon>services.local.ts</DependentUpon>
@@ -94,7 +94,7 @@
     <TypeScriptCompile Include="web\game\_paramsDefault.ts" />
     <Content Include="web\game\_paramsInterfaces.ts" />
     <Content Include="web\game\_references.ts" />
-    <TypeScriptCompile Include="web\list\_main.ts" />
+    <TypeScriptCompile Include="web\list\_index.ts" />
     <Content Include="web\list\index.css" />
     <Content Include="web\list\index.html" />
     <TypeScriptCompile Include="web\list\inputs\keyboard\_main.ts" />
@@ -125,7 +125,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy "$(ProjectDir)web"  "$(ProjectDir)..\..\web" /s /e /y &gt; nul
+    <PostBuildEvent>xcopy "$(ProjectDir)web"  "$(ProjectDir)..\..\web\" /s /e /y &gt; nul
 del /s /q "$(ProjectDir)web\common\*.js" &gt;nul
 del /s /q "$(ProjectDir)web\common\*.js.map" &gt;nul
 del /s /q "$(ProjectDir)web\game\*.js" &gt;nul
