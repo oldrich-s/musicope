@@ -10,21 +10,21 @@ import players = module("./players/_load");
 import inputs = module("./inputs/_load");
 
 var params: IParams = paramService.getUrlParams();
-var ctrlParams: ICtrlParams = paramService.copy(params, defParams.iCtrlParams);
+var gameParams: IGameParams = paramService.copy(params, defParams.iCtrlParams);
 
-if (!ctrlParams.c_songUrl) {
-  alert("missing c_songUrl");
+if (!gameParams.g_songUrl) {
+  alert("missing g_songUrl");
 } else {
 
-  var device: IDevice = new devices[ctrlParams.c_idevice]();
+  var device: IDevice = new devices[gameParams.g_idevice]();
   device._init();
   if (device.exists()) {
-    var parser: IParser = new parsers[ctrlParams.c_iparser]();
-    var scene: IScene = new scenes[ctrlParams.c_iscene]();
-    var player: IPlayer = new players[ctrlParams.c_iplayer]();
+    var parser: IParser = new parsers[gameParams.g_iparser]();
+    var scene: IScene = new scenes[gameParams.g_iscene]();
+    var player: IPlayer = new players[gameParams.g_iplayer]();
 
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', params.c_songUrl);
+    xhr.open('GET', params.g_songUrl);
     xhr.responseType = 'arraybuffer';
 
     xhr.onload = function (e) {

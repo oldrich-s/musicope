@@ -57,8 +57,8 @@ export class Basic implements IScene {
 
   private setBackgrColors() {
     var o = this;
-    o.pausedColor = new Int32Array(drawScene.hexToRgb(o.params.v_colPaused));
-    o.unpausedColor = new Int32Array(drawScene.hexToRgb(o.params.v_colUnPaused));
+    o.pausedColor = new Int32Array(drawScene.hexToRgb(o.params.s_colPaused));
+    o.unpausedColor = new Int32Array(drawScene.hexToRgb(o.params.s_colUnPaused));
   }
 
   private setPausedState(isPaused: bool) {
@@ -79,7 +79,7 @@ export class Basic implements IScene {
     var o = this;
     o.canvas.width = window.innerWidth;
     o.canvas.height = window.innerHeight;
-    o.pixelsPerTime = o.canvas.height * 4 / (o.parser.noteValuePerBeat * o.params.v_quartersPerHeight * o.parser.timePerBeat);
+    o.pixelsPerTime = o.canvas.height * 4 / (o.parser.noteValuePerBeat * o.params.s_quartersPerHeight * o.parser.timePerBeat);
     $(window).resize(() => {
       o.canvas.width = window.innerWidth;
       o.canvas.height = window.innerHeight;

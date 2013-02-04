@@ -87,7 +87,7 @@ class AppViewModel {
 
   private loadSongs() {
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', ctrlParams.songsUrl);
+    xhr.open('GET', ctrlParams.l_songsUrl);
     xhr.responseType = 'text';
     xhr.onload = function (e) {
       if (this.status == 200) {

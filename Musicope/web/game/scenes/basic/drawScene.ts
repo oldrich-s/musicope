@@ -59,7 +59,7 @@ function drawPianoBlackNotes(loc: Local) {
     var x1 = x0 + 2 * loc.blackWidth - 3;
     var y0 = Math.floor(loc.pianoHeight * 0.4);
     var y1 = loc.pianoHeight - 8;
-    var activeColor = hexToRgb(loc.input.params.v_colPianoBlack);
+    var activeColor = hexToRgb(loc.input.params.s_colPianoBlack);
     loc.input.drawRect(x0, y0, x1, y1, [id], black, activeColor);
   });
 }
@@ -70,12 +70,12 @@ function drawPianoWhiteNotes(loc: Local) {
     var x1 = x0 + loc.whiteWidth - 1;
     var y0 = 12;
     var y1 = y0 + loc.pianoHeight - 20;
-    loc.input.drawRect(x0, y0, x1, y1, [id], white, hexToRgb(loc.input.params.v_colPianoWhite));
+    loc.input.drawRect(x0, y0, x1, y1, [id], white, hexToRgb(loc.input.params.s_colPianoWhite));
   });
 }
 
 function drawPianoTimeBarColor(loc: Local) {
-  var color = hexToRgb(loc.input.params.v_colTime);
+  var color = hexToRgb(loc.input.params.s_colTime);
   loc.input.drawRect(0, loc.pianoHeight - 5, 1, loc.pianoHeight, [151, 152, 152, 151], color, color);
 }
 
@@ -98,9 +98,9 @@ function drawPiano(loc: Local) {
 }
     
 function drawTrack(loc: Local, trackId: number) {
-  var whiteNoteColor = hexToRgb(loc.input.params.v_colWhites[trackId]);
-  var blackNoteColor = hexToRgb(loc.input.params.v_colBlacks[trackId]);
-  var sustainColor = hexToRgb(loc.input.params.v_colSustain);
+  var whiteNoteColor = hexToRgb(loc.input.params.s_colWhites[trackId]);
+  var blackNoteColor = hexToRgb(loc.input.params.s_colBlacks[trackId]);
+  var sustainColor = hexToRgb(loc.input.params.s_colSustain);
   loc.input.tracks[trackId].forEach(function (note) {
     var y0 = loc.pianoHeight + loc.input.pixelsPerTime * note.timeOn + 1;
     var y1 = loc.pianoHeight + loc.input.pixelsPerTime * note.timeOff - 2;
@@ -130,7 +130,7 @@ export function drawScene(input: Input) {
     pianoHeight: Math.floor(0.2 * input.sceneHeight),
     remainder: input.sceneWidth - whiteWidth * whiteNoteIds.length,
   }
-  input.params.v_views.forEach((view, i) => {
+  input.params.s_views.forEach((view, i) => {
     if (view === "full") { drawTrack(loc, i); }
   });
   drawPiano(loc);

@@ -27,22 +27,22 @@ export var iParserParams: IParserParams = {
 };
 
 export var iSceneParams: ISceneParams = {
-  v_views: ["full", "full"],
-  v_quartersPerHeight: 5,
-  v_colWhites: ["#ff5252", "#ffd800"],
-  v_colBlacks: ["#b73f3f", "#a78d00"],
-  v_colTime: "#0094ff",
-  v_colPianoWhite: "#2c79b2",
-  v_colPianoBlack: "#3faeff",
-  v_colSustain: "#00ff90",
-  v_colPaused: "#090714",
-  v_colUnPaused: "#0d0c0c"
+  s_views: ["full", "full"],
+  s_quartersPerHeight: 5,
+  s_colWhites: ["#ff5252", "#ffd800"],
+  s_colBlacks: ["#b73f3f", "#a78d00"],
+  s_colTime: "#0094ff",
+  s_colPianoWhite: "#2c79b2",
+  s_colPianoBlack: "#3faeff",
+  s_colSustain: "#00ff90",
+  s_colPaused: "#090714",
+  s_colUnPaused: "#0d0c0c"
 };
 
-export var iCtrlParams: ICtrlParams = {
-  c_songUrl: undefined,
-  c_idevice: "Jazz",
-  c_iscene: "Basic",
-  c_iplayer: "Basic",
-  c_iparser: "Midi"
+export var iCtrlParams: IGameParams = {
+  g_songUrl: undefined,
+  g_idevice: "Jazz",
+  g_iscene: "Basic",
+  g_iplayer: "Basic",
+  g_iparser: "Midi"
 };

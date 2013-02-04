@@ -1,5 +1,5 @@
 interface IListParams {
-  songsUrl: string;
+  l_songsUrl: string;
 }
 
 interface IParams extends IListParams {}

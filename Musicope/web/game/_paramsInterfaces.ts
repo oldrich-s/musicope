@@ -28,16 +28,16 @@ interface IMetronomeParams {
 }
 
 interface ISceneParams {
-  v_views: string[];
-  v_quartersPerHeight: number;
-  v_colWhites: string[];
-  v_colBlacks: string[];
-  v_colTime: string;
-  v_colPianoWhite: string;
-  v_colPianoBlack: string;
-  v_colSustain: string;
-  v_colPaused: string;
-  v_colUnPaused: string;
+  s_views: string[];
+  s_quartersPerHeight: number;
+  s_colWhites: string[];
+  s_colBlacks: string[];
+  s_colTime: string;
+  s_colPianoWhite: string;
+  s_colPianoBlack: string;
+  s_colSustain: string;
+  s_colPaused: string;
+  s_colUnPaused: string;
 }
 
 /**
@@ -48,12 +48,12 @@ interface IParserParams {
   f_trackIds: number[];
 }
 
-interface ICtrlParams {
-  c_songUrl: string;
-  c_idevice: string;
-  c_iscene: string;
-  c_iplayer: string;
-  c_iparser: string;
+interface IGameParams {
+  g_songUrl: string;
+  g_idevice: string;
+  g_iscene: string;
+  g_iplayer: string;
+  g_iparser: string;
 }
 
-interface IParams extends IPlayerParams, IMetronomeParams, ISceneParams, ICtrlParams, IParserParams {}
+interface IParams extends IPlayerParams, IMetronomeParams, ISceneParams, IGameParams, IParserParams {}
