@@ -45,13 +45,13 @@ class AppViewModel {
   private initTemplates() {
     var o = this;
     var defaultTemplates = [
-      {name: "none", value: "p_deviceIn=0&p_deviceOut=1&p_waits=[0,0]&p_volumes=[1,1]"},
-      {name: "left", value: "p_deviceIn=0&p_deviceOut=1&p_waits=[0,0]&p_volumes=[0,1]"},
-      {name: "right", value: "p_deviceIn=0&p_deviceOut=1&p_waits=[0,0]&p_volumes=[1,0]"},
-      {name: "both", value: "p_deviceIn=0&p_deviceOut=1&p_waits=[0,0]&p_volumes=[0,0]"},
-      {name: "waitLeft", value: "p_deviceIn=0&p_deviceOut=1&p_waits=[1,1]&p_volumes=[0,1]"},
-      {name: "waitRight", value: "p_deviceIn=0&p_deviceOut=1&p_waits=[1,1]&p_volumes=[1,0]"},
-      {name: "waitBoth", value: "p_deviceIn=0&p_deviceOut=1&p_waits=[1,1]&p_volumes=[0,0]"}
+      {name: "none", value: "p_callbackUrl=../list/&p_deviceIn=0&p_deviceOut=1&p_waits=[0,0]&p_volumes=[1,1]"},
+      {name: "left", value: "p_callbackUrl=../list/&p_deviceIn=0&p_deviceOut=1&p_waits=[0,0]&p_volumes=[0,1]"},
+      {name: "right", value: "p_callbackUrl=../list/&p_deviceIn=0&p_deviceOut=1&p_waits=[0,0]&p_volumes=[1,0]"},
+      {name: "both", value: "p_callbackUrl=../list/&p_deviceIn=0&p_deviceOut=1&p_waits=[0,0]&p_volumes=[0,0]"},
+      {name: "wait for left", value: "p_callbackUrl=../list/&p_deviceIn=0&p_deviceOut=1&p_waits=[1,1]&p_volumes=[0,1]"},
+      {name: "wait for right", value: "p_callbackUrl=../list/&p_deviceIn=0&p_deviceOut=1&p_waits=[1,1]&p_volumes=[1,0]"},
+      {name: "wait for both", value: "p_callbackUrl=../list/&p_deviceIn=0&p_deviceOut=1&p_waits=[1,1]&p_volumes=[0,0]"}
     ];
     var templates = local.get("templates", defaultTemplates);
     o.templates = ko.observableArray(templates);
@@ -138,7 +138,7 @@ class AppViewModel {
         return path.indexOf(query) > -1;
       });
     });
-    var slicedSongs = songs.slice(0, 20);
+    var slicedSongs = songs.slice(0, 40);
     var coloredSongs = slicedSongs.map((song) => {
       if (query.length > 0) {
         var name = queries.map((query) => {

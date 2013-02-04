@@ -29,7 +29,7 @@ export var iParserParams: IParserParams = {
 
 export var iSceneParams: ISceneParams = {
   s_views: ["full", "full"],
-  s_quartersPerHeight: 5,
+  s_quartersPerHeight: 10,
   s_colWhites: ["#ff5252", "#ffd800"],
   s_colBlacks: ["#b73f3f", "#a78d00"],
   s_colTime: "#0094ff",
