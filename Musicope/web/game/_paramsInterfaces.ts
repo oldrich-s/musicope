@@ -4,6 +4,7 @@ p_speed: Relative speed of the song, e.g. 1 = 100%
 */
 
 interface IPlayerParams {
+  p_callbackUrl: string;
   p_deviceIn: string;
   p_deviceOut: string;
   p_elapsedTime: number;

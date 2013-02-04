@@ -81,7 +81,16 @@ export class Basic implements IPlayer {
     o.previousTime = currentTime;
     if (!o.params.p_isPaused && !o.waits[0] && !o.waits[1] && duration < 100) {
       o.params.p_elapsedTime = o.elapTime = o.params.p_elapsedTime + o.params.p_speed * duration;
-      if (o.params.p_elapsedTime > o.parser.timePerSong + 500) {
+      o.redirectOnSongEnd();
+    }
+  }
+
+  private redirectOnSongEnd() {
+    var o = this;
+    if (o.params.p_elapsedTime > o.parser.timePerSong + 1000) {
+      if (o.params.p_callbackUrl) {
+        window.location.href = o.params.p_callbackUrl;
+      } else {
         o.params.p_elapsedTime = o.elapTime = o.parser.timePerSong;
       }
     }

@@ -1,6 +1,7 @@
 /// <reference path="_references.ts" />
 
 export var iPlayerParams: IPlayerParams = {
+  p_callbackUrl: undefined,
   p_deviceIn: "0",
   p_deviceOut: "0",
   p_elapsedTime: undefined,
