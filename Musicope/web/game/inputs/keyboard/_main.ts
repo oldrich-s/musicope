@@ -1,5 +1,7 @@
 /// <reference path="../../_references.ts" />
 
+import key = module("../../../common/keyCodes");
+
 export class Keyboard implements IGameInput {
 
   private oldText;
@@ -19,28 +21,28 @@ export class Keyboard implements IGameInput {
 
     $(document).on("keydown.IGameViewInputsKeyboard", function (e) {
       switch (e.which) {
-        case 77: // m
+        case key.m:
           o.toggleMetronome();
           break;
-        case 40: // down
+        case key.downArrow: // down
           player.params.p_speed = player.params.p_speed - 0.1;
           changeSpeed(player.params.p_speed);
           break;
-        case 38: // up
+        case key.upArrow: // up
           player.params.p_speed = player.params.p_speed + 0.1;
           changeSpeed(player.params.p_speed);
           break;
-        case 37: // left
+        case key.leftArrow: // left
           player.params.p_elapsedTime = Math.max(player.params.p_initTime, player.params.p_elapsedTime - 2 * parser.timePerBeat);
           break;
-        case 39: // right
+        case key.rightArrow: // right
           player.params.p_elapsedTime = Math.min(parser.timePerSong + 10, player.params.p_elapsedTime + 2 * parser.timePerBeat);
           break;
-        case 33:
-        case 36:
+        case key.pageUp:
+        case key.home:
           player.params.p_elapsedTime = player.params.p_initTime;
           break;
-        case 32:
+        case key.space:
           player.params.p_isPaused = player.params.p_isPaused ? false : true;
           break;
         default:
