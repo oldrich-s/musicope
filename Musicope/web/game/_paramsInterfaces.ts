@@ -13,6 +13,7 @@ interface IPlayerParams {
   p_radiuses: number[];
   p_speed: number;
   p_sustain: bool;
+  p_userHands: bool[];
   p_volumes: number[];
   p_waits: bool[];
 }

@@ -8,7 +8,7 @@ export class ChangeSpeed implements IKeyboardActions {
 
   constructor(private player: IPlayer, private parser: IParser) {
     var o = this;
-    o.changeDisplayedSpeed(player.params.p_speed);
+    o.changeDisplayedSpeed(player.getParam("p_speed"));
   }
 
   run(keyCode: number) {
@@ -19,14 +19,14 @@ export class ChangeSpeed implements IKeyboardActions {
 
   private speedUp() {
     var o = this;
-    o.player.params.p_speed = o.player.params.p_speed + 0.1;
-    o.changeDisplayedSpeed(o.player.params.p_speed);
+    o.player.setParam("p_speed", o.player.getParam("p_speed") + 0.1);
+    o.changeDisplayedSpeed(o.player.getParam("p_speed"));
   }
 
   private slowDown() {
     var o = this;
-    o.player.params.p_speed = o.player.params.p_speed - 0.1;
-    o.changeDisplayedSpeed(o.player.params.p_speed);
+    o.player.setParam("p_speed", o.player.getParam("p_speed") - 0.1);
+    o.changeDisplayedSpeed(o.player.getParam("p_speed"));
   }
 
   private changeDisplayedSpeed(speed) {

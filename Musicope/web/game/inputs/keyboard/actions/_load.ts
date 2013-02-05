@@ -7,3 +7,6 @@ export var MoveInTime: IKeyboardActionsNew = moveInTime.MoveInTime;
 
 import unsorted = module("./unsorted");
 export var Unsorted: IKeyboardActionsNew = unsorted.Unsorted;
+
+import toggleParams = module("./toggleParams");
+export var ToggleParams: IKeyboardActionsNew = toggleParams.ToggleParams;

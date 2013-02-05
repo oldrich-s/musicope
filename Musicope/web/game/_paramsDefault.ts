@@ -10,6 +10,7 @@ export var iPlayerParams: IPlayerParams = {
   p_radiuses: [200, 200],
   p_speed: 1,
   p_sustain: true,
+  p_userHands: [false, false],
   p_volumes: [1, 1],
   p_waits: [false, false],
 };
