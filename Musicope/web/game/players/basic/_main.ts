@@ -41,8 +41,7 @@ export class Basic implements IPlayer {
     });
 
     o.initDevice();
-    o.metronome = new metronomes.Basic();
-    o.metronome._init(parser.timePerBeat, parser.timePerBar / parser.timePerBeat, device, <any>params);
+    o.metronome = new metronomes.Basic(parser.timePerBeat, parser.timePerBar / parser.timePerBeat, device, <any>params);
     o.step();
   }
 

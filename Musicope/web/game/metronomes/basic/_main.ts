@@ -5,16 +5,9 @@ import paramService = module("../../../common/services.params");
 
 export class Basic implements IMetronome {
 
-  params: IMetronomeParams;
-
   private lastPlayedId: number;
-  private timePerBeat: number; 
-  private beatsPerBar: number; 
-  private device: IDevice;
 
-  constructor() { }
-
-  _init(timePerBeat: number, beatsPerBar: number, device: IDevice, params: IMetronomeParams) {
+  constructor(private timePerBeat: number, private beatsPerBar: number, private device: IDevice, private params: IMetronomeParams) {
     this.timePerBeat = timePerBeat;
     this.beatsPerBar = beatsPerBar;
     this.device = device;
