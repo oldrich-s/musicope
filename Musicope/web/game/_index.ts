@@ -16,8 +16,7 @@ if (!gameParams.g_songUrl) {
   alert("missing g_songUrl");
 } else {
 
-  var device: IDevice = new devices[gameParams.g_idevice]();
-  device._init();
+  var device: IDevice = new (<IDeviceNew> devices[gameParams.g_idevice])();
   if (device.exists()) {
     var parser: IParser = new parsers[gameParams.g_iparser]();
     var scene: IScene = new scenes[gameParams.g_iscene]();

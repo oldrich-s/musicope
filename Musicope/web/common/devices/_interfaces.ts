@@ -1,5 +1,4 @@
 interface IDevice {
-  _init(): void;
   inOpen(name: any, callback: (timestamp: number, byte1: number, byte2: number, byte3: number) => void ): void;
   inClose(): void;
   inList(): string[];
@@ -9,4 +8,8 @@ interface IDevice {
   outList(): string[];
   outOpen(name: any): void;
   time(): number;
+}
+
+declare interface IDeviceNew {
+  new (): IDevice;
 }

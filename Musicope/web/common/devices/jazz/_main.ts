@@ -19,9 +19,7 @@ export class Jazz implements IDevice {
 
   private jazz: IJazz;
 
-  constructor() { }
-
-  _init() {
+  constructor() {
     this.jazz = <any>document.getElementById("Jazz");
   }
 
