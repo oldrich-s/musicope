@@ -33,17 +33,13 @@ export class Midi implements IParser {
   tracksPlayer: INotePlayer[][] = [];
   tracksScene: INoteScene[][];
     
-  params: IParserParams;
-
   private timePerTick: number;
   private ticksPerQuarter: number;
   private timePerQuarter: number;
   private beatsPerBar: number;
-  private midi: Uint8Array;
   
-  constructor() { }
 
-  _init(midi: Uint8Array, params: IParserParams) {
+  constructor(private midi: Uint8Array, private params: IParserParams) {
     var o = this;
 
     o.midi = midi;

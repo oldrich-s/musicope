@@ -24,5 +24,8 @@ interface IParser {
   noteValuePerBeat: number; // denominator in time signature: 2, 4, 8, 16 ...
   tracksPlayer: INotePlayer[][];
   tracksScene: INoteScene[][];
-  _init(midi: Uint8Array, params: IParserParams): void;
+}
+
+interface IParserNew {
+  new(midi: Uint8Array, params: IParserParams): IParser;
 }
