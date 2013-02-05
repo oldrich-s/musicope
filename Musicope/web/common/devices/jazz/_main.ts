@@ -21,6 +21,10 @@ export class Jazz implements IDevice {
 
   constructor() {
     this.jazz = <any>document.getElementById("Jazz");
+    window.onbeforeunload = () => {
+      this.jazz.MidiInClose();
+      this.jazz.MidiOutClose();
+    }
   }
 
   inOpen(nameOrIndex, callback) {
