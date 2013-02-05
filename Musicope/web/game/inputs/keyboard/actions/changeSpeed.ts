@@ -13,7 +13,8 @@ export class ChangeSpeed implements IKeyboardActions {
 
   run(keyCode: number) {
     var o = this;
-    if (keyCode == key.upArrow) { o.speedUp(); } else { o.slowDown(); }
+    if (keyCode == key.upArrow) { o.speedUp(); }
+    else if (keyCode == key.downArrow) { o.slowDown(); }
   }
 
   private speedUp() {

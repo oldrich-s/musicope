@@ -24,7 +24,12 @@ export class Keyboard implements IGameInput {
     var o = this;
     $(document).keydown((e) => {
       o.actionObjects.forEach((action) => {
-        action.run(e.which);
+        var isValid = action.hotkeys.some((key) => {
+          return key == e.which;
+        });
+        if (isValid) {
+          action.run(e.which);
+        }
       });
     });
   }
