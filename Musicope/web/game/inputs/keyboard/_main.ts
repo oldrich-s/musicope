@@ -5,14 +5,9 @@ import key = module("../../../common/keyCodes");
 export class Keyboard implements IGameInput {
 
   private oldText;
-  private player: IPlayer;
-  private parser: IParser;
 
-  constructor() { }
-
-  _init(player: IPlayer, parser: IParser) {
+  constructor(private player: IPlayer, private parser: IParser) {
     var o = this;
-    o.player = player; o.parser = parser;
 
     $(document).on("keydown.IGameViewInputsKeyboard", function (e) {
       switch (e.which) {

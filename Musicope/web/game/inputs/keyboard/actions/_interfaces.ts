@@ -3,6 +3,6 @@ interface IKeyboardActions {
   run(keyCode: number): void;
 }
 
-declare interface IKeyboardActionsNew {
+interface IKeyboardActionsNew {
   new (player: IPlayer, parser: IParser): IKeyboardActions;
 }

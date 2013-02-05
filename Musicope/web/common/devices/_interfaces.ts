@@ -10,6 +10,6 @@ interface IDevice {
   time(): number;
 }
 
-declare interface IDeviceNew {
+interface IDeviceNew {
   new (): IDevice;
 }

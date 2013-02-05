@@ -1,3 +1,3 @@
 
 import keyboardM = module("./keyboard/_main");
-export var Keyboard = keyboardM.Keyboard;
+export var Keyboard: IGameInputNew = keyboardM.Keyboard;

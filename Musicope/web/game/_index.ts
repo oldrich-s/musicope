@@ -34,7 +34,7 @@ if (!gameParams.g_songUrl) {
         scene._init(parser, params);
         player._init(device, scene, parser, params);
         for (var prop in inputs) {
-          (<IGameInput> new inputs[prop]())._init(player, parser);
+          new (<IGameInputNew> inputs[prop])(player, parser);
         }
       }
     }
