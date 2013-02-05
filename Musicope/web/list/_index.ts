@@ -45,13 +45,13 @@ class AppViewModel {
   private initTemplates() {
     var o = this;
     var defaultTemplates = [
-      {name: "none", value: "p_callbackUrl=../list/&p_deviceIn=0&p_deviceOut=1&p_waits=[0,0]&p_volumes=[1,1]"},
-      {name: "left", value: "p_callbackUrl=../list/&p_deviceIn=0&p_deviceOut=1&p_waits=[0,0]&p_volumes=[0,1]"},
-      {name: "right", value: "p_callbackUrl=../list/&p_deviceIn=0&p_deviceOut=1&p_waits=[0,0]&p_volumes=[1,0]"},
-      {name: "both", value: "p_callbackUrl=../list/&p_deviceIn=0&p_deviceOut=1&p_waits=[0,0]&p_volumes=[0,0]"},
-      {name: "wait for left", value: "p_callbackUrl=../list/&p_deviceIn=0&p_deviceOut=1&p_waits=[1,1]&p_volumes=[0,1]"},
-      {name: "wait for right", value: "p_callbackUrl=../list/&p_deviceIn=0&p_deviceOut=1&p_waits=[1,1]&p_volumes=[1,0]"},
-      {name: "wait for both", value: "p_callbackUrl=../list/&p_deviceIn=0&p_deviceOut=1&p_waits=[1,1]&p_volumes=[0,0]"}
+      { name: "none", value: "p_callbackUrl=../list/&p_deviceIn=0&p_deviceOut=1&p_waits=[0,0]&p_volumes=[1,1]" },
+      { name: "left", value: "p_callbackUrl=../list/&p_deviceIn=0&p_deviceOut=1&p_waits=[0,0]&p_volumes=[0,1]" },
+      { name: "right", value: "p_callbackUrl=../list/&p_deviceIn=0&p_deviceOut=1&p_waits=[0,0]&p_volumes=[1,0]" },
+      { name: "both", value: "p_callbackUrl=../list/&p_deviceIn=0&p_deviceOut=1&p_waits=[0,0]&p_volumes=[0,0]" },
+      { name: "wait for left", value: "p_callbackUrl=../list/&p_deviceIn=0&p_deviceOut=1&p_waits=[1,1]&p_volumes=[0,1]" },
+      { name: "wait for right", value: "p_callbackUrl=../list/&p_deviceIn=0&p_deviceOut=1&p_waits=[1,1]&p_volumes=[1,0]" },
+      { name: "wait for both", value: "p_callbackUrl=../list/&p_deviceIn=0&p_deviceOut=1&p_waits=[1,1]&p_volumes=[0,0]" }
     ];
     var templates = local.get("templates", defaultTemplates);
     o.templates = ko.observableArray(templates);
@@ -103,7 +103,7 @@ class AppViewModel {
   private createSongsFromUrls(urls: string[]): ISong[] {
     return urls.map((path) => {
       var vals = path.match(/^(.*\/)([^\/]+)\.([^.]+)$/);
-      return {path: vals[1], name: vals[2], extension: vals[3], url: path};
+      return { path: vals[1], name: vals[2], extension: vals[3], url: path };
     });
   }
 
@@ -121,7 +121,7 @@ class AppViewModel {
           } else {
             o.filteredSongs(o.createSongsFromUrls(songUrls));
           }
-          
+
         });
       } else {
         o.filteredSongs(o.filterSongs(query));
@@ -130,27 +130,47 @@ class AppViewModel {
   }
 
   private filterSongs(query: string) {
-    function replace(where: string, what: string) { return where.replace(new RegExp(what, 'gi'), '<span class="search-match">$&</span>'); }
+    var o = this;
+    var queries = o.splitQuery(query);
+    var filteredSongs = o.filterSongsByQueries(queries);
+    var slicedSongs = filteredSongs.slice(0, 40);
+    var coloredSongs = o.colorSongsByQueries(slicedSongs, queries);
+    return coloredSongs;
+  }
+
+  private splitQuery(query: string) {
     var queries = query.toLowerCase().split(" ");
-    var songs = o.songs.filter((song, i) => {
-      var path = song.url.toLowerCase();
+    var trimmedQueries = queries.map((query) => { return query.trim(); });
+    var nonEmptyQueries = trimmedQueries.filter((query) => { return query != ""; });
+    return nonEmptyQueries;
+  }
+
+  private filterSongsByQueries(queries: string[]) {
+    return o.songs.filter((song, i) => {
+      var url = song.url.toLowerCase();
       return queries.every((query) => {
-        return path.indexOf(query) > -1;
+        return url.indexOf(query) > -1;
       });
     });
-    var slicedSongs = songs.slice(0, 40);
-    var coloredSongs = slicedSongs.map((song) => {
-      if (query.length > 0) {
-        var name = queries.map((query) => {
-          return replace(song.name, query);
-        });
-        var path = queries.map((query) => {
-          return replace(song.path, query);
-        });
-        return { name: name, path: path, url: song.url };
+  }
+
+  private colorSongsByQueries(songs: ISong[], queries: string[]) {
+    function color(str: string) {
+      queries.forEach((query) => {
+        str = str.replace(new RegExp(query, 'gi'), '{$&}');
+      });
+      for (var i = 0; i < queries.length; i++) {
+        str = str.replace(/\{([^{]+?)\}/g, '<span class="search-match">$1</span>');
+      }
+      return str;
+    }
+    return songs.map((song) => {
+      if (queries.length > 0 && queries[0].length > 0) {
+        var coloredName = color(song.name);
+        var coloredPath = color(song.path);
+        return { name: coloredName, path: coloredPath, url: song.url };
       } else { return <any>song; }
     });
-    return coloredSongs;
   }
 
 }
