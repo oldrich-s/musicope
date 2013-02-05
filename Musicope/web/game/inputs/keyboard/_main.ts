@@ -1,36 +1,32 @@
 /// <reference path="../../_references.ts" />
 
-import key = module("../../../common/keyCodes");
+import actions = module("./actions/_load");
 
 export class Keyboard implements IGameInput {
 
-  private oldText;
+  private actionObjects: IKeyboardActions[] = [];
 
   constructor(private player: IPlayer, private parser: IParser) {
     var o = this;
-
-    $(document).on("keydown.IGameViewInputsKeyboard", function (e) {
-      switch (e.which) {
-        case key.m:
-          o.toggleMetronome();
-          break;
-        case key.space:
-          player.params.p_isPaused = player.params.p_isPaused ? false : true;
-          break;
-        default:
-        }
-    });
-
+    o.initActions();
+    o.signupActions();
   }
 
-  private m_vel;
-  private toggleMetronome() {
+  private initActions() {
     var o = this;
-    if (o.player.metronome.params.m_velocity > 0) {
-      o.m_vel = o.player.metronome.params.m_velocity;
-      o.player.metronome.params.m_velocity = 0;
-    } else {
-      o.player.metronome.params.m_velocity = o.m_vel;
+    for (var prop in actions) {
+      var action = new (<IKeyboardActionsNew> actions[prop])(o.player, o.parser);
+      o.actionObjects.push(action);
     }
   }
+
+  private signupActions() {
+    var o = this;
+    $(document).keydown((e) => {
+      o.actionObjects.forEach((action) => {
+        action.run(e.which);
+      });
+    });
+  }
+
 }
