@@ -13,21 +13,13 @@ interface INote extends INotePlayer {
 
 export class Basic implements IPlayer {
 
-  params: IPlayerParams;
   metronome: IMetronome;
-
-  private device: IDevice;
-  private viewer: IScene;
-  private parser: IParser;
 
   private notes: INote[][];
   private unknownNotes: INotePlayer[] = [];
   private theEnd: bool = false;
 
-
-  constructor() { }
-
-  _init(device: IDevice, viewer: IScene, parser: IParser, params: IPlayerParams) {
+  constructor(private device: IDevice, private viewer: IScene, private parser: IParser, private params: IPlayerParams) {
     var o = this;
     o.device = device; o.viewer = viewer; o.parser = parser;
     o.params = paramService.copy(params, defParams.iPlayerParams);

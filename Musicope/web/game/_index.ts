@@ -16,11 +16,11 @@ if (!gameParams.g_songUrl) {
   alert("missing g_songUrl");
 } else {
 
-  var device: IDevice = new (<IDeviceNew> devices[gameParams.g_idevice])();
+  var device = new (<IDeviceNew> devices[gameParams.g_idevice])();
   if (device.exists()) {
     
     var scene: IScene = new scenes[gameParams.g_iscene]();
-    var player: IPlayer = new players[gameParams.g_iplayer]();
+    
 
     var xhr = new XMLHttpRequest();
     xhr.open('GET', params.g_songUrl);
@@ -30,9 +30,9 @@ if (!gameParams.g_songUrl) {
       if (this.status == 200) {
         var arr = new Uint8Array(xhr.response);
 
-        var parser: IParser = new (<IParserNew> parsers[gameParams.g_iparser])(arr, params);
+        var parser = new (<IParserNew> parsers[gameParams.g_iparser])(arr, params);
         scene._init(parser, params);
-        player._init(device, scene, parser, params);
+        var player = new (<IPlayerNew> players[gameParams.g_iplayer])(device, scene, parser, params);
         for (var prop in inputs) {
           new (<IGameInputNew> inputs[prop])(player, parser);
         }
