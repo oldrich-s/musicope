@@ -7,9 +7,6 @@ import webgl = module("./webgl");
 
 export class Basic implements IScene {
 
-  params: ISceneParams;
-
-  private parser: IParser;
   private pixelsPerTime: number;
   private pressedNotes = new Int32Array(127);
 
@@ -19,9 +16,7 @@ export class Basic implements IScene {
   private pausedColor: Int32Array;
   private unpausedColor: Int32Array;
 
-  constructor() { }
-
-  _init(parser: IParser, params: ISceneParams) {
+  constructor(private parser: IParser, public params: ISceneParams) {
     var o = this;
     o.params = paramService.copy(params, defParams.iSceneParams);
     o.parser = parser;

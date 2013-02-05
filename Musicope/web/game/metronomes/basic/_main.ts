@@ -7,7 +7,7 @@ export class Basic implements IMetronome {
 
   private lastPlayedId: number;
 
-  constructor(private timePerBeat: number, private beatsPerBar: number, private device: IDevice, private params: IMetronomeParams) {
+  constructor(private timePerBeat: number, private beatsPerBar: number, private device: IDevice, public params: IMetronomeParams) {
     this.timePerBeat = timePerBeat;
     this.beatsPerBar = beatsPerBar;
     this.device = device;

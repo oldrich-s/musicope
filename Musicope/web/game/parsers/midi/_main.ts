@@ -39,7 +39,7 @@ export class Midi implements IParser {
   private beatsPerBar: number;
   
 
-  constructor(private midi: Uint8Array, private params: IParserParams) {
+  constructor(private midi: Uint8Array, public params: IParserParams) {
     var o = this;
 
     o.midi = midi;

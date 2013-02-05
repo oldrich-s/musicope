@@ -19,7 +19,7 @@ export class Basic implements IPlayer {
   private unknownNotes: INotePlayer[] = [];
   private theEnd: bool = false;
 
-  constructor(private device: IDevice, private viewer: IScene, private parser: IParser, private params: IPlayerParams) {
+  constructor(private device: IDevice, private viewer: IScene, private parser: IParser, public params: IPlayerParams) {
     var o = this;
     o.device = device; o.viewer = viewer; o.parser = parser;
     o.params = paramService.copy(params, defParams.iPlayerParams);
