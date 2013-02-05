@@ -74,6 +74,7 @@
     <Content Include="web\game\index.css" />
     <Content Include="web\game\index.html" />
     <TypeScriptCompile Include="web\game\inputs\keyboard\_main.ts" />
+    <TypeScriptCompile Include="web\common\keyCodes.ts" />
     <Content Include="web\game\inputs\_interfaces.ts" />
     <TypeScriptCompile Include="web\game\inputs\_load.ts" />
     <TypeScriptCompile Include="web\game\metronomes\basic\_main.ts" />
