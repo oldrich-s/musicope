@@ -20,12 +20,12 @@ export var iMetronomeParams: IMetronomeParams = {
   m_channel: 153,
   m_id1: 60,
   m_id2: 56,
-  m_velocity: 20
+  m_velocity: 15
 };
 
 export var iParserParams: IParserParams = {
   f_trackIds: [1, 0],
-  f_normalize: 70
+  f_normalize: 50
 };
 
 export var iSceneParams: ISceneParams = {

@@ -55,9 +55,9 @@ export class Basic implements IPlayer {
     o.metronome.reset();
 
     o.lastIds.forEach((_, i) => {
-      o.lastIds[i] = 0;
-      while (o.notes[i][o.lastIds[i]] && o.notes[i][o.lastIds[i]].time < o.params.p_elapsedTime) { o.lastIds[i]++; }
-      o.lastIdsPC[i] = o.lastIds[i];
+      o.lastIds[i] = o.notes[i].length - 1;
+      while (o.notes[i][o.lastIds[i]] && o.notes[i][o.lastIds[i]].time > o.params.p_elapsedTime) { o.lastIds[i]--; }
+      o.lastIdsPC[i] = o.lastIds[i] + 1;
       for (var j = o.lastIds[i]; j < o.notes[i].length; j++) {
         o.notes[i][j].userTime = undefined;
       }

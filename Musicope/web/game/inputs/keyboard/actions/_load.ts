@@ -10,3 +10,6 @@ export var Unsorted: IKeyboardActionsNew = unsorted.Unsorted;
 
 import toggleParams = module("./toggleParams");
 export var ToggleParams: IKeyboardActionsNew = toggleParams.ToggleParams;
+
+import metronome = module("./metronome");
+export var Metronome: IKeyboardActionsNew = metronome.Metronome;
