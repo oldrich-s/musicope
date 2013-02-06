@@ -6,9 +6,12 @@ export class ChangeSpeed implements IKeyboardActions {
 
   hotkeys = [key.upArrow, key.downArrow];
 
+  private container: IJQuery.JQuery;
+
   constructor(private player: IPlayer, private parser: IParser) {
     var o = this;
     var params = player.getParams();
+    o.container = $("<div />").appendTo('#overlayDiv');
     o.changeDisplayedSpeed(params.p_speed);
   }
 
@@ -35,8 +38,8 @@ export class ChangeSpeed implements IKeyboardActions {
   }
 
   private changeDisplayedSpeed(speed) {
-    var oldText = $("#overlayDiv").text();
-    $("#overlayDiv").text("" + Math.round(speed * 100));
+    var o = this;
+    o.container.text("" + Math.round(speed * 100));
   }
 
   private wrap(fn: (params: IPlayerParams) => void) {
