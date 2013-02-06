@@ -20,7 +20,12 @@ List View is a supporting view for the Game View. This view isn't in fact necess
 
 The source of the Musicope is written in [TypeScript][13]. TypeScript is JavaScript with types. You can use e.g. free [Microsoft Visual Studio Express for Web][14] to edit the TypeScript files.
 
-As mentioned, the game consist of two separate views (Game View and List View). Each view consists of the main [index.html][12], [index.css][17] and [_index.ts][15] file. All the TypeScript files are loaded dynamically by [RequireJS][16]. The interface of the input *GET* parameters is contained in [_paramsInterfaces.ts][18] whereas their respective default values can be found in [_paramsDefault.ts][19].
+As mentioned, the game consist of two separate views (Game View and List View). Each view consists of the main [index.html][12], [index.css][17] and [_index.ts][15] file. All the TypeScript files are loaded dynamically by [RequireJS][16]. The interface of the input *GET* parameters is contained in [_paramsInterfaces.ts][18] whereas their respective default values can be found in [_paramsDefault.ts][19]. All the interfaces are loaded by *<reference/>* tags.
+
+All the views consist of plugins. Each plugin is contained in separate folder. Let's take [scenes][20] plugin as an example. Each plugin consists of [_interfaces.ts][21] which defines the interface of the plugin Class. Each plugin further contains [_load.ts][22] file which loads all the plugins of the specified interface. Whenever you create a plugin for a specified interface, place your plugin reference into the respective *_load.ts*.
+
+
+
 
 [1]: https://github.com/musicope/game/tree/master/Musicope/web/game
 [2]: https://github.com/musicope/game/tree/master/Musicope/web/list
@@ -41,3 +46,6 @@ As mentioned, the game consist of two separate views (Game View and List View). 
 [17]: https://github.com/musicope/game/blob/master/Musicope/web/game/index.css
 [18]: https://github.com/musicope/game/blob/master/Musicope/web/game/_paramsInterfaces.ts
 [19]: https://github.com/musicope/game/blob/master/Musicope/web/game/_paramsDefault.ts
+[20]: https://github.com/musicope/game/tree/master/Musicope/web/game/scenes
+[21]: https://github.com/musicope/game/blob/master/Musicope/web/game/scenes/_interfaces.ts
+[22]: https://github.com/musicope/game/blob/master/Musicope/web/game/scenes/_load.ts
