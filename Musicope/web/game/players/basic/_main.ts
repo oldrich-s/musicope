@@ -37,14 +37,14 @@ export class Basic implements IPlayer {
     o.step();
   }
 
-  getParam(name: string) {
+  getParams() {
     var o = this;
-    return o.params[name];
+    return <IPlayerParams> $.extend(true, {}, o.params);
   }
 
-  setParam(name: string, value: any) {
+  setParams(params: IPlayerParams) {
     var o = this;
-    o.params[name] = value;
+    o.params = params;
     o.reset();
   }
 

@@ -24,18 +24,25 @@ export class ToggleParams implements IKeyboardActions {
 
   private toggleHands() {
     var o = this;
-    var options = [[false, false], [false, true], [true, false], [true, true]];
-    for (var i = 0; i < options.length; i++) {
-      var areEqual = o.player.getParam("p_userHands").every((param, j) => {
-        return param == options[i][j];
-      });
-      if (areEqual) {
-        o.player.setParam("p_userHands", options[(i + 1) % options.length]);
-        break;
+    o.wrap((params) => {
+      var options = [[false, false], [false, true], [true, false], [true, true]];
+      for (var i = 0; i < options.length; i++) {
+        var areEqual = params.p_userHands.every((param, j) => {
+          return param == options[i][j];
+        });
+        if (areEqual) {
+          params.p_userHands = options[(i + 1) % options.length];
+          break;
+        }
       }
-    }
-    
-    
+    });
+  }
+
+  private wrap(fn: (params: IPlayerParams) => void) {
+    var o = this;
+    var params = o.player.getParams();
+    fn(params);
+    o.player.setParams(params);
   }
 
 }

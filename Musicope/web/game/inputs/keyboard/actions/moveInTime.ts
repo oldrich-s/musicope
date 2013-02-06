@@ -17,20 +17,33 @@ export class MoveInTime implements IKeyboardActions {
 
   private moveBack() {
     var o = this;
-    var newTime = o.player.getParam("p_elapsedTime") - 2 * o.parser.timePerBeat;
-    var truncTime = Math.max(o.player.getParam("p_initTime"), newTime);
-    o.player.setParam("p_elapsedTime", truncTime);
+    o.wrap((params) => {
+      var newTime = params.p_elapsedTime - 2 * o.parser.timePerBeat;
+      var truncTime = Math.max(params.p_initTime, newTime);
+      params.p_elapsedTime = truncTime;
+    });
   }
 
   private moveForward() {
     var o = this;
-    var newTime = o.player.getParam("p_elapsedTime") + 2 * o.parser.timePerBeat;
-    var truncTime = Math.min(o.parser.timePerSong + 10, newTime);
-    o.player.setParam("p_elapsedTime", truncTime);
+    o.wrap((params) => {
+      var newTime = params.p_elapsedTime + 2 * o.parser.timePerBeat;
+      var truncTime = Math.min(o.parser.timePerSong + 10, newTime);
+      params.p_elapsedTime = truncTime;
+    });
   }
 
   private goHome() {
     var o = this;
-    o.player.setParam("p_elapsedTime", o.player.getParam("p_initTime"));
+    o.wrap((params) => {
+      params.p_elapsedTime = params.p_initTime;
+    });
+  }
+
+  private wrap(fn: (params: IPlayerParams) => void) {
+    var o = this;
+    var params = o.player.getParams();
+    fn(params);
+    o.player.setParams(params);
   }
 }

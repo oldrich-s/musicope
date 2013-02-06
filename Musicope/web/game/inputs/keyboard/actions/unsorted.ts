@@ -17,7 +17,16 @@ export class Unsorted implements IKeyboardActions {
 
   private togglePause() {
     var o = this;
-    o.player.setParam("p_isPaused", !o.player.getParam("p_isPaused"));
+    o.wrap((params) => {
+      params.p_isPaused = !params.p_isPaused;
+    });
+  }
+
+  private wrap(fn: (params: IPlayerParams) => void) {
+    var o = this;
+    var params = o.player.getParams();
+    fn(params);
+    o.player.setParams(params);
   }
 
 }

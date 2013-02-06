@@ -2,8 +2,8 @@
 
 interface IPlayer {
   metronome: IMetronome;
-  getParam(name: string): any;
-  setParam(name: string, value: any): void;
+  getParams(): IPlayerParams;
+  setParams(params: IPlayerParams): void;
 }
 
 interface IPlayerNew {
