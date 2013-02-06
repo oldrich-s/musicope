@@ -14,7 +14,9 @@ All the input *GET* parameters can be theoretically modified during the game pla
 
 ## [List View][2]
 
+List View is a supporting view for the Game View. This view isn't in fact necessary at all and can be replaced by any other web-page. The main task of the List View is to parse a *json* list of available *midi* files, and provide it to the user. The user chooses the song of interest together with input parameters and plays the game. Simple :). Currently, there is only one input *GET* [parameter][11] of the List view, namely *l_songsUrl* which should point to the *json* url.
 
+## Source Code description
 
 [1]: https://github.com/musicope/game/tree/master/Musicope/web/game
 [2]: https://github.com/musicope/game/tree/master/Musicope/web/list
@@ -26,3 +28,4 @@ All the input *GET* parameters can be theoretically modified during the game pla
 [8]: http://qa.musicope.com/
 [9]: http://jazz-soft.net/
 [10]: https://github.com/musicope/game/tree/master/Musicope/web/game/inputs/keyboard/actions
+[11]: https://github.com/musicope/game/blob/master/Musicope/web/list/_paramsInterfaces.ts
