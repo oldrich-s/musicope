@@ -25,7 +25,7 @@ export class Basic implements IPlayer {
     o.params = paramService.copy(params, defParams.iPlayerParams);
     if (typeof o.params.p_initTime == 'undefined') { o.params.p_initTime = -2 * o.parser.timePerBar; }
     if (typeof o.params.p_elapsedTime == 'undefined') { o.params.p_elapsedTime = o.params.p_initTime; }
-      
+
     o.notes = o.parser.tracksPlayer.map((oldNotes) => {
       return oldNotes.map((n) => {
         return { on: n.on, time: n.time, id: n.id, velocity: n.velocity, userTime: undefined };
@@ -54,11 +54,11 @@ export class Basic implements IPlayer {
     o.viewer.unsetAllPressedNotes();
     o.metronome.reset();
 
-    o.lastIds.forEach((_, i) => {
-      o.lastIds[i] = o.notes[i].length - 1;
-      while (o.notes[i][o.lastIds[i]] && o.notes[i][o.lastIds[i]].time > o.params.p_elapsedTime) { o.lastIds[i]--; }
-      o.lastIdsPC[i] = o.lastIds[i] + 1;
-      for (var j = o.lastIds[i]; j < o.notes[i].length; j++) {
+    o.waitId.forEach((_, i) => {
+      o.waitId[i] = o.notes[i].length - 1;
+      while (o.notes[i][o.waitId[i]] && o.notes[i][o.waitId[i]].time > o.params.p_elapsedTime) { o.waitId[i]--; }
+      o.playId[i] = o.waitId[i] + 1;
+      for (var j = o.waitId[i]; j < o.notes[i].length; j++) {
         o.notes[i][j].userTime = undefined;
       }
     });
@@ -69,17 +69,17 @@ export class Basic implements IPlayer {
     function _step() {
       if (!o.theEnd) {
         (<any>window).webkitRequestAnimationFrame(_step);
-//        benchmark.collect();
+        //        benchmark.collect();
       }
       o.updateTime();
-        
+
       o.processNotes(0);
       o.processNotes(1);
 
       o.metronome.play(o.params.p_elapsedTime);
       o.viewer.redraw(o.params.p_elapsedTime, o.params.p_isPaused);
     }
-      _step();
+    _step();
   }
 
   private previousTime: number;
@@ -107,43 +107,80 @@ export class Basic implements IPlayer {
       }
     }
   }
-
-  private lastIds = [0,0];
-  private lastIdsPC = [0,0];
-  private ons = [144, 145];
+  
   private processNotes(i: number) {
     var o = this;
-
     o.waits[i] = false;
-    if (o.params.p_userHands[i] && o.params.p_waits[i]) { // user playback
-      while (o.notes[i][o.lastIds[i]] && o.notes[i][o.lastIds[i]].time < o.params.p_elapsedTime - o.params.p_radiuses[i]) {
-        var note = o.notes[i][o.lastIds[i]];
-        if (!note.userTime && note.on && note.id !== -1) { o.waits[i] = true; break; }
-        o.lastIds[i]++;
+    o.setIfWaitOnUser(i);
+    o.playNotes(i);
+  }
+
+  private waitId = [0, 0];
+  private setIfWaitOnUser(trackId: number) {
+    var o = this;
+
+    function lastIdsNoteBelowCurrentTimeMinusRadius() {
+      return o.notes[trackId][o.waitId[trackId]] && o.notes[trackId][o.waitId[trackId]].time < o.params.p_elapsedTime - o.params.p_radiuses[trackId]
+    }
+
+    var isWait = o.params.p_userHands[trackId] && o.params.p_waits[trackId];
+    if (isWait) {
+      while (lastIdsNoteBelowCurrentTimeMinusRadius()) {
+        var note = o.notes[trackId][o.waitId[trackId]];
+        var isSustain = note.id === -1;
+        var wasPlayedByUser = note.userTime;
+        var isNoteAboveMin = note.id >= o.params.p_minNote;
+        var isNoteBelowMax = note.id <= o.params.p_maxNote;
+        if (note.on && !isSustain && !wasPlayedByUser && isNoteAboveMin && isNoteBelowMax) {
+          o.waits[trackId] = true;
+          break;
+        }
+        o.waitId[trackId]++;
       }
     }
-    
-    if (!o.params.p_userHands[i] || o.params.p_sustain) { // pc playback
-      while (o.notes[i][o.lastIdsPC[i]] && o.params.p_elapsedTime > o.notes[i][o.lastIdsPC[i]].time) {
-        var note = o.notes[i][o.lastIdsPC[i]];
-        if (note.on) {
-          if (note.id == -1) {
-            o.device.out(176, 64, 127);
-            o.device.out(177, 64, 127);
-          } else if (!o.params.p_userHands[i]) { 
-            o.device.out(o.ons[i], note.id, Math.min(127, o.params.p_volumes[i] * note.velocity));
-            o.viewer.setPressedNote(note.id);
-          }
-        } else {
-          if (note.id == -1) {
-            o.device.out(176, 64, 0);
-            o.device.out(177, 64, 0);
-          } else if (!o.params.p_userHands[i]) { 
-            o.device.out(o.ons[i], note.id, 0);
-            o.viewer.unsetPressedNote(note.id);
-          }
-        }
-        o.lastIdsPC[i]++;
+  }
+
+  private playId = [0, 0];
+  private playNotes(trackId: number) {
+    var o = this;
+    function lastIdsNoteBelowCurrentTime() {
+      return o.notes[trackId][o.playId[trackId]] && o.notes[trackId][o.playId[trackId]].time < o.params.p_elapsedTime;
+    }
+    while (lastIdsNoteBelowCurrentTime()) {
+      var note = o.notes[trackId][o.playId[trackId]];
+      o.playSustain(note);
+      o.playNote(note, trackId);
+      o.playId[trackId]++;
+    }
+  }
+
+  private playSustain(note: INote) {
+    var o = this;
+    var isSustain = o.params.p_sustain && note.id == -1;
+    if (isSustain) {
+      if (note.on) {
+        o.device.out(176, 64, 127);
+        o.device.out(177, 64, 127);
+      } else {
+        o.device.out(176, 64, 0);
+        o.device.out(177, 64, 0);
+      }
+    }
+  }
+
+  private ons = [144, 145];
+  private playNote(note: INote, trackId: number) {
+    var o = this;
+    var playsUser = o.params.p_userHands[trackId];
+    var isBelowMin = note.id < o.params.p_minNote;
+    var isAboveMax = note.id > o.params.p_maxNote;
+    if (!playsUser || isBelowMin || isAboveMax) {
+      if (note.on) {
+        o.device.out(o.ons[trackId], note.id, Math.min(127, o.params.p_volumes[trackId] * note.velocity));
+        o.viewer.setPressedNote(note.id);
+      } else {
+        o.device.out(o.ons[trackId], note.id, 0);
+        o.viewer.unsetPressedNote(note.id);
       }
     }
   }
@@ -168,7 +205,7 @@ export class Basic implements IPlayer {
         var found = false;
         o.params.p_userHands.forEach((userHand, i) => {
           if (userHand && !found) {
-            var id = o.lastIds[i];
+            var id = o.waitId[i];
             while (o.notes[i][id] && o.notes[i][id].time < o.params.p_elapsedTime + o.params.p_radiuses[i]) {
               var note = o.notes[i][id];
               var radius = Math.abs(o.notes[i][id].time - o.params.p_elapsedTime) - 50;

@@ -7,6 +7,8 @@ export var iPlayerParams: IPlayerParams = {
   p_elapsedTime: undefined,
   p_initTime: undefined,
   p_isPaused: false,
+  p_minNote: 21,
+  p_maxNote: 108,
   p_radiuses: [200, 200],
   p_speed: 1,
   p_sustain: true,

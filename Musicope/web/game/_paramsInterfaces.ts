@@ -10,6 +10,8 @@ interface IPlayerParams {
   p_elapsedTime: number;
   p_initTime: number;
   p_isPaused: bool;
+  p_minNote: number;
+  p_maxNote: number;
   p_radiuses: number[];
   p_speed: number;
   p_sustain: bool;
