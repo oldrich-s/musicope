@@ -83,14 +83,14 @@ export class Basic implements IPlayer {
   }
 
   private previousTime: number;
-  private waits = [false, false];
+  private stops = [false, false];
   private updateTime() {
     var o = this;
     var currentTime = o.device.time();
     if (!o.previousTime) { o.previousTime = currentTime; }
     var duration = currentTime - o.previousTime;
     o.previousTime = currentTime;
-    if (!o.params.p_isPaused && !o.waits[0] && !o.waits[1] && duration < 100) {
+    if (!o.params.p_isPaused && !o.stops[0] && !o.stops[1] && duration < 100) {
       o.params.p_elapsedTime = o.params.p_elapsedTime + o.params.p_speed * duration;
       o.redirectOnSongEnd();
     }
@@ -110,7 +110,7 @@ export class Basic implements IPlayer {
   
   private processNotes(i: number) {
     var o = this;
-    o.waits[i] = false;
+    o.stops[i] = false;
     o.setIfWaitOnUser(i);
     o.playNotes(i);
   }
@@ -132,7 +132,7 @@ export class Basic implements IPlayer {
         var isNoteAboveMin = note.id >= o.params.p_minNote;
         var isNoteBelowMax = note.id <= o.params.p_maxNote;
         if (note.on && !isSustain && !wasPlayedByUser && isNoteAboveMin && isNoteBelowMax) {
-          o.waits[trackId] = true;
+          o.stops[trackId] = true;
           break;
         }
         o.waitId[trackId]++;
