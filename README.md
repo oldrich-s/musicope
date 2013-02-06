@@ -18,6 +18,10 @@ List View is a supporting view for the Game View. This view isn't in fact necess
 
 ## Source Code description
 
+The source of the Musicope is written in [TypeScript][13]. TypeScript is JavaScript with types. You can use e.g. free [Microsoft Visual Studio Express for Web][14] to edit the TypeScript files.
+
+As mentioned, the game consist of two separate views (Game View and List View). Each view consists of the main [index.html][12], [index.css][17] and [_index.ts][15] file. All the TypeScript files are loaded dynamically by [RequireJS][16]. The interface of the input *GET* parameters is contained in [_paramsInterfaces.ts][18] whereas their respective default values can be found in [_paramsDefault.ts][19].
+
 [1]: https://github.com/musicope/game/tree/master/Musicope/web/game
 [2]: https://github.com/musicope/game/tree/master/Musicope/web/list
 [3]: https://github.com/musicope/game/blob/master/Musicope/web/game/_paramsInterfaces.ts
@@ -29,3 +33,11 @@ List View is a supporting view for the Game View. This view isn't in fact necess
 [9]: http://jazz-soft.net/
 [10]: https://github.com/musicope/game/tree/master/Musicope/web/game/inputs/keyboard/actions
 [11]: https://github.com/musicope/game/blob/master/Musicope/web/list/_paramsInterfaces.ts
+[12]: https://github.com/musicope/game/blob/master/Musicope/web/game/index.html
+[13]: http://www.typescriptlang.org/
+[14]: http://www.microsoft.com/visualstudio/eng/products/visual-studio-express-for-web
+[15]: https://github.com/musicope/game/blob/master/Musicope/web/game/_index.ts
+[16]: http://requirejs.org/
+[17]: https://github.com/musicope/game/blob/master/Musicope/web/game/index.css
+[18]: https://github.com/musicope/game/blob/master/Musicope/web/game/_paramsInterfaces.ts
+[19]: https://github.com/musicope/game/blob/master/Musicope/web/game/_paramsDefault.ts
