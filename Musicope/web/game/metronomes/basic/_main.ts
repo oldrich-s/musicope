@@ -14,6 +14,17 @@ export class Basic implements IMetronome {
     this.params = paramService.copy(params, defParams.iMetronomeParams);
   }
 
+  getParams() {
+    var o = this;
+    return <IMetronomeParams> $.extend(true, {}, o.params);
+  }
+
+  setParams(params: IMetronomeParams) {
+    var o = this;
+    o.params = params;
+    o.reset();
+  }
+
   play(time: number) {
     var o = this;
     if (o.params.m_velocity > 0) {

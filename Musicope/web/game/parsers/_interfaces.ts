@@ -17,7 +17,6 @@ interface INoteScene {
 }
 
 interface IParser {
-  params: IParserParams;
   timePerBeat: number;
   timePerBar: number;
   timePerSong: number;

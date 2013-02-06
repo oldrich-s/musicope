@@ -20,12 +20,21 @@ export class Metronome implements IKeyboardActions {
 
   private toggleMetronome() {
     var o = this;
-    if (o.player.metronome.params.m_velocity > 0) {
-      o.m_velocity = o.player.metronome.params.m_velocity;
-      o.player.metronome.params.m_velocity = 0;
-    } else {
-      o.player.metronome.params.m_velocity = o.m_velocity;
-    }
+    o.wrap((params) => {
+      if (params.m_velocity > 0) {
+        o.m_velocity = params.m_velocity;
+        params.m_velocity = 0;
+      } else {
+        params.m_velocity = o.m_velocity;
+      }
+    });
+  }
+
+  private wrap(fn: (params: IMetronomeParams) => void) {
+    var o = this;
+    var params = o.player.metronome.getParams();
+    fn(params);
+    o.player.metronome.setParams(params);
   }
 
 }

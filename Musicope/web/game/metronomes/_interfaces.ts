@@ -1,7 +1,8 @@
 /// <reference path="../_references.ts" />
 
 interface IMetronome {
-  params: IMetronomeParams;
+  getParams(): IMetronomeParams;
+  setParams(params: IMetronomeParams): void;
   play(time: number);
   reset();
 }
