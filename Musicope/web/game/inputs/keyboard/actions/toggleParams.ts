@@ -45,12 +45,24 @@ export class ToggleParams implements IKeyboardActions {
   }
 
   private toggle(currentOption: any, options: any[]) {
+    var o = this;
     for (var i = 0; i < options.length; i++) {
-      var areEqual = JSON.stringify(currentOption) == JSON.stringify(options[i]);
-      if (areEqual) {
+      if (o.areParamsEqual(currentOption, options[i])) {
         return options[(i + 1) % options.length];
       }
     }
+  }
+
+  private areParamsEqual(p1: any, p2: any) {
+    if ("every" in p1) {
+      var areEqual =  (<any[]> p1).every((p1i, i) => {
+        return p1i == p2[i];
+      });
+      return areEqual;
+    } else {
+      return p1 == p2;
+    }
+
   }
 
   private display(description: string, value: string) {
