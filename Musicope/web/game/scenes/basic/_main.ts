@@ -27,6 +27,16 @@ export class Basic implements IScene {
     o.setupScene();
 
   }
+
+  getParams() {
+    var o = this;
+    return <ISceneParams> $.extend(true, {}, o.params);
+  }
+
+  setParams(params: ISceneParams) {
+    var o = this;
+    o.params = params;
+  }
     
   setPressedNote(noteId: number) {
     this.pressedNotes[noteId] = 1;
