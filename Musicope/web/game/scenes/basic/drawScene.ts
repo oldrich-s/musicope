@@ -11,22 +11,20 @@ export interface Input {
 
 interface Local {
   blackWidth: number;
-  pianoHeight: number;
+  yEndOfPiano: number;
+  yEndOfTimeBar: number;
   remainder: number;
   whiteWidth: number;
   input: Input;
 }
 
 // http://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
-export function hexToRgb(hex: string) {
+export function hexToRgb(hex: string, alpha?: number) {
   var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
   hex = hex.replace(shorthandRegex, function(m, r, g, b) { return r + r + g + g + b + b; });
   var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  return [ parseInt(result[1], 16)/255, parseInt(result[2], 16)/255, parseInt(result[3], 16)/255, 1 ];
+  return [ parseInt(result[1], 16)/255, parseInt(result[2], 16)/255, parseInt(result[3], 16)/255, alpha || 1 ];
 }
-
-var black = [0, 0, 0, 1];
-var white = [1, 1, 1, 1];
 
 var whiteNoteIds = [
   21, 23,
@@ -57,10 +55,10 @@ function drawPianoBlackNotes(loc: Local) {
   blackNoteIds.forEach((id, i) => {
     var x0 = blackNoteSpots[i] * loc.whiteWidth - loc.blackWidth + 2;
     var x1 = x0 + 2 * loc.blackWidth - 3;
-    var y0 = Math.floor(loc.pianoHeight * 0.4);
-    var y1 = loc.pianoHeight - 8;
+    var y0 = Math.floor(loc.yEndOfPiano * 0.4);
+    var y1 = loc.yEndOfPiano - 2;
     var activeColor = hexToRgb(loc.input.params.s_colPianoBlack);
-    loc.input.drawRect(x0, y0, x1, y1, [id], black, activeColor);
+    loc.input.drawRect(x0, y0, x1, y1, [id], [0, 0, 0, 1], activeColor);
   });
 }
 
@@ -69,24 +67,28 @@ function drawPianoWhiteNotes(loc: Local) {
     var x0 = i * loc.whiteWidth;
     var x1 = x0 + loc.whiteWidth - 1;
     var y0 = 12;
-    var y1 = y0 + loc.pianoHeight - 20;
-    loc.input.drawRect(x0, y0, x1, y1, [id], white, hexToRgb(loc.input.params.s_colPianoWhite));
+    var y1 = loc.yEndOfPiano - 2;
+    loc.input.drawRect(x0, y0, x1, y1, [id], [1, 1, 1, 1], hexToRgb(loc.input.params.s_colPianoWhite));
   });
 }
 
 function drawPianoTimeBarColor(loc: Local) {
-  var color = hexToRgb(loc.input.params.s_colTime);
-  loc.input.drawRect(0, loc.pianoHeight - 5, 1, loc.pianoHeight, [151, 152, 152, 151], color, color);
+  var color = hexToRgb(loc.input.params.s_colTime, 0.9);
+  var y0 = loc.yEndOfPiano;
+  var y1 = loc.yEndOfTimeBar;
+  loc.input.drawRect(0, y0, 1, y1, [151, 152, 152, 151], color, color);
 }
 
 function drawPianoTimeBarWhite(loc: Local) {
-  var y0 = loc.pianoHeight - 5;
-  var y1 = y0 + 5;
-  loc.input.drawRect(0, y0, loc.input.sceneWidth, y1, [151], white, white);
+  var y0 = loc.yEndOfPiano;
+  var y1 = loc.yEndOfTimeBar;
+  var color = [1, 1, 1, 0.9];
+  loc.input.drawRect(0, y0, loc.input.sceneWidth, y1, [151], color, color);
 }
 
 function drawPianoBackBlack(loc: Local) {
-  loc.input.drawRect(0, 0, loc.input.sceneWidth + 1, loc.pianoHeight - 8, [150], black, black);
+  var y1 = loc.yEndOfPiano;
+  loc.input.drawRect(0, 0, loc.input.sceneWidth + 1, y1, [150], [0, 0, 0, 1], [0, 0, 0, 1]);
 }
 
 function drawPiano(loc: Local) {
@@ -102,8 +104,8 @@ function drawTrack(loc: Local, trackId: number) {
   var blackNoteColor = hexToRgb(loc.input.params.s_colBlacks[trackId]);
   var sustainColor = hexToRgb(loc.input.params.s_colSustain);
   loc.input.tracks[trackId].forEach(function (note) {
-    var y0 = loc.pianoHeight + loc.input.pixelsPerTime * note.timeOn + 1;
-    var y1 = loc.pianoHeight + loc.input.pixelsPerTime * note.timeOff - 2;
+    var y0 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOn + 1;
+    var y1 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOff - 2;
     var ipos = note.id == -1 ? whiteNoteIds.length : whiteNoteIds.indexOf(note.id);
     if (ipos >= 0) {
       var x0 = ipos * loc.whiteWidth + 3;
@@ -127,7 +129,8 @@ export function drawScene(input: Input) {
     input: input,  
     whiteWidth: whiteWidth,    
     blackWidth: Math.round(0.25 * whiteWidth),
-    pianoHeight: Math.floor(0.2 * input.sceneHeight),
+    yEndOfTimeBar: Math.floor(0.2 * input.sceneHeight),
+    yEndOfPiano: Math.floor(0.18 * input.sceneHeight),
     remainder: input.sceneWidth - whiteWidth * whiteNoteIds.length,
   }
   input.params.s_views.forEach((view, i) => {
