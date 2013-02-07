@@ -1,30 +1,32 @@
 /// <reference path="../_references.ts" />
 // time units = miliseconds
+module IGame {
 
-interface INotePlayer {
-  on: bool;
-  time: number;
-  id: number;
-  velocity: number;
-}
+  export interface INotePlayer {
+    on: bool;
+    time: number;
+    id: number;
+    velocity: number;
+  }
 
-interface INoteScene {
-  timeOn: number;
-  timeOff: number;
-  id: number;
-  velocityOn: number;
-  velocityOff: number;
-}
+  export interface INoteScene {
+    timeOn: number;
+    timeOff: number;
+    id: number;
+    velocityOn: number;
+    velocityOff: number;
+  }
 
-interface IParser {
-  timePerBeat: number;
-  timePerBar: number;
-  timePerSong: number;
-  noteValuePerBeat: number; // denominator in time signature: 2, 4, 8, 16 ...
-  tracksPlayer: INotePlayer[][];
-  tracksScene: INoteScene[][];
-}
+  export interface IParser {
+    timePerBeat: number;
+    timePerBar: number;
+    timePerSong: number;
+    noteValuePerBeat: number; // denominator in time signature: 2, 4, 8, 16 ...
+    tracksPlayer: INotePlayer[][];
+    tracksScene: INoteScene[][];
+  }
 
-interface IParserNew {
-  new(midi: Uint8Array, params: IParserParams): IParser;
+  export interface IParserNew {
+    new (midi: Uint8Array, params: IParams): IParser;
+  }
 }

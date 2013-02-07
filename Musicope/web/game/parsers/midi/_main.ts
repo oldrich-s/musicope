@@ -1,8 +1,5 @@
 /// <reference path="../../_references.ts" />
 
-import defParams = module("../../_paramsDefault");
-import paramsService = module("../../../common/services.params");
-
 function indexOf(where: Uint8Array, what: number[]) {
   for (var i = 0; i < where.length; i++) {
     var found = what.every((whati, j) => {
@@ -24,14 +21,14 @@ function indexesOf(where: Uint8Array, what: number[]) {
   return result;
 }
 
-export class Midi implements IParser {
+export class Midi implements IGame.IParser {
 
   timePerBeat: number;
   timePerBar: number;
   timePerSong: number;
   noteValuePerBeat: number; // denominator in time signature: 2, 4, 8, 16 ...
-  tracksPlayer: INotePlayer[][] = [];
-  tracksScene: INoteScene[][];
+  tracksPlayer: IGame.INotePlayer[][] = [];
+  tracksScene: IGame.INoteScene[][];
     
   private timePerTick: number;
   private ticksPerQuarter: number;
@@ -39,13 +36,11 @@ export class Midi implements IParser {
   private beatsPerBar: number;
   
 
-  constructor(private midi: Uint8Array, private params: IParserParams) {
+  constructor(private midi: Uint8Array, private params: IGame.IParams) {
     var o = this;
 
     o.midi = midi;
       
-    o.params = paramsService.copy(params, defParams.iParserParams);
-
     o.parseHeader();
 
     var trackIndexes = indexesOf(o.midi, [77, 84, 114, 107]);
@@ -74,30 +69,30 @@ export class Midi implements IParser {
 
   private sortTracksPlayer() {
     var o = this;
-    o.tracksPlayer = o.params.f_trackIds.map((trackId) => {
+    o.tracksPlayer = o.params.readOnly.f_trackIds.map((trackId) => {
       return o.tracksPlayer[trackId] || [];
     });
   }
 
   private normalize() {
     var o = this;
-    if (o.params.f_normalize) {
+    if (o.params.readOnly.f_normalize) {
       var sumVelocity = 0, n = 0;
       o.tracksPlayer.forEach((notes) => {
         notes.forEach((note) => {
           if (note.on) { n++; sumVelocity += note.velocity; }
         });
       });
-      var scaleVel = o.params.f_normalize / (sumVelocity / n);
+      var scaleVel = o.params.readOnly.f_normalize / (sumVelocity / n);
       o.tracksPlayer.forEach((notes) => {
         notes.forEach((note) => { note.velocity = Math.max(0, Math.min(127, scaleVel * note.velocity)); });
       });
     }
   }
 
-  private getTrackScene(trackPlayer: INotePlayer[]) {
+  private getTrackScene(trackPlayer: IGame.INotePlayer[]) {
     var o = this;
-    var notes: INoteScene[] = [], tempNotes = {};
+    var notes: IGame.INoteScene[] = [], tempNotes = {};
     trackPlayer.forEach(function (note, i) {
       if (note.on) {
         if (tempNotes[note.id]) {
@@ -117,7 +112,7 @@ export class Midi implements IParser {
     return notes;
   }
 
-  private getSceneNote(noteOn: INotePlayer, noteOff: INotePlayer) {
+  private getSceneNote(noteOn: IGame.INotePlayer, noteOff: IGame.INotePlayer) {
     return {
       timeOn: noteOn.time,
       timeOff: noteOff.time,
@@ -127,8 +122,8 @@ export class Midi implements IParser {
     };
   }
 
-  private getTrackPlayer(notes: INoteScene[]) {
-    var notesPlayer: INotePlayer[] = [];
+  private getTrackPlayer(notes: IGame.INoteScene[]) {
+    var notesPlayer: IGame.INotePlayer[] = [];
     notes.forEach((note) => {
       notesPlayer.push({on: true, time: note.timeOn, id: note.id, velocity: note.velocityOn});
       notesPlayer.push({on: false, time: note.timeOff, id: note.id, velocity: note.velocityOff});

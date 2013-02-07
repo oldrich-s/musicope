@@ -1,8 +1,12 @@
-interface IKeyboardActions {
-  hotkeys: number[];
-  run(keyCode: number): void;
-}
+module IGame {
 
-interface IKeyboardActionsNew {
-  new (player: IPlayer, parser: IParser): IKeyboardActions;
+  export interface IKeyboardActions {
+    hotkeys: number[];
+    run(keyCode: number): void;
+  }
+
+  export interface IKeyboardActionsNew {
+    new (player: IPlayer, parser: IParser): IKeyboardActions;
+  }
+
 }

@@ -2,11 +2,11 @@
 
 import key = module("../../../../common/keyCodes");
 
-export class MoveInTime implements IKeyboardActions {
+export class MoveInTime implements IGame.IKeyboardActions {
 
   hotkeys = [key.leftArrow, key.rightArrow, key.home];
 
-  constructor(private player: IPlayer, private parser: IParser) { }
+  constructor(private params: IGame.IParams, private parser: IGame.IParser) { }
 
   run(keyCode: number) {
     var o = this;
@@ -17,33 +17,21 @@ export class MoveInTime implements IKeyboardActions {
 
   private moveBack() {
     var o = this;
-    o.wrap((params) => {
-      var newTime = params.p_elapsedTime - 2 * o.parser.timePerBeat;
-      var truncTime = Math.max(params.p_initTime, newTime);
-      params.p_elapsedTime = truncTime;
-    });
+      var newTime = o.params.readOnly.p_elapsedTime - 2 * o.parser.timePerBeat;
+      var truncTime = Math.max(o.params.readOnly.p_initTime, newTime);
+      o.params.setParam("p_elapsedTime", truncTime);
   }
 
   private moveForward() {
     var o = this;
-    o.wrap((params) => {
-      var newTime = params.p_elapsedTime + 2 * o.parser.timePerBeat;
+      var newTime = o.params.readOnly.p_elapsedTime + 2 * o.parser.timePerBeat;
       var truncTime = Math.min(o.parser.timePerSong + 10, newTime);
-      params.p_elapsedTime = truncTime;
-    });
+      o.params.setParam("p_elapsedTime", truncTime);
   }
 
   private goHome() {
     var o = this;
-    o.wrap((params) => {
-      params.p_elapsedTime = params.p_initTime;
-    });
+    o.params.setParam("p_elapsedTime", o.params.readOnly.p_initTime);
   }
 
-  private wrap(fn: (params: IPlayerParams) => void) {
-    var o = this;
-    var params = o.player.getParams();
-    fn(params);
-    o.player.setParams(params);
-  }
 }

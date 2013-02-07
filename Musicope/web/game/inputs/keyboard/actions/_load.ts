@@ -1,15 +1,15 @@
 
 import changeSpeed = module("./changeSpeed");
-export var ChangeSpeed: IKeyboardActionsNew = changeSpeed.ChangeSpeed;
+export var ChangeSpeed: IGame.IKeyboardActionsNew = changeSpeed.ChangeSpeed;
 
 import moveInTime = module("./moveInTime");
-export var MoveInTime: IKeyboardActionsNew = moveInTime.MoveInTime;
+export var MoveInTime: IGame.IKeyboardActionsNew = moveInTime.MoveInTime;
 
 import unsorted = module("./unsorted");
-export var Unsorted: IKeyboardActionsNew = unsorted.Unsorted;
+export var Unsorted: IGame.IKeyboardActionsNew = unsorted.Unsorted;
 
 import toggleParams = module("./toggleParams");
-export var ToggleParams: IKeyboardActionsNew = toggleParams.ToggleParams;
+export var ToggleParams: IGame.IKeyboardActionsNew = toggleParams.ToggleParams;
 
 import metronome = module("./metronome");
-export var Metronome: IKeyboardActionsNew = metronome.Metronome;
+export var Metronome: IGame.IKeyboardActionsNew = metronome.Metronome;

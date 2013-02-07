@@ -1,4 +1,5 @@
-/// <reference path="_paramsInterfaces.ts" />
+/// <reference path="_params/_interfaces.ts" />
+/// <reference path="controllers/_interfaces.ts" />
 /// <reference path="parsers/_interfaces.ts" />
 /// <reference path="players/_interfaces.ts" />
 /// <reference path="scenes/_interfaces.ts" />

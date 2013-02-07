@@ -2,11 +2,13 @@
 
 export interface Input {
   drawRect(x0: number, y0: number, x1: number, y1: number, ids: number[], color: number[], activeColor: number[]): void;
-  params: ISceneParams;
+  readOnly: IGame.IParamsData;
   pixelsPerTime: number;
   sceneWidth: number;
   sceneHeight: number;
-  tracks: INoteScene[][];
+  tracks: IGame.INoteScene[][];
+  p_minNote: number;
+  p_maxNote: number;
 }
 
 interface Local {
@@ -51,13 +53,25 @@ var blackNoteSpots = [
   1, 3, 4, 6, 7, 8, 10, 11, 13, 14, 15, 17, 18, 20, 21, 22, 24, 25, 27, 28, 29, 31, 32,
   34, 35, 36, 38, 39, 41, 42, 43, 45, 46, 48, 49, 50];
 
+function drawPianoOutOfReach(loc: Local) {
+  var minId = whiteNoteIds.indexOf(loc.input.p_minNote);
+  var maxId = whiteNoteIds.indexOf(loc.input.p_maxNote);
+  if (minId > -1) {
+    var minX1 = minId * loc.whiteWidth;
+    var maxX0 = (maxId + 1) * loc.whiteWidth;
+    var y1 = loc.yEndOfPiano;
+    var color = [0, 0, 0, 0.5];
+    loc.input.drawRect(0, 0, minX1, y1, [121], color, color);
+  }
+}
+
 function drawPianoBlackNotes(loc: Local) {
   blackNoteIds.forEach((id, i) => {
     var x0 = blackNoteSpots[i] * loc.whiteWidth - loc.blackWidth + 2;
     var x1 = x0 + 2 * loc.blackWidth - 3;
     var y0 = Math.floor(loc.yEndOfPiano * 0.4);
     var y1 = loc.yEndOfPiano - 2;
-    var activeColor = hexToRgb(loc.input.params.s_colPianoBlack);
+    var activeColor = hexToRgb(loc.input.readOnly.s_colPianoBlack);
     loc.input.drawRect(x0, y0, x1, y1, [id], [0, 0, 0, 1], activeColor);
   });
 }
@@ -68,12 +82,12 @@ function drawPianoWhiteNotes(loc: Local) {
     var x1 = x0 + loc.whiteWidth - 1;
     var y0 = 12;
     var y1 = loc.yEndOfPiano - 2;
-    loc.input.drawRect(x0, y0, x1, y1, [id], [1, 1, 1, 1], hexToRgb(loc.input.params.s_colPianoWhite));
+    loc.input.drawRect(x0, y0, x1, y1, [id], [1, 1, 1, 1], hexToRgb(loc.input.readOnly.s_colPianoWhite));
   });
 }
 
 function drawPianoTimeBarColor(loc: Local) {
-  var color = hexToRgb(loc.input.params.s_colTime, 0.9);
+  var color = hexToRgb(loc.input.readOnly.s_colTime, 0.9);
   var y0 = loc.yEndOfPiano;
   var y1 = loc.yEndOfTimeBar;
   loc.input.drawRect(0, y0, 1, y1, [151, 152, 152, 151], color, color);
@@ -97,12 +111,13 @@ function drawPiano(loc: Local) {
   drawPianoTimeBarColor(loc);
   drawPianoWhiteNotes(loc);
   drawPianoBlackNotes(loc);
+  drawPianoOutOfReach(loc);
 }
     
 function drawTrack(loc: Local, trackId: number) {
-  var whiteNoteColor = hexToRgb(loc.input.params.s_colWhites[trackId]);
-  var blackNoteColor = hexToRgb(loc.input.params.s_colBlacks[trackId]);
-  var sustainColor = hexToRgb(loc.input.params.s_colSustain);
+  var whiteNoteColor = hexToRgb(loc.input.readOnly.s_colWhites[trackId]);
+  var blackNoteColor = hexToRgb(loc.input.readOnly.s_colBlacks[trackId]);
+  var sustainColor = hexToRgb(loc.input.readOnly.s_colSustain);
   loc.input.tracks[trackId].forEach(function (note) {
     var y0 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOn + 1;
     var y1 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOff - 2;
@@ -133,7 +148,7 @@ export function drawScene(input: Input) {
     yEndOfPiano: Math.floor(0.18 * input.sceneHeight),
     remainder: input.sceneWidth - whiteWidth * whiteNoteIds.length,
   }
-  input.params.s_views.forEach((view, i) => {
+  input.readOnly.s_views.forEach((view, i) => {
     if (view === "full") { drawTrack(loc, i); }
   });
   drawPiano(loc);

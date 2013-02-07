@@ -2,13 +2,13 @@
 
 import key = module("../../../../common/keyCodes");
 
-export class Metronome implements IKeyboardActions {
+export class Metronome implements IGame.IKeyboardActions {
 
   hotkeys = [key.m];
 
   private m_velocity: number;
 
-  constructor(private player: IPlayer, private parser: IParser) {
+  constructor(private params: IGame.IParams, private parser: IGame.IParser) {
   }
 
   run(keyCode: number) {
@@ -20,21 +20,12 @@ export class Metronome implements IKeyboardActions {
 
   private toggleMetronome() {
     var o = this;
-    o.wrap((params) => {
-      if (params.m_velocity > 0) {
-        o.m_velocity = params.m_velocity;
-        params.m_velocity = 0;
-      } else {
-        params.m_velocity = o.m_velocity;
-      }
-    });
-  }
-
-  private wrap(fn: (params: IMetronomeParams) => void) {
-    var o = this;
-    var params = o.player.metronome.getParams();
-    fn(params);
-    o.player.metronome.setParams(params);
+    if (o.params.readOnly.m_velocity > 0) {
+      o.m_velocity = o.params.readOnly.m_velocity;
+      o.params.setParam("m_velocity", 0);
+    } else {
+      o.params.setParam("m_velocity", o.m_velocity);
+    }
   }
 
 }

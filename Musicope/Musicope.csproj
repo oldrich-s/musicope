@@ -71,6 +71,9 @@
     <Content Include="web\common\services.local.js">
       <DependentUpon>services.local.ts</DependentUpon>
     </Content>
+    <TypeScriptCompile Include="web\game\controllers\basic\_main.ts" />
+    <Content Include="web\game\controllers\_interfaces.ts" />
+    <TypeScriptCompile Include="web\game\controllers\_load.ts" />
     <Content Include="web\game\index.css" />
     <Content Include="web\game\index.html" />
     <TypeScriptCompile Include="web\game\inputs\keyboard\_main.ts" />
@@ -100,8 +103,10 @@
     <TypeScriptCompile Include="web\game\scenes\basic\_main.ts" />
     <Content Include="web\game\scenes\_interfaces.ts" />
     <TypeScriptCompile Include="web\game\scenes\_load.ts" />
-    <TypeScriptCompile Include="web\game\_paramsDefault.ts" />
-    <Content Include="web\game\_paramsInterfaces.ts" />
+    <TypeScriptCompile Include="web\game\_params\basic\defaults.ts" />
+    <TypeScriptCompile Include="web\game\_params\basic\_main.ts" />
+    <Content Include="web\game\_params\_interfaces.ts" />
+    <TypeScriptCompile Include="web\game\_params\_load.ts" />
     <Content Include="web\game\_references.ts" />
     <TypeScriptCompile Include="web\list\_index.ts" />
     <Content Include="web\list\index.css" />
@@ -132,6 +137,7 @@
     <Content Include="web\game\scenes\basic\assets\fragment.glsl" />
     <Content Include="web\game\scenes\basic\assets\vertex.glsl" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy "$(ProjectDir)web"  "$(ProjectDir)..\..\web\" /s /e /y &gt; nul

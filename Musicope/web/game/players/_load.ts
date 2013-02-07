@@ -1,3 +1,3 @@
 
 import basicM = module("./basic/_main");
-export var Basic: IPlayerNew = basicM.Basic;
+export var Basic: IGame.IPlayerNew = basicM.Basic;

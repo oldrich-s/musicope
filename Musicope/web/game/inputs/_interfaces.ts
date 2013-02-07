@@ -1,7 +1,11 @@
 /// <reference path="../_references.ts" />
 
-interface IGameInput {}
+module IGame {
 
-interface IGameInputNew {
-  new (player: IPlayer, parser: IParser): IGameInput;
+  export interface IInput {}
+
+  export interface IInputNew {
+    new (player: IPlayer, parser: IParser): IInput;
+  }
+
 }

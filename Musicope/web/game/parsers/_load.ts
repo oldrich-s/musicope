@@ -1,3 +1,3 @@
 
 import midiM = module("./midi/_main");
-export var Midi: IParserNew = midiM.Midi;
+export var Midi: IGame.IParserNew = midiM.Midi;

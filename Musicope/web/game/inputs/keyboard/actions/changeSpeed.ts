@@ -2,17 +2,16 @@
 
 import key = module("../../../../common/keyCodes");
 
-export class ChangeSpeed implements IKeyboardActions {
+export class ChangeSpeed implements IGame.IKeyboardActions {
 
   hotkeys = [key.upArrow, key.downArrow];
 
   private container: IJQuery.JQuery;
 
-  constructor(private player: IPlayer, private parser: IParser) {
+  constructor(private params: IGame.IParams, private parser: IGame.IParser) {
     var o = this;
-    var params = player.getParams();
     o.container = $("<div />").appendTo('#overlayDiv');
-    o.changeDisplayedSpeed(params.p_speed);
+    o.changeDisplayedSpeed(params.readOnly.p_speed);
   }
 
   run(keyCode: number) {
@@ -23,18 +22,14 @@ export class ChangeSpeed implements IKeyboardActions {
 
   private speedUp() {
     var o = this;
-    o.wrap((params) => {
-      params.p_speed = params.p_speed + 0.1;
-      o.changeDisplayedSpeed(params.p_speed);
-    });
+    o.params.setParam("p_speed", o.params.readOnly.p_speed + 0.1);
+    o.changeDisplayedSpeed(o.params.readOnly.p_speed);
   }
 
   private slowDown() {
     var o = this;
-    o.wrap((params) => {
-      params.p_speed = params.p_speed - 0.1;
-      o.changeDisplayedSpeed(params.p_speed);
-    });
+    o.params.setParam("p_speed", o.params.readOnly.p_speed - 0.1);
+    o.changeDisplayedSpeed(o.params.readOnly.p_speed);
   }
 
   private changeDisplayedSpeed(speed) {
@@ -42,10 +37,4 @@ export class ChangeSpeed implements IKeyboardActions {
     o.container.text("" + Math.round(speed * 100));
   }
 
-  private wrap(fn: (params: IPlayerParams) => void) {
-    var o = this;
-    var params = o.player.getParams();
-    fn(params);
-    o.player.setParams(params);
-  }
 }

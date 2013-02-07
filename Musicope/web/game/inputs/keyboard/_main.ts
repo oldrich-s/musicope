@@ -2,11 +2,11 @@
 
 import actions = module("./actions/_load");
 
-export class Keyboard implements IGameInput {
+export class Keyboard implements IGame.IInput {
 
-  private actionObjects: IKeyboardActions[] = [];
+  private actionObjects: IGame.IKeyboardActions[] = [];
 
-  constructor(private player: IPlayer, private parser: IParser) {
+  constructor(private player: IGame.IPlayer, private parser: IGame.IParser) {
     var o = this;
     o.initActions();
     o.signupActions();
@@ -15,7 +15,7 @@ export class Keyboard implements IGameInput {
   private initActions() {
     var o = this;
     for (var prop in actions) {
-      var action = new (<IKeyboardActionsNew> actions[prop])(o.player, o.parser);
+      var action = new (<IGame.IKeyboardActionsNew> actions[prop])(o.player, o.parser);
       o.actionObjects.push(action);
     }
   }

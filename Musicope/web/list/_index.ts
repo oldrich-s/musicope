@@ -6,8 +6,7 @@ import local = module("../common/services.local");
 import inputs = module("./inputs/_load");
 import lastPlayedSongs = module("./lastPlayedSongs");
 
-var params: IParams = paramService.getUrlParams();
-var ctrlParams: IListParams = paramService.copy(params, defParams.iListParams);
+var params: IParams = paramService.getUrlParams(defParams.iListParams);
 
 interface ISong { path: string; extension: string; name: string; url: string; }
 
@@ -88,7 +87,7 @@ class AppViewModel {
 
   private loadSongs() {
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', ctrlParams.l_songsUrl);
+    xhr.open('GET', params.l_songsUrl);
     xhr.responseType = 'text';
     xhr.onload = function (e) {
       if (this.status == 200) {

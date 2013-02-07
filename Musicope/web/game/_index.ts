@@ -1,41 +1,5 @@
 /// <reference path="_references.ts" />
 
-import defParams = module("_paramsDefault");
-import paramService = module("../common/services.params");
+import controllers = module("./controllers/_load");
 
-import devices = module("../common/devices/_load");
-import parsers = module("./parsers/_load");
-import scenes = module("./scenes/_load");
-import players = module("./players/_load");
-import inputs = module("./inputs/_load");
-
-var params: IParams = paramService.getUrlParams();
-var gameParams: IGameParams = paramService.copy(params, defParams.iCtrlParams);
-
-if (!gameParams.g_songUrl) {
-  alert("missing g_songUrl");
-} else {
-
-  var device = new (<IDeviceNew> devices[gameParams.g_idevice])();
-  if (device.exists()) {
-
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', params.g_songUrl);
-    xhr.responseType = 'arraybuffer';
-
-    xhr.onload = function (e) {
-      if (this.status == 200) {
-        var arr = new Uint8Array(xhr.response);
-
-        var parser = new (<IParserNew> parsers[gameParams.g_iparser])(arr, params);
-        var scene = new (<ISceneNew> scenes[gameParams.g_iscene])(parser, params);
-        var player = new (<IPlayerNew> players[gameParams.g_iplayer])(device, scene, parser, params);
-
-        for (var prop in inputs) {
-          new (<IGameInputNew> inputs[prop])(player, parser);
-        }
-      }
-    }
-    xhr.send();
-  }
-}
+var c = new controllers.Basic();

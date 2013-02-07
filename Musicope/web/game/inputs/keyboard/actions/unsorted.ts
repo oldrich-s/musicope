@@ -2,11 +2,11 @@
 
 import key = module("../../../../common/keyCodes");
 
-export class Unsorted implements IKeyboardActions {
+export class Unsorted implements IGame.IKeyboardActions {
 
   hotkeys = [key.space];
 
-  constructor(private player: IPlayer, private parser: IParser) { }
+  constructor(private params: IGame.IParams, private parser: IGame.IParser) { }
 
   run(keyCode: number) {
     var o = this;
@@ -17,16 +17,7 @@ export class Unsorted implements IKeyboardActions {
 
   private togglePause() {
     var o = this;
-    o.wrap((params) => {
-      params.p_isPaused = !params.p_isPaused;
-    });
-  }
-
-  private wrap(fn: (params: IPlayerParams) => void) {
-    var o = this;
-    var params = o.player.getParams();
-    fn(params);
-    o.player.setParams(params);
+    o.params.setParam("p_isPaused", !o.params.readOnly.p_isPaused);
   }
 
 }

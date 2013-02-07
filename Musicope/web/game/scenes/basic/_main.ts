@@ -1,11 +1,9 @@
 /// <reference path="../../_references.ts" />
 
-import defParams = module("../../_paramsDefault");
-import paramService = module("../../../common/services.params");
 import drawScene = module("./drawScene");
 import webgl = module("./webgl");
 
-export class Basic implements IScene {
+export class Basic implements IGame.IScene {
 
   private pixelsPerTime: number;
   private pressedNotes = new Int32Array(127);
@@ -16,9 +14,8 @@ export class Basic implements IScene {
   private pausedColor: Int32Array;
   private unpausedColor: Int32Array;
 
-  constructor(private parser: IParser, public params: ISceneParams) {
+  constructor(private parser: IGame.IParser, public params: IGame.IParams) {
     var o = this;
-    o.params = paramService.copy(params, defParams.iSceneParams);
     o.parser = parser;
     o.setBackgrColors();
     o.canvas = o.getCanvas();
@@ -27,16 +24,7 @@ export class Basic implements IScene {
     o.setupScene();
 
   }
-
-  getParams() {
-    var o = this;
-    return <ISceneParams> $.extend(true, {}, o.params);
-  }
-
-  setParams(params: ISceneParams) {
-    var o = this;
-    o.params = params;
-  }
+ 
     
   setPressedNote(noteId: number) {
     this.pressedNotes[noteId] = 1;
@@ -62,8 +50,8 @@ export class Basic implements IScene {
 
   private setBackgrColors() {
     var o = this;
-    o.pausedColor = new Int32Array(drawScene.hexToRgb(o.params.s_colPaused));
-    o.unpausedColor = new Int32Array(drawScene.hexToRgb(o.params.s_colUnPaused));
+    o.pausedColor = new Int32Array(drawScene.hexToRgb(o.params.readOnly.s_colPaused));
+    o.unpausedColor = new Int32Array(drawScene.hexToRgb(o.params.readOnly.s_colUnPaused));
   }
 
   private setPausedState(isPaused: bool) {
@@ -84,7 +72,7 @@ export class Basic implements IScene {
     var o = this;
     o.canvas.width = window.innerWidth;
     o.canvas.height = window.innerHeight;
-    o.pixelsPerTime = o.canvas.height * 4 / (o.parser.noteValuePerBeat * o.params.s_quartersPerHeight * o.parser.timePerBeat);
+    o.pixelsPerTime = o.canvas.height * 4 / (o.parser.noteValuePerBeat * o.params.readOnly.s_quartersPerHeight * o.parser.timePerBeat);
     $(window).resize(() => {
       o.canvas.width = window.innerWidth;
       o.canvas.height = window.innerHeight;
@@ -110,11 +98,13 @@ export class Basic implements IScene {
       drawRect: (x0, y0, x1, y1, ids, color, activeColor) => {
         bag.push(o.rect(x0, y0, x1, y1, ids, [color], [activeColor]));
       },
-      params: o.params,
+      readOnly: o.params.readOnly,
       pixelsPerTime: o.pixelsPerTime,
       sceneWidth: o.canvas.width,
       sceneHeight: o.canvas.height,
-      tracks: o.parser.tracksScene
+      tracks: o.parser.tracksScene,
+      p_minNote: o.params.readOnly.p_minNote,
+      p_maxNote: o.params.readOnly.p_maxNote
     };
     drawScene.drawScene(input);
     var bufferData = Basic.concat(bag);

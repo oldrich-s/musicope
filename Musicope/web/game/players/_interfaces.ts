@@ -1,11 +1,12 @@
 /// <reference path="../_references.ts" />
 
-interface IPlayer {
-  metronome: IMetronome;
-  getParams(): IPlayerParams;
-  setParams(params: IPlayerParams): void;
-}
+module IGame {
 
-interface IPlayerNew {
-  new(device: IDevice, viewer: IScene, parser: IParser, params: IPlayerParams): IPlayer;
+  export interface IPlayer {
+  }
+
+  export interface IPlayerNew {
+    new (device: IDevice, parser: IParser, metronome: IMetronome, scene: IScene, params: IParams): IPlayer;
+  }
+
 }
