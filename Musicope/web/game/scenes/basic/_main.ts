@@ -102,7 +102,7 @@ export class Basic implements IGame.IScene {
       pixelsPerTime: o.pixelsPerTime,
       sceneWidth: o.canvas.width,
       sceneHeight: o.canvas.height,
-      tracks: o.parser.tracksScene,
+      tracks: o.parser.sceneTracks,
       p_minNote: o.params.readOnly.p_minNote,
       p_maxNote: o.params.readOnly.p_maxNote
     };

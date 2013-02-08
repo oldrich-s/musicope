@@ -44,7 +44,7 @@ export class Basic implements IGame.IPlayer {
 
   private createNotes() {
     var o = this;
-    return o.parser.tracksPlayer.map((oldNotes) => {
+    return o.parser.playerTracks.map((oldNotes) => {
       return oldNotes.map((n) => {
         return { on: n.on, time: n.time, id: n.id, velocity: n.velocity, userTime: undefined };
       });

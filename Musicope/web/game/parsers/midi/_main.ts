@@ -1,148 +1,49 @@
 /// <reference path="../../_references.ts" />
 
-function indexOf(where: Uint8Array, what: number[]) {
-  for (var i = 0; i < where.length; i++) {
-    var found = what.every((whati, j) => {
-      return whati == where[i + j];
-    });
-    if (found) { return i; }
-  }
-  return -1;
-}
-
-function indexesOf(where: Uint8Array, what: number[]) {
-  var result: number[] = [];
-  for (var i = 0; i < where.length; i++) {
-    var found = what.every((whati, j) => {
-      return whati == where[i + j];
-    });
-    if (found) { result.push(i); }
-  }
-  return result;
-}
-
 export class Midi implements IGame.IParser {
 
   timePerBeat: number;
   timePerBar: number;
   timePerSong: number;
   noteValuePerBeat: number; // denominator in time signature: 2, 4, 8, 16 ...
-  tracksPlayer: IGame.INotePlayer[][] = [];
-  tracksScene: IGame.INoteScene[][];
+  playerTracks: IGame.INotePlayer[][] = [];
+  sceneTracks: IGame.INoteScene[][];
     
   private timePerTick: number;
   private ticksPerQuarter: number;
   private timePerQuarter: number;
   private beatsPerBar: number;
   
-
   constructor(private midi: Uint8Array, private params: IGame.IParams) {
     var o = this;
-
-    o.midi = midi;
-      
     o.parseHeader();
-
-    var trackIndexes = indexesOf(o.midi, [77, 84, 114, 107]);
-
-    trackIndexes.forEach((index, i) => { o.parseTrack(i, index + 4); });
-    if (o.tracksPlayer[0].length == 0) { o.tracksPlayer.shift(); }
-
-    o.sortTracksPlayer()
-    o.normalize();
-
-    o.tracksScene = o.tracksPlayer.map((notes) => {
-      return o.getTrackScene(notes);
-    });
-    o.tracksPlayer = o.tracksScene.map((notes) => {
-      return o.getTrackPlayer(notes);
-    });
-
-    o.timePerSong = 0;
-    o.tracksPlayer.forEach((notes) => {
-      notes.forEach(function (note) {
-        if (note.time > o.timePerSong) { o.timePerSong = note.time; }
-      });
-    });
-
-  }
-
-  private sortTracksPlayer() {
-    var o = this;
-    o.tracksPlayer = o.params.readOnly.f_trackIds.map((trackId) => {
-      return o.tracksPlayer[trackId] || [];
-    });
-  }
-
-  private normalize() {
-    var o = this;
-    if (o.params.readOnly.f_normalize) {
-      var sumVelocity = 0, n = 0;
-      o.tracksPlayer.forEach((notes) => {
-        notes.forEach((note) => {
-          if (note.on) { n++; sumVelocity += note.velocity; }
-        });
-      });
-      var scaleVel = o.params.readOnly.f_normalize / (sumVelocity / n);
-      o.tracksPlayer.forEach((notes) => {
-        notes.forEach((note) => { note.velocity = Math.max(0, Math.min(127, scaleVel * note.velocity)); });
-      });
-    }
-  }
-
-  private getTrackScene(trackPlayer: IGame.INotePlayer[]) {
-    var o = this;
-    var notes: IGame.INoteScene[] = [], tempNotes = {};
-    trackPlayer.forEach(function (note, i) {
-      if (note.on) {
-        if (tempNotes[note.id]) {
-          var noteScene = o.getSceneNote(tempNotes[note.id], note);
-          notes.push(noteScene);
-        }
-        tempNotes[note.id] = note;
-      } else if (!note.on) {
-        var tn = tempNotes[note.id];
-        if (tn) {
-          var noteScene = o.getSceneNote(tempNotes[note.id], note);
-          notes.push(noteScene);
-          tempNotes[note.id] = undefined;
-        }
-      }
-    });
-    return notes;
-  }
-
-  private getSceneNote(noteOn: IGame.INotePlayer, noteOff: IGame.INotePlayer) {
-    return {
-      timeOn: noteOn.time,
-      timeOff: noteOff.time,
-      id: noteOn.id,
-      velocityOn: noteOn.velocity,
-      velocityOff: noteOff.velocity
-    };
-  }
-
-  private getTrackPlayer(notes: IGame.INoteScene[]) {
-    var notesPlayer: IGame.INotePlayer[] = [];
-    notes.forEach((note) => {
-      notesPlayer.push({on: true, time: note.timeOn, id: note.id, velocity: note.velocityOn});
-      notesPlayer.push({on: false, time: note.timeOff, id: note.id, velocity: note.velocityOff});
-    });
-    return notesPlayer.sort((a, b) => { return a.time - b.time; });
+    o.parsePlayerTracks();
+    o.sortPlayerTracksByHands();
+    o.normalizeVolumeOfPlayerTracks();
+    o.computeSceneTracks();
+    o.computeCleanedPlayerTracks();
+    o.computeTimePerSong();
   }
 
   private parseHeader() {
     var o = this;
-    var i0 = indexOf(o.midi, [77, 84, 104, 100, 0, 0, 0, 6]);
+    var i0 = Midi.indexOf(o.midi, [77, 84, 104, 100, 0, 0, 0, 6]);
     if (i0 == -1 || o.midi[i0 + 9] > 1) { alert("cannot parse midi"); }
 
     o.ticksPerQuarter = o.midi[i0 + 12] * 256 + o.midi[i0 + 13];
     if (o.ticksPerQuarter & 0x8000) { alert("ticksPerBeat not implemented"); }
   }
 
-  private parseTrack(trackId: number, index: number) {
+  private parsePlayerTracks() {
+    var o = this;
+    var trackIndexes = Midi.indexesOf(o.midi, [77, 84, 114, 107]);
+    trackIndexes.forEach((index, i) => { o.parsePlayerTrack(i, index + 4); });
+    if (o.playerTracks[0].length == 0) { o.playerTracks.shift(); }
+  }
+
+  private parsePlayerTrack(trackId: number, index: number) {
     var o = this, ticks = 0;
-    o.tracksPlayer.push([]);
+    o.playerTracks.push([]);
     var trackLength = o.midi[index++] * 256 * 256 * 256 + o.midi[index++] * 256 * 256 + o.midi[index++] * 256 + o.midi[index++];
     var end = index + trackLength;
     while (index < end) {
@@ -226,7 +127,7 @@ export class Midi implements IGame.IParser {
         var noteId = o.midi[index++];
         var velocity = o.midi[index++];
         var on = type == 9 && velocity > 0;
-        o.tracksPlayer[trackId].push({ on: on, time: time, id: noteId, velocity: velocity });
+        o.playerTracks[trackId].push({ on: on, time: time, id: noteId, velocity: velocity });
         break;
       case 10: // note aftertouch
         index = index + 2;
@@ -235,7 +136,7 @@ export class Midi implements IGame.IParser {
         var id = o.midi[index++];
         if (id == 64) { // sustain
           var value = o.midi[index++];
-          o.tracksPlayer[trackId].push({ on: value != 0, time: time, velocity: value, id: -1 });
+          o.playerTracks[trackId].push({ on: value != 0, time: time, velocity: value, id: -1 });
         } else {
           index++;
         }
@@ -256,6 +157,85 @@ export class Midi implements IGame.IParser {
     return index;
   }
 
+  private sortPlayerTracksByHands() {
+    var o = this;
+    o.playerTracks = o.params.readOnly.f_trackIds.map((trackId) => {
+      return o.playerTracks[trackId] || [];
+    });
+  }
+
+  private normalizeVolumeOfPlayerTracks() {
+    var o = this;
+    if (o.params.readOnly.f_normalize) {
+      var sumVelocity = 0, n = 0;
+      o.playerTracks.forEach((notes) => {
+        notes.forEach((note) => {
+          if (note.on) { n++; sumVelocity += note.velocity; }
+        });
+      });
+      var scaleVel = o.params.readOnly.f_normalize / (sumVelocity / n);
+      o.playerTracks.forEach((notes) => {
+        notes.forEach((note) => { note.velocity = Math.max(0, Math.min(127, scaleVel * note.velocity)); });
+      });
+    }
+  }
+
+  private computeSceneTracks() {
+    var o = this;
+    o.sceneTracks = o.playerTracks.map((playerNotes) => {
+      var sceneNotes: IGame.INoteScene[] = [], tempNotes = {};
+      playerNotes.forEach(function (note, i) {
+        if (note.on) {
+          if (tempNotes[note.id]) {
+            var noteScene = o.getSceneNote(tempNotes[note.id], note);
+            sceneNotes.push(noteScene);
+          }
+          tempNotes[note.id] = note;
+        } else if (!note.on) {
+          var tn = tempNotes[note.id];
+          if (tn) {
+            var noteScene = o.getSceneNote(tempNotes[note.id], note);
+            sceneNotes.push(noteScene);
+            tempNotes[note.id] = undefined;
+          }
+        }
+      });
+      return sceneNotes;
+    });
+  }
+
+  private getSceneNote(noteOn: IGame.INotePlayer, noteOff: IGame.INotePlayer) {
+    return {
+      timeOn: noteOn.time,
+      timeOff: noteOff.time,
+      id: noteOn.id,
+      velocityOn: noteOn.velocity,
+      velocityOff: noteOff.velocity
+    };
+  }
+
+  private computeCleanedPlayerTracks() {
+    var o = this;
+    o.playerTracks = o.sceneTracks.map((sceneNotes) => {
+      var notesPlayer: IGame.INotePlayer[] = [];
+      sceneNotes.forEach((note) => {
+        notesPlayer.push({ on: true, time: note.timeOn, id: note.id, velocity: note.velocityOn });
+        notesPlayer.push({ on: false, time: note.timeOff, id: note.id, velocity: note.velocityOff });
+      });
+      return notesPlayer.sort((a, b) => { return a.time - b.time; });
+    });
+  }
+
+  private computeTimePerSong() {
+    var o = this;
+    o.timePerSong = 0;
+    o.playerTracks.forEach((notes) => {
+      notes.forEach(function (note) {
+        if (note.time > o.timePerSong) { o.timePerSong = note.time; }
+      });
+    });
+  }
+
   private readVarLength(index: number) {
     var value = this.midi[index++];
     if (value & 0x80) {
@@ -266,6 +246,27 @@ export class Midi implements IGame.IParser {
       } while (c & 0x80);
     }
     return { value: value, newIndex: index };
+  }
+
+  static private indexOf(where: Uint8Array, what: number[]) {
+    for (var i = 0; i < where.length; i++) {
+      var found = what.every((whati, j) => {
+        return whati == where[i + j];
+      });
+      if (found) { return i; }
+    }
+    return -1;
+  }
+
+  static private indexesOf(where: Uint8Array, what: number[]) {
+    var result: number[] = [];
+    for (var i = 0; i < where.length; i++) {
+      var found = what.every((whati, j) => {
+        return whati == where[i + j];
+      });
+      if (found) { result.push(i); }
+    }
+    return result;
   }
 
 }
