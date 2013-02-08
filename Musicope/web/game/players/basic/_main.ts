@@ -69,9 +69,11 @@ export class Basic implements IGame.IPlayer {
 
   private addUserTimeToNotes() {
     var o = this;
-    o.parser.playerTracks.forEach((notes) => {
-      notes.forEach((_, i) => {
-        notes[i]["userTime"] = undefined;
+    o.notes = o.parser.playerTracks.map((notes) => {
+      return notes.map((note) => {
+        var newNote = <any> $.extend(true, {}, note);
+        newNote["userTime"] = undefined;
+        return newNote;
       });
     });
   }

@@ -1,12 +1,12 @@
 /// <reference path="../../_references.ts" />
 
 import defParams = module("./defaults");
-import paramService = module("../common/services.params");
+import paramService = module("../../../common/services.params");
 
 export class Basic implements IGame.IParams {
 
   readOnly: IGame.IParamsData;
-  private subscribtions: { regex: RegExp; callback: (param: string, value: any) => void; }[];
+  private subscribtions: { regex: RegExp; callback: (param: string, value: any) => void; }[] = [] ;
 
   constructor() {
     var o = this;

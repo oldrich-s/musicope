@@ -71,13 +71,15 @@ export class Basic implements IGame.IController {
     for (var prop in inputsM) {
       new (<IGame.IInputNew> inputsM[prop])(o.params, o.parser);
     }
+    o.step();
   }
 
   private step() {
     var o = this;
     function _step() {
       if (!o.isEnd) {
-        o.requestAnimationFrame(_step);
+        window["webkitRequestAnimationFrame"](_step);
+        //o.requestAnimationFrame(_step);
       }
       o.isEnd = o.player.step();
       if (o.isEnd) {
