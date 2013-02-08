@@ -12,13 +12,6 @@ export class Basic implements IGame.IMetronome {
     o.subscribe();
   }
 
-  private subscribe() {
-    var o = this;
-    o.params.subscribe("^m_.+$", (name, value) => {
-      o.reset();
-    });
-  }
-
   play(time: number) {
     var o = this;
     if (o.params.readOnly.m_isOn) {
@@ -34,5 +27,12 @@ export class Basic implements IGame.IMetronome {
   }
 
   reset() { this.lastPlayedId = undefined; }
+
+  private subscribe() {
+    var o = this;
+    o.params.subscribe("^m_.+$", (name, value) => {
+      o.reset();
+    });
+  }
 
 }

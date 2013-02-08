@@ -8,8 +8,8 @@ export var MoveInTime: IGame.IKeyboardActionsNew = moveInTime.MoveInTime;
 import unsorted = module("./unsorted");
 export var Unsorted: IGame.IKeyboardActionsNew = unsorted.Unsorted;
 
-import toggleParams = module("./toggleParams");
-export var ToggleParams: IGame.IKeyboardActionsNew = toggleParams.ToggleParams;
+import hands = module("./hands");
+export var Hands: IGame.IKeyboardActionsNew = hands.Hands;
 
 import metronome = module("./metronome");
 export var Metronome: IGame.IKeyboardActionsNew = metronome.Metronome;

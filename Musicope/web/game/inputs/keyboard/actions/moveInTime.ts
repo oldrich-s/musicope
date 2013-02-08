@@ -17,16 +17,16 @@ export class MoveInTime implements IGame.IKeyboardActions {
 
   private moveBack() {
     var o = this;
-      var newTime = o.params.readOnly.p_elapsedTime - 2 * o.parser.timePerBeat;
-      var truncTime = Math.max(o.params.readOnly.p_initTime, newTime);
-      o.params.setParam("p_elapsedTime", truncTime);
+    var newTime = o.params.readOnly.p_elapsedTime - 2 * o.parser.timePerBeat;
+    var truncTime = Math.max(o.params.readOnly.p_initTime, newTime);
+    o.params.setParam("p_elapsedTime", truncTime);
   }
 
   private moveForward() {
     var o = this;
-      var newTime = o.params.readOnly.p_elapsedTime + 2 * o.parser.timePerBeat;
-      var truncTime = Math.min(o.parser.timePerSong + 10, newTime);
-      o.params.setParam("p_elapsedTime", truncTime);
+    var newTime = o.params.readOnly.p_elapsedTime + 2 * o.parser.timePerBeat;
+    var truncTime = Math.min(o.parser.timePerSong + 10, newTime);
+    o.params.setParam("p_elapsedTime", truncTime);
   }
 
   private goHome() {

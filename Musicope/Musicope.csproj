@@ -79,7 +79,7 @@
     <TypeScriptCompile Include="web\game\inputs\keyboard\actions\moveInTime.ts" />
     <TypeScriptCompile Include="web\game\inputs\keyboard\actions\metronome.ts" />
     <TypeScriptCompile Include="web\game\inputs\keyboard\actions\unsorted.ts" />
-    <TypeScriptCompile Include="web\game\inputs\keyboard\actions\toggleParams.ts" />
+    <TypeScriptCompile Include="web\game\inputs\keyboard\actions\hands.ts" />
     <Content Include="web\game\inputs\keyboard\actions\_interfaces.ts" />
     <TypeScriptCompile Include="web\game\inputs\keyboard\actions\_load.ts" />
     <Content Include="web\game\inputs\_interfaces.ts" />
@@ -89,6 +89,8 @@
     <Content Include="web\game\metronomes\_interfaces.ts" />
     <TypeScriptCompile Include="web\game\metronomes\_load.ts" />
     <TypeScriptCompile Include="web\game\parsers\midi\_main.ts" />
+    <TypeScriptCompile Include="web\game\inputs\keyboard\overlays\basic.ts" />
+    <TypeScriptCompile Include="web\game\inputs\keyboard\overlays\_load.ts" />
     <Content Include="web\game\parsers\_interfaces.ts" />
     <TypeScriptCompile Include="web\game\parsers\_load.ts" />
     <TypeScriptCompile Include="web\game\players\basic\_main.ts" />

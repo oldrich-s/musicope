@@ -1,6 +1,7 @@
 /// <reference path="../../../_references.ts" />
 
 import key = module("../../../../common/keyCodes");
+import overlays = module("../overlays/_load");
 
 export class Metronome implements IGame.IKeyboardActions {
 
@@ -18,7 +19,8 @@ export class Metronome implements IGame.IKeyboardActions {
 
   private toggleMetronome() {
     var o = this;
-    o.params.setParam("m_isOn", !o.params.readOnly.m_isOn)
+    o.params.setParam("m_isOn", !o.params.readOnly.m_isOn);
+    overlays.basic.display("m_isOn", o.params.readOnly.m_isOn);
   }
 
 }
