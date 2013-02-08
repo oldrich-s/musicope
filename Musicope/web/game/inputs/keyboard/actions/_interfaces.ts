@@ -6,7 +6,7 @@ module IGame {
   }
 
   export interface IKeyboardActionsNew {
-    new (player: IPlayer, parser: IParser): IKeyboardActions;
+    new (params: IParams, parser: IParser): IKeyboardActions;
   }
 
 }

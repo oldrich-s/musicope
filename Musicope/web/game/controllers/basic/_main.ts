@@ -21,7 +21,9 @@ export class Basic implements IGame.IController {
   private scene: IGame.IScene;
 
   private params: IGame.IParams;
-  
+
+  private isEnd = false;
+
   constructor() {
     var o = this;
 
@@ -53,7 +55,7 @@ export class Basic implements IGame.IController {
       if (this.status == 200) {
         var arr = new Uint8Array(xhr.response);
         out.resolve(arr);
-        
+
       }
     }
     xhr.send();
@@ -67,9 +69,33 @@ export class Basic implements IGame.IController {
     o.metronome = new metronomesM.Basic(o.parser.timePerBeat, o.parser.timePerBar / o.parser.timePerBeat, o.device, o.params);
     o.player = new (<IGame.IPlayerNew> playersM[o.params.readOnly.c_iplayer])(o.device, o.parser, o.metronome, o.scene, o.params);
     for (var prop in inputsM) {
-      new (<IGame.IInputNew> inputsM[prop])(o.player, o.parser);
+      new (<IGame.IInputNew> inputsM[prop])(o.params, o.parser);
     }
   }
 
-  
+  private step() {
+    var o = this;
+    function _step() {
+      if (!o.isEnd) {
+        o.requestAnimationFrame(_step);
+      }
+      o.isEnd = o.player.step();
+      if (o.isEnd) {
+        o.redirect();
+      }
+    }
+    _step();
+  }
+
+  private redirect() {
+    var o = this;
+    if (o.params.readOnly.c_callbackUrl) {
+      window.location.href = o.params.readOnly.c_callbackUrl;
+    }
+  }
+
+  private requestAnimationFrame: (fn: () => void) => void = 
+    window["requestAnimationFrame"] || window["webkitRequestAnimationFrame"] ||
+    window["mozRequestAnimationFrame"] || window["oRequestAnimationFrame"] ||
+    window["msRequestAnimationFrame"] || function(callback) { window.setTimeout(callback, 1000/60); };
 }

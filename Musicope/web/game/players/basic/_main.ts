@@ -17,14 +17,23 @@ export class Basic implements IGame.IPlayer {
               private scene: IGame.IScene, private params: IGame.IParams) {
     var o = this;
 
-    o.correctParamTimes();
-    o.subscribeParams();
-    o.notes = o.createNotes();
+    o.correctTimesInParams();
+    o.subscribeToParamsChange();
+    o.notes = o.getNotesWithUserTime();
     o.initDevice();
-    o.step();
   }
 
-  private correctParamTimes() {
+  step() {
+    var o = this;
+    var isSongEnd = o.updateTime();
+    o.processNotes(0);
+    o.processNotes(1);
+    o.metronome.play(o.params.readOnly.p_elapsedTime);
+    o.scene.redraw(o.params.readOnly.p_elapsedTime, o.params.readOnly.p_isPaused);
+    return isSongEnd;
+  }
+
+  private correctTimesInParams() {
     var o = this;
     if (typeof o.params.readOnly.p_initTime == 'undefined') {
       o.params.setParam("p_initTime", -2 * o.parser.timePerBar);
@@ -35,20 +44,29 @@ export class Basic implements IGame.IPlayer {
   }
 
 
-  private subscribeParams() {
+  private subscribeToParamsChange() {
     var o = this;
     o.params.subscribe("^p_.+$", (name, value) => {
       o.reset();
     });
   }
 
-  private createNotes() {
+  private getNotesWithUserTime() {
     var o = this;
     return o.parser.playerTracks.map((oldNotes) => {
       return oldNotes.map((n) => {
         return { on: n.on, time: n.time, id: n.id, velocity: n.velocity, userTime: undefined };
       });
     });
+  }
+
+  private initDevice() {
+    var o = this;
+    var midiOut = o.params.readOnly.p_deviceOut;
+    var midiIn = o.params.readOnly.p_deviceIn;
+    o.device.outOpen(midiOut);
+    o.device.out(0x80, 0, 0);
+    o.device.inOpen(midiIn, o.deviceIn());
   }
 
   private reset() {
@@ -67,24 +85,6 @@ export class Basic implements IGame.IPlayer {
     });
   }
 
-  private step() {
-    var o = this;
-    function _step() {
-      if (!o.theEnd) {
-        (<any>window).webkitRequestAnimationFrame(_step);
-        //        benchmark.collect();
-      }
-      o.updateTime();
-
-      o.processNotes(0);
-      o.processNotes(1);
-
-      o.metronome.play(o.params.readOnly.p_elapsedTime);
-      o.scene.redraw(o.params.readOnly.p_elapsedTime, o.params.readOnly.p_isPaused);
-    }
-    _step();
-  }
-
   private previousTime: number;
   private stops = [false, false];
   private updateTime() {
@@ -93,24 +93,21 @@ export class Basic implements IGame.IPlayer {
     if (!o.previousTime) { o.previousTime = currentTime; }
     var duration = currentTime - o.previousTime;
     o.previousTime = currentTime;
-    if (!o.params.readOnly.p_isPaused && !o.stops[0] && !o.stops[1] && duration < 100) {
+
+    var isSongEnd = o.params.readOnly.p_elapsedTime > o.parser.timePerSong + 1000;
+    
+    var freezeTime =
+      o.params.readOnly.p_isPaused ||
+      (o.stops[0] && o.stops[1]) || /*waiting for hands*/
+      duration < 100; /*window was out of focus*/
+      
+    if (!freezeTime) {
       o.params.readOnly.p_elapsedTime = o.params.readOnly.p_elapsedTime + o.params.readOnly.p_speed * duration;
-      o.redirectOnSongEnd();
     }
+
+    return isSongEnd;
   }
 
-  private redirectOnSongEnd() {
-    var o = this;
-    if (o.params.readOnly.p_elapsedTime > o.parser.timePerSong + 1000) {
-      if (o.params.readOnly.c_callbackUrl) {
-        window.location.href = o.params.readOnly.c_callbackUrl;
-        o.theEnd = true;
-      } else {
-        o.params.readOnly.p_elapsedTime = o.parser.timePerSong;
-      }
-    }
-  }
-  
   private processNotes(i: number) {
     var o = this;
     o.stops[i] = false;
@@ -188,14 +185,7 @@ export class Basic implements IGame.IPlayer {
     }
   }
 
-  private initDevice() {
-    var o = this;
-    var midiOut = o.params.readOnly.p_deviceOut;
-    var midiIn = o.params.readOnly.p_deviceIn;
-    o.device.outOpen(midiOut);
-    o.device.out(0x80, 0, 0);
-    o.device.inOpen(midiIn, o.deviceIn());
-  }
+
 
   private deviceIn() {
     var o = this;
