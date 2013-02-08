@@ -15,49 +15,52 @@ interface IJazz {
   isJazz: bool;
 }
 
+var jazz: IJazz;
+
 export class Jazz implements IDevice {
 
-  private jazz: IJazz;
-
   constructor() {
-    this.jazz = <any>document.getElementById("Jazz");
+    var o = this;
+    if (!o.exists()) {
+      jazz = <any>document.getElementById("Jazz");
+    }
     window.onbeforeunload = () => {
-      this.jazz.MidiInClose();
-      this.jazz.MidiOutClose();
+      jazz.MidiInClose();
+      jazz.MidiOutClose();
     }
   }
 
   inOpen(nameOrIndex, callback) {
-    this.jazz.MidiInOpen(<string>nameOrIndex, callback);
+    jazz.MidiInOpen(<string>nameOrIndex, callback);
   }
 
   inClose() {
-    this.jazz.MidiInClose();
+    jazz.MidiInClose();
   }
 
   inList() {
-    return this.jazz.MidiInList();
+    return jazz.MidiInList();
   }
 
-  exists() { return this.jazz && this.jazz.isJazz; }
+  exists() { return jazz && jazz.isJazz; }
 
   out(byte1: number, byte2: number, byte3: number) {
-    this.jazz.MidiOut(byte1, byte2, byte3);
+    jazz.MidiOut(byte1, byte2, byte3);
   }
 
   outClose() {
-    this.jazz.MidiOutClose();
+    jazz.MidiOutClose();
   }
 
   outList() {
-    return this.jazz.MidiOutList();
+    return jazz.MidiOutList();
   }
 
   outOpen(name) {
-    this.jazz.MidiOutOpen(<string>name);
+    jazz.MidiOutOpen(<string>name);
   }
 
   time() {
-    return this.jazz.Time();
+    return jazz.Time();
   }
 }
