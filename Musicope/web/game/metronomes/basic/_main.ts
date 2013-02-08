@@ -21,7 +21,7 @@ export class Basic implements IGame.IMetronome {
 
   play(time: number) {
     var o = this;
-    if (o.params.readOnly.m_velocity > 0) {
+    if (o.params.readOnly.m_isOn) {
       var id = Math.floor(o.params.readOnly.m_ticksPerBeat * time / o.timePerBeat);
       if (!o.lastPlayedId) { o.lastPlayedId = id; }
       if (id > o.lastPlayedId) {

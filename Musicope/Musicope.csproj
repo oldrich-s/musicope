@@ -68,9 +68,6 @@
     <TypeScriptCompile Include="web\common\services.params.ts" />
     <TypeScriptCompile Include="web\game\_index.ts" />
     <TypeScriptCompile Include="web\common\services.local.ts" />
-    <Content Include="web\common\services.local.js">
-      <DependentUpon>services.local.ts</DependentUpon>
-    </Content>
     <TypeScriptCompile Include="web\game\controllers\basic\_main.ts" />
     <Content Include="web\game\controllers\_interfaces.ts" />
     <TypeScriptCompile Include="web\game\controllers\_load.ts" />

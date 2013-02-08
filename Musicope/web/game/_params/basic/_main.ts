@@ -27,24 +27,6 @@ export class Basic implements IGame.IParams {
     o.call(name, value);
   }
 
-  getParams() {
-    var o = this;
-    return <IGame.IParamsData> $.extend(true, {}, o.readOnly);
-  }
-
-  setParams(newParams: IGame.IParamsData) {
-    var o = this;
-    for (var prop in o.readOnly) {
-      var oldParam = o.readOnly[prop];
-      var newParam = newParams[prop];
-      var areEqual = o.areEqual(oldParam, newParam);
-      if (!areEqual) {
-        o.readOnly[prop] = newParam;
-        o.call(prop, newParam);
-      }
-    }
-  }
-
   areEqual(param1: any, param2: any) {
     if ("every" in param1 && "every" in param2) {
       var areEqual = (<any[]> param1).every((param1i, i) => {

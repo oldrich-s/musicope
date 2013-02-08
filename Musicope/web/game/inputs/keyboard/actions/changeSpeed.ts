@@ -14,10 +14,15 @@ export class ChangeSpeed implements IGame.IKeyboardActions {
     o.changeDisplayedSpeed(params.readOnly.p_speed);
   }
 
-  run(keyCode: number) {
+  keyPressed(keyCode: number) {
     var o = this;
     if (keyCode == key.upArrow) { o.speedUp(); }
     else if (keyCode == key.downArrow) { o.slowDown(); }
+  }
+
+  private changeDisplayedSpeed(speed) {
+    var o = this;
+    o.container.text("" + Math.round(speed * 100));
   }
 
   private speedUp() {
@@ -32,9 +37,6 @@ export class ChangeSpeed implements IGame.IKeyboardActions {
     o.changeDisplayedSpeed(o.params.readOnly.p_speed);
   }
 
-  private changeDisplayedSpeed(speed) {
-    var o = this;
-    o.container.text("" + Math.round(speed * 100));
-  }
+
 
 }

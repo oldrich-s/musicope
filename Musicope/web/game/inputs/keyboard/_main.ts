@@ -28,7 +28,7 @@ export class Keyboard implements IGame.IInput {
           return key == e.which;
         });
         if (isValid) {
-          action.run(e.which);
+          action.keyPressed(e.which);
         }
       });
     });

@@ -8,7 +8,7 @@ export class Unsorted implements IGame.IKeyboardActions {
 
   constructor(private params: IGame.IParams, private parser: IGame.IParser) { }
 
-  run(keyCode: number) {
+  keyPressed(keyCode: number) {
     var o = this;
     if (keyCode == key.space) {
       o.togglePause();

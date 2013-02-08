@@ -26,11 +26,12 @@ module IGame {
     p_waits: bool[];
 
     // metronomes
-    m_velocity: number;
+    m_channel: number;
     m_id1: number;
     m_id2: number;
-    m_channel: number;
+    m_isOn: bool;
     m_ticksPerBeat: number;
+    m_velocity: number;
 
     // scenes
     s_views: string[];

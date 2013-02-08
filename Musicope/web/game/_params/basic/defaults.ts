@@ -26,10 +26,11 @@ export var params: IGame.IParamsData = {
   p_waits: [false, false],
 
   // metronomes
-  m_ticksPerBeat: 1,
   m_channel: 153,
   m_id1: 60,
   m_id2: 56,
+  m_isOn: true,
+  m_ticksPerBeat: 1,
   m_velocity: 15,
 
   // parsers

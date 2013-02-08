@@ -30,7 +30,9 @@ export class Basic implements IGame.IController {
     if (!o.params.readOnly.c_songUrl) { throw "c_songUrl does not exist!"; }
     else {
       o.device = new (<IDeviceNew> devicesM[o.params.readOnly.c_idevice])();
-      if (o.device.exists()) {
+      if (!o.device.exists()) {
+        throw "Device does not exist!"
+      } else {
         o.getSong().done((arr) => {
           o.init(arr);
         });

@@ -2,7 +2,7 @@ module IGame {
 
   export interface IKeyboardActions {
     hotkeys: number[];
-    run(keyCode: number): void;
+    keyPressed(keyCode: number): void;
   }
 
   export interface IKeyboardActionsNew {

@@ -17,7 +17,7 @@ export class ToggleParams implements IGame.IKeyboardActions {
     o.DisplayValue = $("<span style='color:red;font-size:large;' />").appendTo(container);
   }
 
-  run(keyCode: number) {
+  keyPressed(keyCode: number) {
     var o = this;
     if (keyCode == key.w) {
       o.toggleWait();

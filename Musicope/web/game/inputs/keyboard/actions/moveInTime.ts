@@ -8,7 +8,7 @@ export class MoveInTime implements IGame.IKeyboardActions {
 
   constructor(private params: IGame.IParams, private parser: IGame.IParser) { }
 
-  run(keyCode: number) {
+  keyPressed(keyCode: number) {
     var o = this;
     if (keyCode == key.leftArrow) { o.moveBack(); }
     else if (keyCode == key.rightArrow) { o.moveForward(); }
