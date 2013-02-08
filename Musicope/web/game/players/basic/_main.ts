@@ -19,15 +19,17 @@ export class Basic implements IGame.IPlayer {
 
     o.correctTimesInParams();
     o.subscribeToParamsChange();
-    o.notes = o.getNotesWithUserTime();
+    o.addUserTimeToNotes();
     o.initDevice();
   }
 
   step() {
     var o = this;
     var isSongEnd = o.updateTime();
-    o.processNotes(0);
-    o.processNotes(1);
+    o.setIfWaitOnUser(0);
+    o.playNotes(0);
+    o.setIfWaitOnUser(1);
+    o.playNotes(1);
     o.metronome.play(o.params.readOnly.p_elapsedTime);
     o.scene.redraw(o.params.readOnly.p_elapsedTime, o.params.readOnly.p_isPaused);
     return isSongEnd;
@@ -51,11 +53,25 @@ export class Basic implements IGame.IPlayer {
     });
   }
 
-  private getNotesWithUserTime() {
+  private reset() {
     var o = this;
-    return o.parser.playerTracks.map((oldNotes) => {
-      return oldNotes.map((n) => {
-        return { on: n.on, time: n.time, id: n.id, velocity: n.velocity, userTime: undefined };
+    o.scene.unsetAllPressedNotes();
+    o.metronome.reset();
+    o.waitId.forEach((_, i) => {
+      o.waitId[i] = o.notes[i].length - 1;
+      while (o.notes[i][o.waitId[i]] && o.notes[i][o.waitId[i]].time > o.params.readOnly.p_elapsedTime) { o.waitId[i]--; }
+      o.playId[i] = o.waitId[i] + 1;
+      for (var j = o.waitId[i]; j < o.notes[i].length; j++) {
+        o.notes[i][j].userTime = undefined;
+      }
+    });
+  }
+
+  private addUserTimeToNotes() {
+    var o = this;
+    o.parser.playerTracks.forEach((notes) => {
+      notes.forEach((_, i) => {
+        notes[i]["userTime"] = undefined;
       });
     });
   }
@@ -69,20 +85,45 @@ export class Basic implements IGame.IPlayer {
     o.device.inOpen(midiIn, o.deviceIn());
   }
 
-  private reset() {
+  private deviceIn() {
     var o = this;
+    return function callback(timeStamp, kind, noteId, velocity) {
+      //o.device.out(kind, noteId, velocity);
+      var isNoteOn = kind > 143 && kind < 160 && velocity > 0;
+      var isNoteOff = (kind > 127 && kind < 144) || (kind > 143 && kind < 160 && velocity == 0);
+      if (isNoteOn) { o.scene.setPressedNote(noteId); } else if (isNoteOff) { o.scene.unsetPressedNote(noteId); }
+      if (isNoteOff || isNoteOn) {
+        var foundNote = o.assignPressedNoteToNotes(noteId, isNoteOn);
+        if (!foundNote) {
+          o.unknownNotes.push({
+            on: isNoteOn,
+            time: o.params.readOnly.p_elapsedTime,
+            id: noteId,
+            velocity: velocity
+          });
+        }
+      }
+    }
+  }
 
-    o.scene.unsetAllPressedNotes();
-    o.metronome.reset();
-
-    o.waitId.forEach((_, i) => {
-      o.waitId[i] = o.notes[i].length - 1;
-      while (o.notes[i][o.waitId[i]] && o.notes[i][o.waitId[i]].time > o.params.readOnly.p_elapsedTime) { o.waitId[i]--; }
-      o.playId[i] = o.waitId[i] + 1;
-      for (var j = o.waitId[i]; j < o.notes[i].length; j++) {
-        o.notes[i][j].userTime = undefined;
+  private assignPressedNoteToNotes(noteId: number, isNoteOn: bool) {
+    var o = this;
+    var found = false;
+    o.params.readOnly.p_userHands.forEach((userHand, i) => {
+      if (userHand && !found) {
+        var id = o.waitId[i];
+        while (o.notes[i][id] && o.notes[i][id].time < o.params.readOnly.p_elapsedTime + o.params.readOnly.p_radiuses[i]) {
+          var note = o.notes[i][id];
+          var radius = Math.abs(o.notes[i][id].time - o.params.readOnly.p_elapsedTime) - 50;
+          if (note.id === noteId && isNoteOn == note.on && radius < o.params.readOnly.p_radiuses[i]) {
+            o.notes[i][id].userTime = o.params.readOnly.p_elapsedTime;
+            found = true; break;
+          }
+          id++;
+        }
       }
     });
+    return found;
   }
 
   private previousTime: number;
@@ -97,6 +138,7 @@ export class Basic implements IGame.IPlayer {
     var isSongEnd = o.params.readOnly.p_elapsedTime > o.parser.timePerSong + 1000;
     
     var freezeTime =
+      isSongEnd ||
       o.params.readOnly.p_isPaused ||
       (o.stops[0] && o.stops[1]) || /*waiting for hands*/
       duration < 100; /*window was out of focus*/
@@ -108,16 +150,11 @@ export class Basic implements IGame.IPlayer {
     return isSongEnd;
   }
 
-  private processNotes(i: number) {
-    var o = this;
-    o.stops[i] = false;
-    o.setIfWaitOnUser(i);
-    o.playNotes(i);
-  }
-
   private waitId = [0, 0];
   private setIfWaitOnUser(trackId: number) {
     var o = this;
+
+    o.stops[trackId] = false;
 
     function lastIdsNoteBelowCurrentTimeMinusRadius() {
       return o.notes[trackId][o.waitId[trackId]] && o.notes[trackId][o.waitId[trackId]].time < o.params.readOnly.p_elapsedTime - o.params.readOnly.p_radiuses[trackId]
@@ -187,39 +224,6 @@ export class Basic implements IGame.IPlayer {
 
 
 
-  private deviceIn() {
-    var o = this;
-    return function callback(timeStamp, kind, noteId, velocity) {
-      //o.device.out(kind, noteId, velocity);
-      var isNoteOn = kind > 143 && kind < 160 && velocity > 0;
-      var isNoteOff = (kind > 127 && kind < 144) || (kind > 143 && kind < 160 && velocity == 0);
-      if (isNoteOn) { o.scene.setPressedNote(noteId); } else if (isNoteOff) { o.scene.unsetPressedNote(noteId); }
-      if (isNoteOff || isNoteOn) {
-        var found = false;
-        o.params.readOnly.p_userHands.forEach((userHand, i) => {
-          if (userHand && !found) {
-            var id = o.waitId[i];
-            while (o.notes[i][id] && o.notes[i][id].time < o.params.readOnly.p_elapsedTime + o.params.readOnly.p_radiuses[i]) {
-              var note = o.notes[i][id];
-              var radius = Math.abs(o.notes[i][id].time - o.params.readOnly.p_elapsedTime) - 50;
-              if (note.id === noteId && isNoteOn == note.on && radius < o.params.readOnly.p_radiuses[i]) {
-                o.notes[i][id].userTime = o.params.readOnly.p_elapsedTime;
-                found = true; break;
-              }
-              id++;
-            }
-          }
-        });
-        if (!found) {
-          o.unknownNotes.push({
-            on: isNoteOn,
-            time: o.params.readOnly.p_elapsedTime,
-            id: noteId,
-            velocity: velocity
-          });
-        }
-      }
-    }
-  }
+  
 
 }
