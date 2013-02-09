@@ -58,11 +58,13 @@ export class Basic implements IGame.IPlayer {
     o.scene.unsetAllPressedNotes();
     o.metronome.reset();
     o.waitId.forEach((_, i) => {
-      o.waitId[i] = o.notes[i].length - 1;
-      while (o.notes[i][o.waitId[i]] && o.notes[i][o.waitId[i]].time > o.params.readOnly.p_elapsedTime) { o.waitId[i]--; }
-      o.playId[i] = o.waitId[i] + 1;
-      for (var j = o.waitId[i]; j < o.notes[i].length; j++) {
-        o.notes[i][j].userTime = undefined;
+      if (o.notes[i].length > 0) {
+        o.waitId[i] = o.notes[i].length - 1;
+        while (o.waitId[i] > 0 && o.notes[i][o.waitId[i]] && o.notes[i][o.waitId[i]].time > o.params.readOnly.p_elapsedTime) { o.waitId[i]--; }
+        o.playId[i] = o.waitId[i] + 1;
+        for (var j = o.waitId[i]; j < o.notes[i].length; j++) {
+          o.notes[i][j].userTime = undefined;
+        }
       }
     });
   }
@@ -139,14 +141,15 @@ export class Basic implements IGame.IPlayer {
 
     var isSongEnd = o.params.readOnly.p_elapsedTime > o.parser.timePerSong + 1000;
     
-    var freezeTime =
+    var doFreezeTime =
       isSongEnd ||
       o.params.readOnly.p_isPaused ||
       (o.stops[0] && o.stops[1]) || /*waiting for hands*/
-      duration < 100; /*window was out of focus*/
+      duration > 100; /*window was out of focus*/
       
-    if (!freezeTime) {
-      o.params.readOnly.p_elapsedTime = o.params.readOnly.p_elapsedTime + o.params.readOnly.p_speed * duration;
+    if (!doFreezeTime) {
+      var newElapsedTime = o.params.readOnly.p_elapsedTime + o.params.readOnly.p_speed * duration;
+      o.params.setParam("p_elapsedTime", newElapsedTime, true);
     }
 
     return isSongEnd;

@@ -21,10 +21,12 @@ export class Basic implements IGame.IParams {
     });
   }
 
-  setParam(name: string, value: any) {
+  setParam(name: string, value: any, dontNotifyOthers?: bool) {
     var o = this
     o.readOnly[name] = value;
-    o.call(name, value);
+    if (!dontNotifyOthers) {
+      o.call(name, value);
+    }
   }
 
   areEqual(param1: any, param2: any) {
