@@ -87,7 +87,7 @@ function drawPianoWhiteNotes(loc: Local) {
 }
 
 function drawPianoTimeBarColor(loc: Local) {
-  var color = hexToRgb(loc.input.readOnly.s_colTime, 0.9);
+  var color = hexToRgb(loc.input.readOnly.s_colTime, 0.8);
   var y0 = loc.yEndOfPiano;
   var y1 = loc.yEndOfTimeBar;
   loc.input.drawRect(0, y0, 1, y1, [151, 152, 152, 151], color, color);
@@ -96,8 +96,8 @@ function drawPianoTimeBarColor(loc: Local) {
 function drawPianoTimeBarWhite(loc: Local) {
   var y0 = loc.yEndOfPiano;
   var y1 = loc.yEndOfTimeBar;
-  var color = [1, 1, 1, 0.9];
-  loc.input.drawRect(0, y0, loc.input.sceneWidth, y1, [151], color, color);
+  var color = [1, 1, 1, 0.8];
+  loc.input.drawRect(0, y0, loc.input.sceneWidth, y1, [152, 151, 151, 152], color, color);
 }
 
 function drawPianoBackBlack(loc: Local) {
@@ -145,7 +145,7 @@ export function drawScene(input: Input) {
     whiteWidth: whiteWidth,    
     blackWidth: Math.round(0.25 * whiteWidth),
     yEndOfTimeBar: Math.floor(0.2 * input.sceneHeight),
-    yEndOfPiano: Math.floor(0.18 * input.sceneHeight),
+    yEndOfPiano: Math.floor(0.17 * input.sceneHeight),
     remainder: input.sceneWidth - whiteWidth * whiteNoteIds.length,
   }
   input.readOnly.s_views.forEach((view, i) => {

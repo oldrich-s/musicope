@@ -144,7 +144,7 @@ export class Basic implements IGame.IPlayer {
     var doFreezeTime =
       isSongEnd ||
       o.params.readOnly.p_isPaused ||
-      (o.stops[0] && o.stops[1]) || /*waiting for hands*/
+      o.stops[0] || o.stops[1] || /*waiting for hands*/
       duration > 100; /*window was out of focus*/
       
     if (!doFreezeTime) {

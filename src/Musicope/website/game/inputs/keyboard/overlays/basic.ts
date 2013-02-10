@@ -13,9 +13,14 @@ function createDomIfNeeded() {
 }
 
 export function display(description: string, value: any) {
+
+  var str;
+  if (typeof value == "number") { str = Math.round(1000 * value) / 1000; }
+  else { str = value; }
+
   createDomIfNeeded();
   displayDescription.text(description + ": ");
-  displayValue.text(value);
+  displayValue.text(str);
   clearTimeout(oldTimeOut);
   oldTimeOut = setTimeout(() => {
     displayDescription.text("");
