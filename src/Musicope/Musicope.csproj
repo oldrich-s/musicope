@@ -63,14 +63,9 @@
   </PropertyGroup>
   <ItemGroup>
     <TypeScriptCompile Include="website\common\devices\jazz\_main.ts" />
-    <TypeScriptCompile Include="tests\website\game\_index.ts" />
-    <TypeScriptCompile Include="tests\website\game\jasmine.ts" />
-    <TypeScriptCompile Include="tests\website\game\metronomes\basic\_main.ts" />
-    <Content Include="tests\website\game\_references.ts" />
     <Content Include="website\_lib\jasmine\jasmine-html.js" />
     <Content Include="website\_lib\jasmine\jasmine.css" />
     <Content Include="website\_lib\jasmine\jasmine.js" />
-    <Content Include="tests\website\game\index.html" />
     <Content Include="website\common\devices\_interfaces.ts" />
     <TypeScriptCompile Include="website\common\devices\_load.ts" />
     <TypeScriptCompile Include="website\common\services.params.ts" />
@@ -145,10 +140,7 @@
     <Content Include="website\game\scenes\basic\assets\fragment.glsl" />
     <Content Include="website\game\scenes\basic\assets\vertex.glsl" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="tests\website\common\" />
-    <Folder Include="tests\website\list\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="website\_lib\jasmine\MIT.LICENSE" />
   </ItemGroup>
