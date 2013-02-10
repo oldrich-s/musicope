@@ -2,7 +2,7 @@
 
 export class Basic implements IGame.IMetronome {
 
-  private lastPlayedId: number;
+  private lastPlayedId: number = -10000;
 
   constructor(private timePerBeat: number, private beatsPerBar: number, private device: IDevice, private params: IGame.IParams) {
     var o = this;
@@ -13,7 +13,6 @@ export class Basic implements IGame.IMetronome {
     var o = this;
     if (o.params.readOnly.m_isOn) {
       var id = Math.floor(o.params.readOnly.m_ticksPerBeat * time / o.timePerBeat);
-      if (!o.lastPlayedId) { o.lastPlayedId = id; }
       if (id > o.lastPlayedId) {
         var noteId = id % o.beatsPerBar == 0 ? o.params.readOnly.m_id1 : o.params.readOnly.m_id2;
         var velocity = Math.min(127, o.params.readOnly.m_velocity);
@@ -23,7 +22,7 @@ export class Basic implements IGame.IMetronome {
     }
   }
 
-  reset() { this.lastPlayedId = undefined; }
+  reset() { this.lastPlayedId = -10000; }
 
   private subscribe() {
     var o = this;
