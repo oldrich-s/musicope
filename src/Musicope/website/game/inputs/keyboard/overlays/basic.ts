@@ -6,9 +6,9 @@ var oldTimeOut: number;
 
 function createDomIfNeeded() {
   if (!displayDescription || !displayValue) {
-    var container = $("<div />").appendTo('#overlayDiv');
+    var container = $("<div style='font-size:xx-large;' />").appendTo('#overlayDiv');
     displayDescription = $("<span />").appendTo(container);
-    displayValue = $("<span style='color:red;font-size:large;' />").appendTo(container);
+    displayValue = $("<span style='color:red;' />").appendTo(container);
   }
 }
 

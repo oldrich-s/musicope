@@ -60,7 +60,7 @@ export class Basic implements IGame.IPlayer {
       if (o.notes[i].length > 0) {
         o.waitId[i] = o.notes[i].length - 1;
         while (o.waitId[i] > 0 && o.notes[i][o.waitId[i]] && o.notes[i][o.waitId[i]].time > o.params.readOnly.p_elapsedTime) { o.waitId[i]--; }
-        o.playId[i] = o.waitId[i] + 1;
+        o.playId[i] = o.waitId[i];
         for (var j = o.waitId[i]; j < o.notes[i].length; j++) {
           o.notes[i][j].userTime = undefined;
         }
@@ -90,26 +90,48 @@ export class Basic implements IGame.IPlayer {
 
   private deviceIn() {
     var o = this;
+    var oldTimeStamp = -1;
+    var oldVelocity = -1;
     return function callback(timeStamp, kind, noteId, velocity) {
-      //o.device.out(kind, noteId, velocity);
+      o.sendBackToDevice(kind, noteId, velocity);
       var isNoteOn = kind > 143 && kind < 160 && velocity > 0;
       var isNoteOff = (kind > 127 && kind < 144) || (kind > 143 && kind < 160 && velocity == 0);
-      if (isNoteOn) { o.scene.setPressedNote(noteId); } else if (isNoteOff) { o.scene.unsetPressedNote(noteId); }
-      if (isNoteOff || isNoteOn) {
-        var foundNote = o.assignPressedNoteToNotes(noteId, isNoteOn);
-        if (!foundNote) {
-          o.unknownNotes.push({
-            on: isNoteOn,
-            time: o.params.readOnly.p_elapsedTime,
-            id: noteId,
-            velocity: velocity
-          });
-        }
+      var isSimilarTime = Math.abs(timeStamp - oldTimeStamp) < 3;
+      var isDoubleNote = isNoteOn && isSimilarTime && velocity == oldVelocity;
+      if (!isDoubleNote && (isNoteOff || isNoteOn)) {
+        if (isNoteOn) { o.scene.setPressedNote(noteId); }
+        else if (isNoteOff) { o.scene.unsetPressedNote(noteId); }
+        o.addToNotes(isNoteOn, noteId, velocity);
       }
+      oldTimeStamp = timeStamp;
+      oldVelocity = velocity;
     }
   }
 
-  private assignPressedNoteToNotes(noteId: number, isNoteOn: bool) {
+  private sendBackToDevice(kind, noteId, velocity) {
+    var o = this;
+    if (kind < 242 && (kind < 127 || kind > 160)) {
+      o.device.out(kind, noteId, velocity);
+    } else if (kind < 242) {
+      //o.device.out(kind, noteId, velocity);
+      var a = 5;
+    }
+  }
+
+  private addToNotes(isNoteOn, noteId, velocity) {
+    var o = this;
+    var foundNote = o.addToKnownNotes(noteId, isNoteOn);
+    if (!foundNote) {
+      o.unknownNotes.push({
+        on: isNoteOn,
+        time: o.params.readOnly.p_elapsedTime,
+        id: noteId,
+        velocity: velocity
+      });
+    }
+  }
+
+  private addToKnownNotes(noteId: number, isNoteOn: bool) {
     var o = this;
     var found = false;
     o.params.readOnly.p_userHands.forEach((userHand, i) => {
@@ -201,15 +223,12 @@ export class Basic implements IGame.IPlayer {
     if (isSustain) {
       if (note.on) {
         o.device.out(176, 64, 127);
-        o.device.out(177, 64, 127);
       } else {
         o.device.out(176, 64, 0);
-        o.device.out(177, 64, 0);
       }
     }
   }
 
-  private ons = [144, 145];
   private playNote(note: INote, trackId: number) {
     var o = this;
     var playsUser = o.params.readOnly.p_userHands[trackId];
@@ -217,10 +236,10 @@ export class Basic implements IGame.IPlayer {
     var isAboveMax = note.id > o.params.readOnly.p_maxNote;
     if (!playsUser || isBelowMin || isAboveMax) {
       if (note.on) {
-        o.device.out(o.ons[trackId], note.id, Math.min(127, o.params.readOnly.p_volumes[trackId] * note.velocity));
+        o.device.out(144, note.id, Math.min(127, o.params.readOnly.p_volumes[trackId] * note.velocity));
         o.scene.setPressedNote(note.id);
       } else {
-        o.device.out(o.ons[trackId], note.id, 0);
+        o.device.out(144, note.id, 0);
         o.scene.unsetPressedNote(note.id);
       }
     }
