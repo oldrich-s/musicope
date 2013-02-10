@@ -11,7 +11,6 @@ export class Basic implements IGame.IPlayer {
 
   private notes: INote[][];
   private unknownNotes: IGame.INotePlayer[] = [];
-  private theEnd: bool = false;
 
   constructor(private device: IDevice, private parser: IGame.IParser, private metronome: IGame.IMetronome,
               private scene: IGame.IScene, private params: IGame.IParams) {

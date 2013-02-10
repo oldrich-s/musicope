@@ -22,8 +22,6 @@ export class Basic implements IGame.IController {
 
   private params: IGame.IParams;
 
-  private isEnd = false;
-
   constructor() {
     var o = this;
 
@@ -77,13 +75,11 @@ export class Basic implements IGame.IController {
   private step() {
     var o = this;
     function _step() {
-      if (!o.isEnd) {
-        //window["webkitRequestAnimationFrame"](_step);
-        o.requestAnimationFrame.call(window, _step);
-      }
-      o.isEnd = o.player.step();
-      if (o.isEnd) {
+      var isEnd = o.player.step();
+      if (isEnd && o.params.readOnly.c_callbackUrl) {
         o.redirect();
+      } else {
+        o.requestAnimationFrame.call(window, _step);
       }
     }
     _step();
@@ -96,9 +92,7 @@ export class Basic implements IGame.IController {
 
   private redirect() {
     var o = this;
-    if (o.params.readOnly.c_callbackUrl) {
-      window.location.href = o.params.readOnly.c_callbackUrl;
-    }
+    window.location.href = o.params.readOnly.c_callbackUrl;
   }
   
 }
