@@ -4,7 +4,7 @@ export function run() {
   describe("metronomes/basic", () => {
 
     it("xxx", () => {
-      expect(true).toBe(true);
+      expect(true).toBe(false);
     });
 
   });
