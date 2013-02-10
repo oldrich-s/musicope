@@ -1,0 +1,159 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <ProjectGuid>{2943442C-A6DA-44DC-AB95-F83D3DDFC961}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <OutputPath>bin</OutputPath>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>4.0</OldToolsVersion>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UpgradeBackupLocation />
+  </PropertyGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace>Musicope</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>3366</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:3263/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <TypeScriptTarget>ES3</TypeScriptTarget>
+    <TypeScriptModuleKind>AMD</TypeScriptModuleKind>
+    <TypeScriptIncludeComments>true</TypeScriptIncludeComments>
+    <TypeScriptSourceMap>true</TypeScriptSourceMap>
+    <PublishDatabases>false</PublishDatabases>
+    <PackageAsSingleFile>false</PackageAsSingleFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <TypeScriptTarget>ES3</TypeScriptTarget>
+    <TypeScriptIncludeComments>false</TypeScriptIncludeComments>
+    <TypeScriptSourceMap>false</TypeScriptSourceMap>
+  </PropertyGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="website\common\devices\jazz\_main.ts" />
+    <TypeScriptCompile Include="tests\website\game\_index.ts" />
+    <TypeScriptCompile Include="tests\website\game\jasmine.ts" />
+    <TypeScriptCompile Include="tests\website\game\metronomes\basic\_main.ts" />
+    <Content Include="tests\website\game\_references.ts" />
+    <Content Include="website\_lib\jasmine\jasmine-html.js" />
+    <Content Include="website\_lib\jasmine\jasmine.css" />
+    <Content Include="website\_lib\jasmine\jasmine.js" />
+    <Content Include="tests\website\game\index.html" />
+    <Content Include="website\common\devices\_interfaces.ts" />
+    <TypeScriptCompile Include="website\common\devices\_load.ts" />
+    <TypeScriptCompile Include="website\common\services.params.ts" />
+    <TypeScriptCompile Include="website\game\_index.ts" />
+    <TypeScriptCompile Include="website\common\services.local.ts" />
+    <TypeScriptCompile Include="website\game\controllers\basic\_main.ts" />
+    <Content Include="website\game\controllers\_interfaces.ts" />
+    <TypeScriptCompile Include="website\game\controllers\_load.ts" />
+    <Content Include="website\game\index.css" />
+    <Content Include="website\game\index.html" />
+    <TypeScriptCompile Include="website\game\inputs\keyboard\_main.ts" />
+    <TypeScriptCompile Include="website\common\keyCodes.ts" />
+    <TypeScriptCompile Include="website\game\inputs\keyboard\actions\changeSpeed.ts" />
+    <TypeScriptCompile Include="website\game\inputs\keyboard\actions\moveInTime.ts" />
+    <TypeScriptCompile Include="website\game\inputs\keyboard\actions\metronome.ts" />
+    <TypeScriptCompile Include="website\game\inputs\keyboard\actions\unsorted.ts" />
+    <TypeScriptCompile Include="website\game\inputs\keyboard\actions\hands.ts" />
+    <Content Include="website\game\inputs\keyboard\actions\_interfaces.ts" />
+    <TypeScriptCompile Include="website\game\inputs\keyboard\actions\_load.ts" />
+    <Content Include="website\game\inputs\_interfaces.ts" />
+    <TypeScriptCompile Include="website\game\inputs\_load.ts" />
+    <TypeScriptCompile Include="website\game\metronomes\basic\_main.ts" />
+    <TypeScriptCompile Include="website\game\inputs\_references.ts" />
+    <Content Include="website\game\metronomes\_interfaces.ts" />
+    <TypeScriptCompile Include="website\game\metronomes\_load.ts" />
+    <TypeScriptCompile Include="website\game\parsers\midi\_main.ts" />
+    <TypeScriptCompile Include="website\game\inputs\keyboard\overlays\basic.ts" />
+    <TypeScriptCompile Include="website\game\inputs\keyboard\overlays\_load.ts" />
+    <Content Include="website\game\parsers\_interfaces.ts" />
+    <TypeScriptCompile Include="website\game\parsers\_load.ts" />
+    <TypeScriptCompile Include="website\game\players\basic\_main.ts" />
+    <TypeScriptCompile Include="website\game\controllers\basic\benchmark.ts" />
+    <Content Include="website\game\players\_interfaces.ts" />
+    <TypeScriptCompile Include="website\game\players\_load.ts" />
+    <TypeScriptCompile Include="website\game\scenes\basic\drawScene.ts" />
+    <TypeScriptCompile Include="website\game\scenes\basic\webgl.ts" />
+    <TypeScriptCompile Include="website\game\scenes\basic\_main.ts" />
+    <Content Include="website\game\scenes\_interfaces.ts" />
+    <TypeScriptCompile Include="website\game\scenes\_load.ts" />
+    <TypeScriptCompile Include="website\game\_params\basic\defaults.ts" />
+    <TypeScriptCompile Include="website\game\_params\basic\_main.ts" />
+    <Content Include="website\game\_params\_interfaces.ts" />
+    <TypeScriptCompile Include="website\game\_params\_load.ts" />
+    <Content Include="website\game\_references.ts" />
+    <TypeScriptCompile Include="website\list\_index.ts" />
+    <Content Include="website\list\index.css" />
+    <Content Include="website\list\index.html" />
+    <TypeScriptCompile Include="website\list\inputs\keyboard\_main.ts" />
+    <TypeScriptCompile Include="website\list\inputs\mouse\_main.ts" />
+    <TypeScriptCompile Include="website\list\inputs\piano\_main.ts" />
+    <Content Include="website\list\inputs\_interfaces.ts" />
+    <TypeScriptCompile Include="website\list\inputs\_load.ts" />
+    <TypeScriptCompile Include="website\list\_paramsDefault.ts" />
+    <TypeScriptCompile Include="website\list\lastPlayedSongs.ts" />
+    <TypeScriptCompile Include="website\list\_interfaces.ts" />
+    <Content Include="website\list\_paramsInterfaces.ts" />
+    <Content Include="website\list\_references.ts" />
+    <Content Include="website\_lib\jasmine\jasmine.d.ts" />
+    <Content Include="website\_lib\jquery\jquery.d.ts" />
+    <Content Include="website\_lib\jquery\jquery.js" />
+    <Content Include="website\_lib\knockout\knockout.d.ts" />
+    <Content Include="website\_lib\knockout\knockout.js" />
+    <Content Include="website\_lib\pouch\pouch.d.ts" />
+    <Content Include="website\_lib\pouch\pouch.js" />
+    <Content Include="website\_lib\purl\purl.d.ts" />
+    <Content Include="website\_lib\purl\purl.js" />
+    <Content Include="website\_lib\requirejs\require.d.ts" />
+    <Content Include="website\_lib\requirejs\require.js" />
+    <Content Include="website\_lib\webgl\webgl.d.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="website\game\scenes\basic\assets\fragment.glsl" />
+    <Content Include="website\game\scenes\basic\assets\vertex.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="tests\website\common\" />
+    <Folder Include="tests\website\list\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="website\_lib\jasmine\MIT.LICENSE" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>$(SolutionDir)..\outputter\outputter\bin\Release\outputter.exe "$(SolutionDir)..\.."</PostBuildEvent>
+  </PropertyGroup>
+</Project>

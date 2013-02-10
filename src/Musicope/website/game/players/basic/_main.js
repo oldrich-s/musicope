@@ -1,0 +1,223 @@
+define(["require", "exports"], function(require, exports) {
+    var Basic = (function () {
+        function Basic(device, parser, metronome, scene, params) {
+            this.device = device;
+            this.parser = parser;
+            this.metronome = metronome;
+            this.scene = scene;
+            this.params = params;
+            this.unknownNotes = [];
+            this.theEnd = false;
+            this.stops = [
+                false, 
+                false
+            ];
+            this.waitId = [
+                0, 
+                0
+            ];
+            this.playId = [
+                0, 
+                0
+            ];
+            this.ons = [
+                144, 
+                145
+            ];
+            var o = this;
+            o.correctTimesInParams();
+            o.subscribeToParamsChange();
+            o.addUserTimeToNotes();
+            o.initDevice();
+        }
+        Basic.prototype.step = function () {
+            var o = this;
+            var isSongEnd = o.updateTime();
+            o.setIfWaitOnUser(0);
+            o.playNotes(0);
+            o.setIfWaitOnUser(1);
+            o.playNotes(1);
+            o.metronome.play(o.params.readOnly.p_elapsedTime);
+            o.scene.redraw(o.params.readOnly.p_elapsedTime, o.params.readOnly.p_isPaused);
+            return isSongEnd;
+        };
+        Basic.prototype.correctTimesInParams = function () {
+            var o = this;
+            if(typeof o.params.readOnly.p_initTime == 'undefined') {
+                o.params.setParam("p_initTime", -2 * o.parser.timePerBar);
+            }
+            if(typeof o.params.readOnly.p_elapsedTime == 'undefined') {
+                o.params.setParam("p_elapsedTime", o.params.readOnly.p_initTime);
+            }
+        };
+        Basic.prototype.subscribeToParamsChange = function () {
+            var o = this;
+            o.params.subscribe("^p_.+$", function (name, value) {
+                o.reset();
+            });
+        };
+        Basic.prototype.reset = function () {
+            var o = this;
+            o.scene.unsetAllPressedNotes();
+            o.metronome.reset();
+            o.waitId.forEach(function (_, i) {
+                if(o.notes[i].length > 0) {
+                    o.waitId[i] = o.notes[i].length - 1;
+                    while(o.waitId[i] > 0 && o.notes[i][o.waitId[i]] && o.notes[i][o.waitId[i]].time > o.params.readOnly.p_elapsedTime) {
+                        o.waitId[i]--;
+                    }
+                    o.playId[i] = o.waitId[i] + 1;
+                    for(var j = o.waitId[i]; j < o.notes[i].length; j++) {
+                        o.notes[i][j].userTime = undefined;
+                    }
+                }
+            });
+        };
+        Basic.prototype.addUserTimeToNotes = function () {
+            var o = this;
+            o.notes = o.parser.playerTracks.map(function (notes) {
+                return notes.map(function (note) {
+                    var newNote = $.extend(true, {
+                    }, note);
+                    newNote["userTime"] = undefined;
+                    return newNote;
+                });
+            });
+        };
+        Basic.prototype.initDevice = function () {
+            var o = this;
+            var midiOut = o.params.readOnly.p_deviceOut;
+            var midiIn = o.params.readOnly.p_deviceIn;
+            o.device.outOpen(midiOut);
+            o.device.out(128, 0, 0);
+            o.device.inOpen(midiIn, o.deviceIn());
+        };
+        Basic.prototype.deviceIn = function () {
+            var o = this;
+            return function callback(timeStamp, kind, noteId, velocity) {
+                //o.device.out(kind, noteId, velocity);
+                var isNoteOn = kind > 143 && kind < 160 && velocity > 0;
+                var isNoteOff = (kind > 127 && kind < 144) || (kind > 143 && kind < 160 && velocity == 0);
+                if(isNoteOn) {
+                    o.scene.setPressedNote(noteId);
+                } else if(isNoteOff) {
+                    o.scene.unsetPressedNote(noteId);
+                }
+                if(isNoteOff || isNoteOn) {
+                    var foundNote = o.assignPressedNoteToNotes(noteId, isNoteOn);
+                    if(!foundNote) {
+                        o.unknownNotes.push({
+                            on: isNoteOn,
+                            time: o.params.readOnly.p_elapsedTime,
+                            id: noteId,
+                            velocity: velocity
+                        });
+                    }
+                }
+            };
+        };
+        Basic.prototype.assignPressedNoteToNotes = function (noteId, isNoteOn) {
+            var o = this;
+            var found = false;
+            o.params.readOnly.p_userHands.forEach(function (userHand, i) {
+                if(userHand && !found) {
+                    var id = o.waitId[i];
+                    while(o.notes[i][id] && o.notes[i][id].time < o.params.readOnly.p_elapsedTime + o.params.readOnly.p_radiuses[i]) {
+                        var note = o.notes[i][id];
+                        var radius = Math.abs(o.notes[i][id].time - o.params.readOnly.p_elapsedTime) - 50;
+                        if(note.id === noteId && isNoteOn == note.on && radius < o.params.readOnly.p_radiuses[i]) {
+                            o.notes[i][id].userTime = o.params.readOnly.p_elapsedTime;
+                            found = true;
+                            break;
+                        }
+                        id++;
+                    }
+                }
+            });
+            return found;
+        };
+        Basic.prototype.updateTime = function () {
+            var o = this;
+            var currentTime = o.device.time();
+            if(!o.previousTime) {
+                o.previousTime = currentTime;
+            }
+            var duration = currentTime - o.previousTime;
+            o.previousTime = currentTime;
+            var isSongEnd = o.params.readOnly.p_elapsedTime > o.parser.timePerSong + 1000;
+            var doFreezeTime = isSongEnd || o.params.readOnly.p_isPaused || (o.stops[0] && o.stops[1]) || /*waiting for hands*/
+            duration > 100;/*window was out of focus*/
+            
+            if(!doFreezeTime) {
+                var newElapsedTime = o.params.readOnly.p_elapsedTime + o.params.readOnly.p_speed * duration;
+                o.params.setParam("p_elapsedTime", newElapsedTime, true);
+            }
+            return isSongEnd;
+        };
+        Basic.prototype.setIfWaitOnUser = function (trackId) {
+            var o = this;
+            o.stops[trackId] = false;
+            function lastIdsNoteBelowCurrentTimeMinusRadius() {
+                return o.notes[trackId][o.waitId[trackId]] && o.notes[trackId][o.waitId[trackId]].time < o.params.readOnly.p_elapsedTime - o.params.readOnly.p_radiuses[trackId];
+            }
+            var isWait = o.params.readOnly.p_userHands[trackId] && o.params.readOnly.p_waits[trackId];
+            if(isWait) {
+                while(lastIdsNoteBelowCurrentTimeMinusRadius()) {
+                    var note = o.notes[trackId][o.waitId[trackId]];
+                    var isSustain = note.id === -1;
+                    var wasPlayedByUser = note.userTime;
+                    var isNoteAboveMin = note.id >= o.params.readOnly.p_minNote;
+                    var isNoteBelowMax = note.id <= o.params.readOnly.p_maxNote;
+                    if(note.on && !isSustain && !wasPlayedByUser && isNoteAboveMin && isNoteBelowMax) {
+                        o.stops[trackId] = true;
+                        break;
+                    }
+                    o.waitId[trackId]++;
+                }
+            }
+        };
+        Basic.prototype.playNotes = function (trackId) {
+            var o = this;
+            function lastIdsNoteBelowCurrentTime() {
+                return o.notes[trackId][o.playId[trackId]] && o.notes[trackId][o.playId[trackId]].time < o.params.readOnly.p_elapsedTime;
+            }
+            while(lastIdsNoteBelowCurrentTime()) {
+                var note = o.notes[trackId][o.playId[trackId]];
+                o.playSustain(note);
+                o.playNote(note, trackId);
+                o.playId[trackId]++;
+            }
+        };
+        Basic.prototype.playSustain = function (note) {
+            var o = this;
+            var isSustain = o.params.readOnly.p_sustain && note.id == -1;
+            if(isSustain) {
+                if(note.on) {
+                    o.device.out(176, 64, 127);
+                    o.device.out(177, 64, 127);
+                } else {
+                    o.device.out(176, 64, 0);
+                    o.device.out(177, 64, 0);
+                }
+            }
+        };
+        Basic.prototype.playNote = function (note, trackId) {
+            var o = this;
+            var playsUser = o.params.readOnly.p_userHands[trackId];
+            var isBelowMin = note.id < o.params.readOnly.p_minNote;
+            var isAboveMax = note.id > o.params.readOnly.p_maxNote;
+            if(!playsUser || isBelowMin || isAboveMax) {
+                if(note.on) {
+                    o.device.out(o.ons[trackId], note.id, Math.min(127, o.params.readOnly.p_volumes[trackId] * note.velocity));
+                    o.scene.setPressedNote(note.id);
+                } else {
+                    o.device.out(o.ons[trackId], note.id, 0);
+                    o.scene.unsetPressedNote(note.id);
+                }
+            }
+        };
+        return Basic;
+    })();
+    exports.Basic = Basic;    
+})
+//@ sourceMappingURL=_main.js.map
