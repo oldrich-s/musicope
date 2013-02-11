@@ -1,6 +1,6 @@
 # Introduction
 
-Musicope is an open-source online piano game. You can play the game or find further information at the [Musicope][6] website. Notice, that currently, you must have [Jazz plug-in][9] installed to play the game. It must be stressed, that Musicope is in its **alpha** phase with a lot of bugs, lack of features and lack of documentation. You are therefore more than welcome to contribute! You can enhance the Musicope [website][6], [file a bug][7], or discuss the game in the Musicope [forum][8]. Any type of contribution is welcome!
+[Musicope][6] is an open-source online piano game. You can play the game or find further information at the [Musicope][6] website. Notice, that currently, you must have [Jazz plug-in][9] installed to play the game. It must be stressed, that Musicope is in its **alpha** phase with a lot of bugs, lack of features and lack of documentation. You are therefore more than welcome to contribute! You can enhance the Musicope [website][6], [file a bug][7], or discuss the game in the Musicope [forum][8]. Any type of contribution is welcome!
 
 The aim of the introduction is to give a brief overview of the game logic and source structure. The game consists of two separate views - [Game view][1] and [List view][2].
 
