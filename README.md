@@ -4,7 +4,7 @@ Musicope is an open-source online piano game. You find further information about
 
 Musicope is in its **alpha** phase with a lot of bugs, lack of features and lack of documentation. You are therefore more than welcome to contribute! You can either enhance the [source code][24], you can [file a bug][7], or you can discuss the game at the Musicope [forum][8]. Any type of contribution is welcome!
 
-In the following a brief overview of the game logic and source structure will be given. The game consists of two separate views - [Game view][1] and [List view][2].
+In the following a brief overview of the game logic and source structure will be given. The game consists of two separate views, [Game view][1] and [List view][2].
 
 ## Game View
 
@@ -32,7 +32,7 @@ All the views consist of plugins. Each plugin is contained in separate folder. L
 [1]: https://github.com/musicope/game/tree/master/src/Musicope/website/game
 [2]: https://github.com/musicope/game/tree/master/src/Musicope/website/list
 [3]: https://github.com/musicope/game/tree/master/src/Musicope/website/game/_paramsInterfaces.ts
-[4]: http://piano.musicope.com/game/index.html?g_songUrl=../songs/G%20Major%20Music/0.0%20-%20First%20Pieces/A%20Tisket,%20A%20Tasket.mid&
+[4]: http://piano.musicope.com/game/index.html?c_songUrl=../songs/G%20Major%20Music/0.0%20-%20First%20Pieces/A%20Tisket,%20A%20Tasket.mid&
 [5]: https://github.com/musicope/game/tree/master/src/Musicope/website/game/_paramsDefault.ts
 [6]: http://musicope.com/
 [7]: https://github.com/musicope/game/issues
