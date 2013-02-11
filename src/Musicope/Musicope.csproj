@@ -153,6 +153,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" />
   <PropertyGroup>
-    <PostBuildEvent>$(SolutionDir)..\outputter\outputter\bin\Release\outputter.exe "$(SolutionDir)..\.."</PostBuildEvent>
+    <PostBuildEvent>$(SolutionDir)..\outputter\exec\outputter.exe "$(SolutionDir)..\.."</PostBuildEvent>
   </PropertyGroup>
 </Project>
