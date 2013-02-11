@@ -20,7 +20,7 @@ All the input *GET* parameters can be theoretically modified during the game pla
 
 ## Source Code description
 
-The source of the Musicope is written in [TypeScript][13]. TypeScript is JavaScript with types. You can use e.g. free [Microsoft Visual Studio Express for Web][14] to edit the TypeScript files.
+The source of the Musicope is written in [TypeScript][13]. TypeScript is simply JavaScript with types. You can use e.g. free [Microsoft Visual Studio Express for Web][14] to edit the TypeScript files.
 
 As mentioned, the game consist of two separate views (Game View and List View). Each view consists of the main [index.html][12], [index.css][17] and [_index.ts][15] file. All the TypeScript files are loaded dynamically by [RequireJS][16]. The interface of the input *GET* parameters is contained in [_interfaces.ts][3] whereas their respective default values can be found in [defaults.ts][5]. All the interfaces are loaded by [ _references.ts][23].
 
