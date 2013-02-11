@@ -10,7 +10,7 @@ In the following a brief overview of the game logic and source structure will be
 
 [Game View][1] is the core of the game. It behaves as a completely separate web-page. You can therefore start the Game View separately by calling a single URL link such as [thisone][4]. 
 
-All the input parameters of the game are served by means of the *GET* parameters. The only required parameter is *g_songUrl*. Other parameters have their respective default [values][5]. The current list of all the possible parameters of the Game View can be found [here][3]. The Game View does not store any data anywhere. Everything goes in and out by means of the *GET* parameters.
+All the input parameters of the game are served by means of the *GET* parameters. The current list of all the possible parameters of the Game View can be found [here][3]. The only required parameter is *c_songUrl*. All the other parameters have their respective default [values][5]. The Game View does not store any data. Everything goes in and out by means of the *GET* parameters.
 
 All the input *GET* parameters can be theoretically modified during the game play. An example of the modification of the input parameters during the game play are the different [keyboard actions][10] currently implemented. You can try to hit *up key*, *down key*, *left key*, *right key*, *m*, *h*, *w* and others during the game play and see what happens :). Or you can study all the keyboard options [here][10].
 
