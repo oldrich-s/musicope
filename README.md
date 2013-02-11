@@ -46,8 +46,8 @@ All the views consist of plugins. Each plugin is contained in separate folder. L
 [15]: https://github.com/musicope/game/tree/master/src/Musicope/website/game/_index.ts
 [16]: http://requirejs.org/
 [17]: https://github.com/musicope/game/tree/master/src/Musicope/website/game/index.css
-[18]: https://github.com/musicope/game/tree/master/src/Musicope/website/game/_paramsInterfaces.ts
-[19]: https://github.com/musicope/game/tree/master/src/Musicope/website/game/_paramsDefault.ts
+[18]: https://github.com/musicope/game/blob/master/src/Musicope/website/game/_params/_interfaces.ts
+[19]: https://github.com/musicope/game/blob/master/src/Musicope/website/game/_params/basic/defaults.ts
 [20]: https://github.com/musicope/game/tree/master/src/Musicope/website/game/scenes
 [21]: https://github.com/musicope/game/tree/master/src/Musicope/website/game/scenes/_interfaces.ts
 [22]: https://github.com/musicope/game/tree/master/src/Musicope/website/game/scenes/_load.ts
