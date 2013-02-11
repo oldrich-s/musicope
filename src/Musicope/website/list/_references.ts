@@ -1,5 +1,5 @@
-/// <reference path="_interfaces.ts" />
-/// <reference path="_paramsInterfaces.ts" />
+/// <reference path="_params/_interfaces.ts" />
+/// <reference path="controllers/_interfaces.ts" />
 /// <reference path="inputs/_interfaces.ts" />
 /// <reference path="../common/devices/_interfaces.ts" />
 /// <reference path="../_lib/jquery/jquery.d.ts" />
