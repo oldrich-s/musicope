@@ -42,13 +42,14 @@ class AppViewModel {
   private initTemplates() {
     var o = this;
     var defaultTemplates = [
-      { name: "none", value: "p_deviceIn=0&p_deviceOut=1&p_waits=[0,0]&p_userHands=[false,false]" },
-      { name: "left", value: "p_deviceIn=0&p_deviceOut=1&p_waits=[0,0]&p_userHands=[true,false]" },
-      { name: "right", value: "p_deviceIn=0&p_deviceOut=1&p_waits=[0,0]&p_userHands=[false,true]" },
-      { name: "both", value: "p_deviceIn=0&p_deviceOut=1&p_waits=[0,0]&p_userHands=[true,true]" },
-      { name: "wait for left", value: "p_deviceIn=0&p_deviceOut=1&p_waits=[1,1]&p_userHands=[true,false]" },
-      { name: "wait for right", value: "p_deviceIn=0&p_deviceOut=1&p_waits=[1,1]&p_userHands=[false,true]" },
-      { name: "wait for both", value: "p_deviceIn=0&p_deviceOut=1&p_waits=[1,1]&p_userHands=[true,true]" }
+      { name: "none", value: "p_deviceIn=0&p_deviceOut=1&p_waits=[0,0]&p_userHands=[0,0]" },
+      { name: "left", value: "p_deviceIn=0&p_deviceOut=1&p_waits=[0,0]&p_userHands=[1,0]" },
+      { name: "right", value: "p_deviceIn=0&p_deviceOut=1&p_waits=[0,0]&p_userHands=[0,1]" },
+      { name: "both", value: "p_deviceIn=0&p_deviceOut=1&p_waits=[0,0]&p_userHands=[1,1]" },
+      { name: "wait for none", value: "p_deviceIn=0&p_deviceOut=1&p_waits=[1,1]&p_userHands=[0,0]" },
+      { name: "wait for left", value: "p_deviceIn=0&p_deviceOut=1&p_waits=[1,1]&p_userHands=[1,0]" },
+      { name: "wait for right", value: "p_deviceIn=0&p_deviceOut=1&p_waits=[1,1]&p_userHands=[0,1]" },
+      { name: "wait for both", value: "p_deviceIn=0&p_deviceOut=1&p_waits=[1,1]&p_userHands=[1,1]" }
     ];
     var templates = localM.get("templates", defaultTemplates);
     o.templates = ko.observableArray(templates);

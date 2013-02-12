@@ -16,8 +16,8 @@ export var params: IGame.IParamsData = {
   p_elapsedTime: undefined,
   p_initTime: undefined,
   p_isPaused: false,  
-  p_minNote: 21,
-  p_maxNote: 108,
+  p_minNote: 36,
+  p_maxNote: 96,
   p_radiuses: [200, 200],
   p_speed: 1,
   p_sustain: true,
@@ -34,8 +34,9 @@ export var params: IGame.IParamsData = {
   m_velocity: 15,
 
   // parsers
-  f_trackIds: [1, 0],
   f_normalize: 50,
+  f_autoOctaveShift: true,
+  f_trackIds: [1, 0],
 
   // scenes
   s_views: ["full", "full"],

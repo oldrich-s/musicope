@@ -2,13 +2,14 @@
 
 export class Midi implements IGame.IParser {
 
+  octaveShift = 0;
   timePerBeat: number;
   timePerBar: number;
   timePerSong: number;
   noteValuePerBeat: number; // denominator in time signature: 2, 4, 8, 16 ...
   playerTracks: IGame.INotePlayer[][] = [];
   sceneTracks: IGame.INoteScene[][];
-    
+  
   private timePerTick: number;
   private ticksPerQuarter: number;
   private timePerQuarter: number;
@@ -20,6 +21,7 @@ export class Midi implements IGame.IParser {
     o.parsePlayerTracks();
     o.sortPlayerTracksByHands();
     o.normalizeVolumeOfPlayerTracks();
+    o.shiftOctave();
     o.computeSceneTracks();
     o.computeCleanedPlayerTracks();
     o.computeTimePerSong();
@@ -176,6 +178,50 @@ export class Midi implements IGame.IParser {
       var scaleVel = o.params.readOnly.f_normalize / (sumVelocity / n);
       o.playerTracks.forEach((notes) => {
         notes.forEach((note) => { note.velocity = Math.max(0, Math.min(127, scaleVel * note.velocity)); });
+      });
+    }
+  }
+
+  private shiftOctave() {
+    var o = this;
+    if (o.params.readOnly.f_autoOctaveShift) {
+      var res = o.getNumOfNotesBelowAndAbovePiano();
+      var shiftOfBottom = Math.ceil(res.nBelow / 12);
+      var shiftOfTop = Math.ceil(res.nAbove / 12);
+      if (shiftOfBottom + shiftOfTop <= 0) {
+        o.octaveShift = shiftOfBottom > 0 ? shiftOfBottom : shiftOfTop;
+        o.shiftPlayerNotesBy(o.octaveShift);
+        if (o.octaveShift !== 0) {
+          alert("Shift your octave by: " + o.octaveShift);
+        }
+      }
+    }
+  }
+
+  private getNumOfNotesBelowAndAbovePiano() {
+    var o = this;
+    var nBelow = -100;
+    var nAbove = -100;
+    o.playerTracks.forEach((notes) => {
+      notes.forEach((note) => {
+        if (note.id > 0) {
+          var belowMin = o.params.readOnly.p_minNote - note.id;
+          if (belowMin > nBelow) { nBelow = belowMin; }
+          var aboveMax = note.id - o.params.readOnly.p_maxNote;
+          if (aboveMax > nAbove) { nAbove = aboveMax; }
+        }
+      });
+    });
+    return { nBelow: nBelow, nAbove: nAbove };
+  }
+
+  private shiftPlayerNotesBy(octaves: number) {
+    var o = this;
+    if (octaves !== 0) {
+      o.playerTracks.forEach((notes) => {
+        notes.forEach((note) => {
+          note.id = note.id + 12 * octaves;
+        });
       });
     }
   }

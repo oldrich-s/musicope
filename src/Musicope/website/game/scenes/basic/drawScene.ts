@@ -53,16 +53,29 @@ var blackNoteSpots = [
   1, 3, 4, 6, 7, 8, 10, 11, 13, 14, 15, 17, 18, 20, 21, 22, 24, 25, 27, 28, 29, 31, 32,
   34, 35, 36, 38, 39, 41, 42, 43, 45, 46, 48, 49, 50];
 
-function drawPianoOutOfReach(loc: Local) {
+function drawPianoBelowReach(loc: Local) {
   var minId = whiteNoteIds.indexOf(loc.input.p_minNote);
-  var maxId = whiteNoteIds.indexOf(loc.input.p_maxNote);
   if (minId > -1) {
-    var minX1 = minId * loc.whiteWidth;
-    var maxX0 = (maxId + 1) * loc.whiteWidth;
+    var x1 = minId * loc.whiteWidth;
     var y1 = loc.yEndOfPiano;
     var color = [0, 0, 0, 0.5];
-    loc.input.drawRect(0, 0, minX1, y1, [121], color, color);
+    loc.input.drawRect(0, 0, x1, y1, [121], color, color);
   }
+}
+
+function drawPianoAboveReach(loc: Local) {
+  var maxId = whiteNoteIds.indexOf(loc.input.p_maxNote);
+  if (maxId > -1) {
+    var x0 = (maxId + 1) * loc.whiteWidth;
+    var y1 = loc.yEndOfPiano;
+    var color = [0, 0, 0, 0.5];
+    loc.input.drawRect(x0, 0, loc.input.sceneWidth, y1, [121], color, color);
+  }
+}
+
+function drawPianoOutOfReach(loc: Local) {
+  drawPianoAboveReach(loc);
+  drawPianoBelowReach(loc);
 }
 
 function drawPianoBlackNotes(loc: Local) {
