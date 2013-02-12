@@ -2,7 +2,6 @@
 
 export class Midi implements IGame.IParser {
 
-  octaveShift = 0;
   timePerBeat: number;
   timePerBar: number;
   timePerSong: number;
@@ -21,8 +20,8 @@ export class Midi implements IGame.IParser {
     o.parsePlayerTracks();
     o.sortPlayerTracksByHands();
     o.normalizeVolumeOfPlayerTracks();
-    o.shiftOctave();
     o.computeSceneTracks();
+    o.shiftSceneTracksByOctave();
     o.computeCleanedPlayerTracks();
     o.computeTimePerSong();
   }
@@ -182,50 +181,6 @@ export class Midi implements IGame.IParser {
     }
   }
 
-  private shiftOctave() {
-    var o = this;
-    if (o.params.readOnly.f_autoOctaveShift) {
-      var res = o.getNumOfNotesBelowAndAbovePiano();
-      var shiftOfBottom = Math.ceil(res.nBelow / 12);
-      var shiftOfTop = Math.ceil(res.nAbove / 12);
-      if (shiftOfBottom + shiftOfTop <= 0) {
-        o.octaveShift = shiftOfBottom > 0 ? shiftOfBottom : shiftOfTop;
-        o.shiftPlayerNotesBy(o.octaveShift);
-        if (o.octaveShift !== 0) {
-          alert("Shift your octave by: " + o.octaveShift);
-        }
-      }
-    }
-  }
-
-  private getNumOfNotesBelowAndAbovePiano() {
-    var o = this;
-    var nBelow = -100;
-    var nAbove = -100;
-    o.playerTracks.forEach((notes) => {
-      notes.forEach((note) => {
-        if (note.id > 0) {
-          var belowMin = o.params.readOnly.p_minNote - note.id;
-          if (belowMin > nBelow) { nBelow = belowMin; }
-          var aboveMax = note.id - o.params.readOnly.p_maxNote;
-          if (aboveMax > nAbove) { nAbove = aboveMax; }
-        }
-      });
-    });
-    return { nBelow: nBelow, nAbove: nAbove };
-  }
-
-  private shiftPlayerNotesBy(octaves: number) {
-    var o = this;
-    if (octaves !== 0) {
-      o.playerTracks.forEach((notes) => {
-        notes.forEach((note) => {
-          note.id = note.id + 12 * octaves;
-        });
-      });
-    }
-  }
-
   private computeSceneTracks() {
     var o = this;
     o.sceneTracks = o.playerTracks.map((playerNotes) => {
@@ -258,6 +213,52 @@ export class Midi implements IGame.IParser {
       velocityOn: noteOn.velocity,
       velocityOff: noteOff.velocity
     };
+  }
+
+  private shiftSceneTracksByOctave() {
+    var o = this;
+    var res = o.getNumOfNotesBelowAndAbovePiano();
+    var shiftOfBottom = Math.ceil(res.nBelow / 12);
+    var shiftOfTop = Math.ceil(res.nAbove / 12);
+    if (shiftOfBottom + shiftOfTop <= 0) {
+      var octaveShift = shiftOfBottom > 0 ? shiftOfBottom : shiftOfTop;
+      //o.shiftSceneNotesBy(o.octaveShift);
+      if (octaveShift !== 0) {
+        alert("Shift your octave to: " + -octaveShift);
+      }
+    } else {
+      alert("This song is too big for your piano :(");
+    }
+  }
+
+  private getNumOfNotesBelowAndAbovePiano() {
+    var o = this;
+    var nBelow = -100;
+    var nAbove = -100;
+    o.sceneTracks.forEach((notes) => {
+      notes.forEach((note) => {
+        if (note.id > 0) {
+          var belowMin = o.params.readOnly.p_minNote - note.id;
+          if (belowMin > nBelow) { nBelow = belowMin; }
+          var aboveMax = note.id - o.params.readOnly.p_maxNote;
+          if (aboveMax > nAbove) { nAbove = aboveMax; }
+        }
+      });
+    });
+    return { nBelow: nBelow, nAbove: nAbove };
+  }
+
+  private shiftSceneNotesBy(octaves: number) {
+    var o = this;
+    if (octaves !== 0) {
+      o.sceneTracks.forEach((notes) => {
+        notes.forEach((note) => {
+          if (note.id > 0) {
+            note.id = note.id + 12 * octaves;
+          }
+        });
+      });
+    }
   }
 
   private computeCleanedPlayerTracks() {

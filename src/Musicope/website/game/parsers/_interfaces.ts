@@ -18,7 +18,6 @@ module IGame {
   }
 
   export interface IParser {
-    octaveShift: number;
     timePerBeat: number;
     timePerBar: number;
     timePerSong: number;

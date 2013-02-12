@@ -47,7 +47,6 @@ module IGame {
 
     // parsers
     f_normalize: number;
-    f_autoOctaveShift: bool;
     f_trackIds: number[];
   }
 

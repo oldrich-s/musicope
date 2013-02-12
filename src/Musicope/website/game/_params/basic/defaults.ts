@@ -35,7 +35,6 @@ export var params: IGame.IParamsData = {
 
   // parsers
   f_normalize: 50,
-  f_autoOctaveShift: true,
   f_trackIds: [1, 0],
 
   // scenes
