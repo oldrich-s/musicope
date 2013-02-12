@@ -221,15 +221,17 @@ export class Midi implements IGame.IParser {
     var res = o.getNumOfNotesBelowAndAbovePiano();
     var shiftOfBottom = Math.ceil(res.nBelow / 12);
     var shiftOfTop = Math.ceil(res.nAbove / 12);
-    if (shiftOfBottom + shiftOfTop <= 0) {
-      var octaveShift = shiftOfBottom > 0 ? shiftOfBottom : shiftOfTop;
-      //o.shiftSceneNotesBy(o.octaveShift);
-      if (octaveShift !== 0) {
-        alert("Shift your octave to: " + -octaveShift);
+    if (shiftOfBottom > 0 || shiftOfTop > 0) {
+      if (shiftOfBottom + shiftOfTop <= 0) {
+        var octaveShift = shiftOfBottom > 0 ? shiftOfBottom : shiftOfTop;
+        //o.shiftSceneNotesBy(o.octaveShift);
+        if (octaveShift !== 0) {
+          alert("Shift your octave to: " + -octaveShift);
+        }
+      } else {
+        o.notesOutOfReach = true;
+        alert("This song is too big for your piano :(");
       }
-    } else {
-      o.notesOutOfReach = true;
-      alert("This song is too big for your piano :(");
     }
   }
 
