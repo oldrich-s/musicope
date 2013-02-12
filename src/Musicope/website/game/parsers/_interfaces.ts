@@ -18,6 +18,7 @@ module IGame {
   }
 
   export interface IParser {
+    notesOutOfReach: bool;
     timePerBeat: number;
     timePerBar: number;
     timePerSong: number;

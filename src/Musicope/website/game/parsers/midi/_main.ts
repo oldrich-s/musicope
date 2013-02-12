@@ -2,6 +2,7 @@
 
 export class Midi implements IGame.IParser {
 
+  notesOutOfReach = false;
   timePerBeat: number;
   timePerBar: number;
   timePerSong: number;
@@ -227,6 +228,7 @@ export class Midi implements IGame.IParser {
         alert("Shift your octave to: " + -octaveShift);
       }
     } else {
+      o.notesOutOfReach = true;
       alert("This song is too big for your piano :(");
     }
   }

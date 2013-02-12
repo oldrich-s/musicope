@@ -92,19 +92,24 @@ export class Basic implements IGame.IPlayer {
     var o = this;
     var oldTimeStamp = -1;
     var oldVelocity = -1;
+    var oldId = -1;
     return function callback(timeStamp, kind, noteId, velocity) {
       o.sendBackToDevice(kind, noteId, velocity);
       var isNoteOn = kind > 143 && kind < 160 && velocity > 0;
       var isNoteOff = (kind > 127 && kind < 144) || (kind > 143 && kind < 160 && velocity == 0);
-      var isSimilarTime = Math.abs(timeStamp - oldTimeStamp) < 3;
-      var isDoubleNote = isNoteOn && isSimilarTime && velocity == oldVelocity;
-      if (!isDoubleNote && (isNoteOff || isNoteOn)) {
-        if (isNoteOn) { o.scene.setPressedNote(noteId); }
-        else if (isNoteOff) { o.scene.unsetPressedNote(noteId); }
-        o.addToNotes(isNoteOn, noteId, velocity);
+      if (isNoteOff || isNoteOn) {
+        var isSimilarTime = Math.abs(timeStamp - oldTimeStamp) < 3;
+        var idMaches = Math.abs(noteId - oldId) == 12;
+        var isDoubleNote = isNoteOn && isSimilarTime && idMaches && velocity == oldVelocity;
+        if (!isDoubleNote) {
+          if (isNoteOn) { o.scene.setPressedNote(noteId); }
+          else if (isNoteOff) { o.scene.unsetPressedNote(noteId); }
+          o.addToNotes(isNoteOn, noteId, velocity);
+        }
+        oldTimeStamp = timeStamp;
+        oldVelocity = velocity;
+        oldId = noteId;
       }
-      oldTimeStamp = timeStamp;
-      oldVelocity = velocity;
     }
   }
 
@@ -234,7 +239,8 @@ export class Basic implements IGame.IPlayer {
     var playsUser = o.params.readOnly.p_userHands[trackId];
     var isBelowMin = note.id < o.params.readOnly.p_minNote;
     var isAboveMax = note.id > o.params.readOnly.p_maxNote;
-    if (!playsUser || isBelowMin || isAboveMax) {
+    var playOutOfReach = o.parser.notesOutOfReach && (isBelowMin || isAboveMax);
+    if (!playsUser || playOutOfReach) {
       if (note.on) {
         o.device.out(144, note.id, Math.min(127, o.params.readOnly.p_volumes[trackId] * note.velocity));
         o.scene.setPressedNote(note.id);

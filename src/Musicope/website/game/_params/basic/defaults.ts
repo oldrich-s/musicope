@@ -34,7 +34,7 @@ export var params: IGame.IParamsData = {
   m_velocity: 15,
 
   // parsers
-  f_normalize: 50,
+  f_normalize: 60,
   f_trackIds: [1, 0],
 
   // scenes
