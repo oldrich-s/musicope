@@ -25,6 +25,8 @@ module IGame {
     noteValuePerBeat: number; // denominator in time signature: 2, 4, 8, 16 ...
     playerTracks: INotePlayer[][];
     sceneTracks: INoteScene[][];
+    minNoteId: number;
+    maxNoteId: number;
   }
 
   export interface IParserNew {

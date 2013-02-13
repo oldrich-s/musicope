@@ -104,7 +104,9 @@ export class Basic implements IGame.IScene {
       sceneHeight: o.canvas.height,
       tracks: o.parser.sceneTracks,
       p_minNote: o.params.readOnly.p_minNote,
-      p_maxNote: o.params.readOnly.p_maxNote
+      p_maxNote: o.params.readOnly.p_maxNote,
+      minNoteId: o.parser.minNoteId,
+      maxNoteId: o.parser.maxNoteId
     };
     drawScene.drawScene(input);
     var bufferData = Basic.concat(bag);

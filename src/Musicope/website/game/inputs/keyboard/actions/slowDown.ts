@@ -17,7 +17,7 @@ export class slowDown implements IGame.IKeyboardAction {
 
   getCurrentState() {
     var o = this;
-    return o.params.readOnly.p_speed;
+    return o.params.readOnly.p_speed * 100;
   }
 
 }

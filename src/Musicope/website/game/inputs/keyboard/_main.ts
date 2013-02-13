@@ -1,6 +1,7 @@
 /// <reference path="../../_references.ts" />
 
 import actions = module("./actions/_load");
+import overlays = module("./overlays/_load");
 
 export class Keyboard implements IGame.IInput {
 
@@ -36,6 +37,7 @@ export class Keyboard implements IGame.IInput {
       if (match) {
         o.keys = [];
         o.actions[i].triggerAction();
+        overlays.basic.display(o.actions[i].id, o.actions[i].getCurrentState());
         return;
       }
     }

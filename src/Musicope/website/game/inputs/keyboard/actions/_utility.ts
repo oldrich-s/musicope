@@ -1,8 +1,17 @@
+function areEqual(param1: any, param2: any) {
+  if ("every" in param1 && "every" in param2) {
+    var areEqual = (<any[]> param1).every((param1i, i) => {
+      return param1i == param2[i];
+    });
+    return areEqual;
+  } else {
+    return param1 == param2;
+  }
+}
 
 export function toggle(currentOption: any, options: any[]) {
-  var o = this;
   for (var i = 0; i < options.length; i++) {
-    if (o.params.areEqual(currentOption, options[i])) {
+    if (areEqual(currentOption, options[i])) {
       return options[(i + 1) % options.length];
     }
   }

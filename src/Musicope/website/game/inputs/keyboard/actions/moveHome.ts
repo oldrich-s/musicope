@@ -17,7 +17,7 @@ export class moveHome implements IGame.IKeyboardAction {
 
   getCurrentState() {
     var o = this;
-    return o.params.readOnly.p_elapsedTime;
+    return o.params.readOnly.p_elapsedTime / 1000;
   }
 
 }

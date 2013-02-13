@@ -9,6 +9,8 @@ export class Midi implements IGame.IParser {
   noteValuePerBeat: number; // denominator in time signature: 2, 4, 8, 16 ...
   playerTracks: IGame.INotePlayer[][] = [];
   sceneTracks: IGame.INoteScene[][];
+  minNoteId = 200;
+  maxNoteId = 0;
   
   private timePerTick: number;
   private ticksPerQuarter: number;
@@ -22,7 +24,8 @@ export class Midi implements IGame.IParser {
     o.sortPlayerTracksByHands();
     o.normalizeVolumeOfPlayerTracks();
     o.computeSceneTracks();
-    o.shiftSceneTracksByOctave();
+    //o.shiftSceneTracksByOctave();
+    o.setMinMaxNoteId();
     o.computeCleanedPlayerTracks();
     o.computeTimePerSong();
   }
@@ -214,6 +217,18 @@ export class Midi implements IGame.IParser {
       velocityOn: noteOn.velocity,
       velocityOff: noteOff.velocity
     };
+  }
+
+  private setMinMaxNoteId() {
+    var o = this;
+    o.sceneTracks.forEach((notes) => {
+      notes.forEach((note) => {
+        if (note.id > 0) {
+          o.maxNoteId = Math.max(note.id, o.maxNoteId);
+          o.minNoteId = Math.min(note.id, o.minNoteId);
+        }
+      });
+    });
   }
 
   private shiftSceneTracksByOctave() {
