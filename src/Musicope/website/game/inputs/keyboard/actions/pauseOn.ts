@@ -15,4 +15,9 @@ export class pauseOn implements IGame.IKeyboardAction {
     o.params.setParam("p_isPaused", !o.params.readOnly.p_isPaused);
   }
 
+  getCurrentState() {
+    var o = this;
+    return o.params.readOnly.p_isPaused;
+  }
+
 }

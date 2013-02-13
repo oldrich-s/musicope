@@ -72,14 +72,12 @@
     <TypeScriptCompile Include="website\game\inputs\keyboard\actions\waitOn.ts" />
     <TypeScriptCompile Include="website\game\inputs\keyboard\actions\_utility.ts" />
     <None Include="website\game\build.r" />
-    <Content Include="website\game\debug.html" />
     <Content Include="website\index.html" />
     <TypeScriptCompile Include="website\list\_params\basic\_main.ts" />
     <TypeScriptCompile Include="website\list\_params\basic\defaults.ts" />
     <TypeScriptCompile Include="website\list\controllers\basic\_main.ts" />
     <Content Include="website\list\controllers\_interfaces.ts" />
     <TypeScriptCompile Include="website\list\controllers\_load.ts" />
-    <Content Include="website\list\debug.html" />
     <Content Include="website\list\_params\_interfaces.ts" />
     <TypeScriptCompile Include="website\list\_params\_load.ts" />
     <Content Include="website\_lib\jasmine\jasmine-html.js" />

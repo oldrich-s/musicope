@@ -1,3 +1,5 @@
+/// <reference path="../../../_references.ts" />
+
 module IGame {
 
   export interface IKeyboardAction {
@@ -5,6 +7,7 @@ module IGame {
     description: string;
     keySequence: number[];
     triggerAction(): void;
+    getCurrentState(): any;
   }
 
   export interface IKeyboardActionsNew {

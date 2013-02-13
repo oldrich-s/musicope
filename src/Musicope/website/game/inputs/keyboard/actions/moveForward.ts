@@ -17,4 +17,9 @@ export class moveForward implements IGame.IKeyboardAction {
     o.params.setParam("p_elapsedTime", truncTime);
   }
 
+  getCurrentState() {
+    var o = this;
+    return o.params.readOnly.p_elapsedTime;
+  }
+
 }

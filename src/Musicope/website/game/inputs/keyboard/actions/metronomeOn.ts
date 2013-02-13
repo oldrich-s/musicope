@@ -15,4 +15,9 @@ export class metronomeOn implements IGame.IKeyboardAction {
     o.params.setParam("m_isOn", !o.params.readOnly.m_isOn);
   }
 
+  getCurrentState() {
+    var o = this;
+    return o.params.readOnly.m_isOn;
+  }
+
 }

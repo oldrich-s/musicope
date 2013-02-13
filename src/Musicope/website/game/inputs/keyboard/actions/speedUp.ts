@@ -15,4 +15,9 @@ export class speedUp implements IGame.IKeyboardAction {
     o.params.setParam("p_speed", o.params.readOnly.p_speed + 0.1);
   }
 
+  getCurrentState() {
+    var o = this;
+    return o.params.readOnly.p_speed;
+  }
+
 }

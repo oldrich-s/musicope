@@ -18,4 +18,9 @@ export class userHands implements IGame.IKeyboardAction {
     o.params.setParam("p_userHands", utility.toggle(o.params.readOnly.p_userHands, o.options));
   }
 
+  getCurrentState() {
+    var o = this;
+    return o.params.readOnly.p_userHands;
+  }
+
 }

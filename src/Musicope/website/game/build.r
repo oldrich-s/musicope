@@ -1,6 +1,6 @@
 ({
     baseUrl: ".",
     name: "_index",
-    out: "_indexb.js",
+    out: "_index.js",
     optimize: "none"
 })

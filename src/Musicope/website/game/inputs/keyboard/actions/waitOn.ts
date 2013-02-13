@@ -18,4 +18,9 @@ export class waitOn implements IGame.IKeyboardAction {
     o.params.setParam("p_waits", utility.toggle(o.params.readOnly.p_waits, o.options));
   }
 
+  getCurrentState() {
+    var o = this;
+    return o.params.readOnly.p_waits;
+  }
+
 }
