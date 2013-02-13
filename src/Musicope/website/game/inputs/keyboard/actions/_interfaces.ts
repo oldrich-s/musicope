@@ -11,7 +11,7 @@ module IGame {
   }
 
   export interface IKeyboardActionsNew {
-    new (params: IParams, parser: IParser): IKeyboardAction;
+    new (params: IParams, parser: IPostParser): IKeyboardAction;
   }
 
 }

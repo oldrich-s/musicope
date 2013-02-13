@@ -8,7 +8,7 @@ export class moveForward implements IGame.IKeyboardAction {
   description = "move forward by the amount of 2 beats";
   keySequence = [key.rightArrow];
 
-  constructor(private params: IGame.IParams, private parser: IGame.IParser) { }
+  constructor(private params: IGame.IParams, private parser: IGame.IPostParser) { }
 
   triggerAction() {
     var o = this;

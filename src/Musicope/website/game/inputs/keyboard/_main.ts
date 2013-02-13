@@ -8,7 +8,7 @@ export class Keyboard implements IGame.IInput {
   private actions: IGame.IKeyboardAction[] = [];
   private keys: number[] = [];
 
-  constructor(private params: IGame.IParams, private parser: IGame.IParser) {
+  constructor(private params: IGame.IParams, private parser: IGame.IPostParser) {
     var o = this;
     o.initActions();
     o.signupActions();

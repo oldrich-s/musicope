@@ -8,7 +8,7 @@ export class moveHome implements IGame.IKeyboardAction {
   description = "move to the initial state of the song";
   keySequence = [key.home];
 
-  constructor(private params: IGame.IParams, private parser: IGame.IParser) { }
+  constructor(private params: IGame.IParams, private parser: IGame.IPostParser) { }
 
   triggerAction() {
     var o = this;

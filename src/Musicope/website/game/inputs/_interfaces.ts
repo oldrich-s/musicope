@@ -5,7 +5,7 @@ module IGame {
   export interface IInput {}
 
   export interface IInputNew {
-    new (params: IParams, parser: IParser): IInput;
+    new (params: IParams, parser: IPostParser): IInput;
   }
 
 }

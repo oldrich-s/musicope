@@ -4,7 +4,7 @@ import paramsM = module("../../_params/_load");
 import devicesM = module("../../../common/devices/_load");
 import inputsM = module("../../inputs/_load");
 import metronomesM = module("../../metronomes/_load");
-import parsersM = module("../../parsers/_load");
+import postParsersM = module("../../postParsers/_load");
 import playersM = module("../../players/_load");
 import scenesM = module("../../scenes/_load");
 
@@ -16,7 +16,7 @@ export class Basic implements IGame.IController {
   private device: IDevice;
   private input: IGame.IInput;
   private metronome: IGame.IMetronome;
-  private parser: IGame.IParser;
+  private postParser: IGame.IPostParser;
   private player: IGame.IPlayer;
   private scene: IGame.IScene;
 
@@ -62,12 +62,12 @@ export class Basic implements IGame.IController {
 
   private init(arr: Uint8Array) {
     var o = this;
-    o.parser = new (<IGame.IParserNew> parsersM[o.params.readOnly.c_iparser])(arr, o.params);
-    o.scene = new (<IGame.ISceneNew> scenesM[o.params.readOnly.c_iscene])(o.parser, o.params);
-    o.metronome = new metronomesM.Basic(o.parser.timePerBeat, o.parser.timePerBar / o.parser.timePerBeat, o.device, o.params);
-    o.player = new (<IGame.IPlayerNew> playersM[o.params.readOnly.c_iplayer])(o.device, o.parser, o.metronome, o.scene, o.params);
+    o.postParser = new (<IGame.IPostParserNew> postParsersM[o.params.readOnly.c_iparser])(arr, o.params);
+    o.scene = new (<IGame.ISceneNew> scenesM[o.params.readOnly.c_iscene])(o.postParser, o.params);
+    o.metronome = new metronomesM.Basic(o.postParser.timePerBeat, o.postParser.timePerBar / o.postParser.timePerBeat, o.device, o.params);
+    o.player = new (<IGame.IPlayerNew> playersM[o.params.readOnly.c_iplayer])(o.device, o.postParser, o.metronome, o.scene, o.params);
     for (var prop in inputsM) {
-      new (<IGame.IInputNew> inputsM[prop])(o.params, o.parser);
+      new (<IGame.IInputNew> inputsM[prop])(o.params, o.postParser);
     }
     o.step();
   }

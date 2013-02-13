@@ -27,6 +27,9 @@
   <PropertyGroup>
     <RootNamespace>Musicope</RootNamespace>
   </PropertyGroup>
+  <PropertyGroup>
+    <RunPostBuildEvent>Always</RunPostBuildEvent>
+  </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
@@ -63,6 +66,9 @@
     <TypeScriptSourceMap>false</TypeScriptSourceMap>
   </PropertyGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="website\game\parsers\midi\_main.ts" />
+    <Content Include="website\game\parsers\_interfaces.ts" />
+    <TypeScriptCompile Include="website\game\parsers\_load.ts" />
     <Content Include="website\list\build.r" />
     <TypeScriptCompile Include="website\common\devices\jazz\_main.ts" />
     <TypeScriptCompile Include="website\game\inputs\keyboard\actions\moveHome.ts" />
@@ -107,11 +113,11 @@
     <TypeScriptCompile Include="website\game\inputs\_references.ts" />
     <Content Include="website\game\metronomes\_interfaces.ts" />
     <TypeScriptCompile Include="website\game\metronomes\_load.ts" />
-    <TypeScriptCompile Include="website\game\parsers\midi\_main.ts" />
+    <TypeScriptCompile Include="website\game\postParsers\basic\_main.ts" />
     <TypeScriptCompile Include="website\game\inputs\keyboard\overlays\basic.ts" />
     <TypeScriptCompile Include="website\game\inputs\keyboard\overlays\_load.ts" />
-    <Content Include="website\game\parsers\_interfaces.ts" />
-    <TypeScriptCompile Include="website\game\parsers\_load.ts" />
+    <Content Include="website\game\postParsers\_interfaces.ts" />
+    <TypeScriptCompile Include="website\game\postParsers\_load.ts" />
     <TypeScriptCompile Include="website\game\players\basic\_main.ts" />
     <TypeScriptCompile Include="website\game\controllers\basic\benchmark.ts" />
     <Content Include="website\game\players\_interfaces.ts" />

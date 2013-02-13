@@ -11,7 +11,7 @@ export class userHands implements IGame.IKeyboardAction {
 
   private options = [[false, false], [false, true], [true, false], [true, true]];
 
-  constructor(private params: IGame.IParams, private parser: IGame.IParser) { }
+  constructor(private params: IGame.IParams, private parser: IGame.IPostParser) { }
 
   triggerAction() {
     var o = this;
