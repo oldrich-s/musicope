@@ -58,10 +58,12 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <TypeScriptTarget>ES3</TypeScriptTarget>
+    <TypeScriptModuleKind>AMD</TypeScriptModuleKind>
     <TypeScriptIncludeComments>false</TypeScriptIncludeComments>
     <TypeScriptSourceMap>false</TypeScriptSourceMap>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="website\list\build.r" />
     <TypeScriptCompile Include="website\common\devices\jazz\_main.ts" />
     <TypeScriptCompile Include="website\game\inputs\keyboard\actions\moveHome.ts" />
     <TypeScriptCompile Include="website\game\inputs\keyboard\actions\moveBack.ts" />
@@ -69,12 +71,15 @@
     <TypeScriptCompile Include="website\game\inputs\keyboard\actions\slowDown.ts" />
     <TypeScriptCompile Include="website\game\inputs\keyboard\actions\waitOn.ts" />
     <TypeScriptCompile Include="website\game\inputs\keyboard\actions\_utility.ts" />
+    <None Include="website\game\build.r" />
+    <Content Include="website\game\debug.html" />
     <Content Include="website\index.html" />
     <TypeScriptCompile Include="website\list\_params\basic\_main.ts" />
     <TypeScriptCompile Include="website\list\_params\basic\defaults.ts" />
     <TypeScriptCompile Include="website\list\controllers\basic\_main.ts" />
     <Content Include="website\list\controllers\_interfaces.ts" />
     <TypeScriptCompile Include="website\list\controllers\_load.ts" />
+    <Content Include="website\list\debug.html" />
     <Content Include="website\list\_params\_interfaces.ts" />
     <TypeScriptCompile Include="website\list\_params\_load.ts" />
     <Content Include="website\_lib\jasmine\jasmine-html.js" />
@@ -162,6 +167,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" />
   <PropertyGroup>
-    <PostBuildEvent>$(SolutionDir)..\outputter\exec\outputter.exe "$(SolutionDir)..\.."</PostBuildEvent>
+    <PostBuildEvent>node "$(ProjectDir)website\r.js" -o "$(ProjectDir)website\game\build.r"
+node "$(ProjectDir)website\r.js" -o "$(ProjectDir)website\list\build.r"
+$(SolutionDir)..\outputter\exec\outputter.exe "$(SolutionDir)..\.."</PostBuildEvent>
   </PropertyGroup>
 </Project>

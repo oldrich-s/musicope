@@ -15,6 +15,11 @@
 
   <script src="../_lib/jquery/jquery.js"></script>
   <script src="../_lib/purl/purl.js"></script>
-  <script data-main="_indexb" src="../_lib/requirejs/require.js"></script>
+  <script data-main="_index" src="../_lib/requirejs/require.js"></script>
+  <script>
+    require.config({
+      urlArgs: "bust=v1"
+    });
+  </script>
 </body>
 </html>
