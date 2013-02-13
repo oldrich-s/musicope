@@ -4,7 +4,8 @@ import actions = module("./actions/_load");
 
 export class Keyboard implements IGame.IInput {
 
-  private actionObjects: IGame.IKeyboardActions[] = [];
+  private actions: IGame.IKeyboardAction[] = [];
+  private keys: number[] = [];
 
   constructor(private params: IGame.IParams, private parser: IGame.IParser) {
     var o = this;
@@ -16,22 +17,37 @@ export class Keyboard implements IGame.IInput {
     var o = this;
     for (var prop in actions) {
       var action = new (<IGame.IKeyboardActionsNew> actions[prop])(o.params, o.parser);
-      o.actionObjects.push(action);
+      o.actions.push(action);
     }
   }
 
   private signupActions() {
     var o = this;
     $(document).keydown((e) => {
-      o.actionObjects.forEach((action) => {
-        var isValid = action.hotkeys.some((key) => {
-          return key == e.which;
-        });
-        if (isValid) {
-          action.keyPressed(e.which);
-        }
-      });
+      o.keys.push(e.which);
+      o.analyzePressedKeys();
     });
+  }
+
+  private analyzePressedKeys() {
+    var o = this;
+    for (var i = 0; i < o.actions.length; i++) {
+      var match = o.doActionKeysMatch(o.actions[i]);
+      if (match) {
+        o.keys = [];
+        o.actions[i].triggerAction();
+        return;
+      }
+    }
+  }
+
+  private doActionKeysMatch(action: IGame.IKeyboardAction) {
+    var o = this;
+    var matchFound = action.keySequence.every((key, i) => {
+      var oldId = o.keys.length - action.keySequence.length + i;
+      return o.keys[oldId] && o.keys[oldId] === key;
+    });
+    return matchFound;
   }
 
 }

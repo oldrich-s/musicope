@@ -1,12 +1,14 @@
 module IGame {
 
-  export interface IKeyboardActions {
-    hotkeys: number[];
-    keyPressed(keyCode: number): void;
+  export interface IKeyboardAction {
+    id: string;
+    description: string;
+    keySequence: number[];
+    triggerAction(): void;
   }
 
   export interface IKeyboardActionsNew {
-    new (params: IParams, parser: IParser): IKeyboardActions;
+    new (params: IParams, parser: IParser): IKeyboardAction;
   }
 
 }
