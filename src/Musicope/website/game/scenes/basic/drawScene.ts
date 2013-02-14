@@ -98,7 +98,7 @@ function drawPianoWhiteNotes(loc: Local) {
     var y0 = 12;
     var y1 = loc.yEndOfPiano - 2;
     var unPressedColor = [1, 1, 1, 1];
-    var notPlayedColor = hexToRgb("#f3e387");
+    var notPlayedColor = hexToRgb(loc.input.readOnly.s_colUnPlayedNotes);
     var activeColor = hexToRgb(loc.input.readOnly.s_colPianoWhite);
     var neverPlayedNote = id < loc.input.minNoteId || id > loc.input.maxNoteId;
     var color = neverPlayedNote ? notPlayedColor : unPressedColor;

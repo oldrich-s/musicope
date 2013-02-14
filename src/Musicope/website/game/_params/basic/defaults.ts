@@ -7,7 +7,7 @@ export var params: IGame.IParamsData = {
   c_idevice: "Jazz",
   c_iscene: "Basic",
   c_iplayer: "Basic",
-  c_iparser: "Midi",
+  c_iparser: "Basic",
   c_callbackUrl: undefined,
 
   // players
@@ -47,6 +47,7 @@ export var params: IGame.IParamsData = {
   s_colPianoBlack: "#3faeff",
   s_colSustain: "#00ff90",
   s_colPaused: "#090714",
-  s_colUnPaused: "#0d0c0c"
+  s_colUnPaused: "#0d0c0c",
+  s_colUnPlayedNotes: "#fff8d1"
   
 };

@@ -10,7 +10,7 @@ export class Midi implements IGame.IParser {
   private timePerQuarter: number;
   private timePerTick: number;
   private beatsPerBar: number;
-  private tracks: IGame.INote[][];
+  private tracks: IGame.INote[][] = [];
 
   constructor(private midi: Uint8Array) {
     var o = this;

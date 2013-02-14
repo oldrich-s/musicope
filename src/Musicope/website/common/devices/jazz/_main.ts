@@ -21,9 +21,7 @@ export class Jazz implements IDevice {
 
   constructor() {
     var o = this;
-    if (!o.exists()) {
-      jazz = <any>document.getElementById("Jazz");
-    }
+    if (!o.exists()) { o.init(); }
     window.onbeforeunload = () => {
       jazz.MidiInClose();
       jazz.MidiOutClose();
@@ -63,4 +61,26 @@ export class Jazz implements IDevice {
   time() {
     return jazz.Time();
   }
+
+  private init() {
+
+    var jazz1 = document.createElement("object");
+    var jazz2 = document.createElement("object");
+
+    jazz1.setAttribute("classid", "CLSID:1ACE1618-1C7D-4561-AEE1-34842AA85E90");
+    jazz1.setAttribute("style", "margin-left:-1000px;");
+
+    jazz2.setAttribute("type", "audio/x-jazz");
+    jazz2.setAttribute("style", "visibility:hidden;");
+
+    var styleStr = "visibility: visible; display:block; position:absolute; top:0; left:0; width:100%; height:100%; text-align: center; vertical-align:middle; font-size: xx-large; background-color: black; color: #ffe44c;";
+    jazz2.innerHTML = '<div style="' + styleStr + '"><br />Please install <a style="color:red" href="http://jazz-soft.net/download/Jazz-Plugin/">JAZZ</a> plugin to make the game function. Thank you :-)</div>';
+
+    jazz1.appendChild(jazz2);
+    document.body.appendChild(jazz1);
+
+    jazz = <any> jazz1;
+    if (!jazz || !jazz.isJazz) { jazz = <any> jazz2; }
+  }
+
 }

@@ -4,7 +4,7 @@ import paramsM = module("../../_params/_load");
 import devicesM = module("../../../common/devices/_load");
 import inputsM = module("../../inputs/_load");
 import metronomesM = module("../../metronomes/_load");
-import postParsersM = module("../../songs/_load");
+import songsM = module("../../songs/_load");
 import playersM = module("../../players/_load");
 import scenesM = module("../../scenes/_load");
 
@@ -62,7 +62,7 @@ export class Basic implements IGame.IController {
 
   private init(arr: Uint8Array) {
     var o = this;
-    o.song = new (<IGame.ISongNew> postParsersM[o.params.readOnly.c_iparser])(arr, o.params);
+    o.song = new (<IGame.ISongNew> songsM[o.params.readOnly.c_iparser])(arr, o.params);
     o.scene = new (<IGame.ISceneNew> scenesM[o.params.readOnly.c_iscene])(o.song, o.params);
     o.metronome = new metronomesM.Basic(o.song.timePerBeat, o.song.timePerBar / o.song.timePerBeat, o.device, o.params);
     o.player = new (<IGame.IPlayerNew> playersM[o.params.readOnly.c_iplayer])(o.device, o.song, o.metronome, o.scene, o.params);
