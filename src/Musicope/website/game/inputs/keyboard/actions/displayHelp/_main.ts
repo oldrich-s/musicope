@@ -1,7 +1,7 @@
 /// <reference path="../../../_references.ts" />
 
-import key = module("../../../../common/keyCodes");
-import utility = module("./_utility");
+import key = module("../../../../../common/keyCodes");
+import load = module("../_load");
 
 export class displayHelp implements IGame.IKeyboardAction {
 
@@ -14,7 +14,8 @@ export class displayHelp implements IGame.IKeyboardAction {
 
   constructor(private params: IGame.IParams, private song: IGame.ISong) {
     var o = this;
-    $.get("game/inputs/keyboard/actions/displayHelp/overlay.html").done((result) => {
+    $.get("inputs/keyboard/actions/displayHelp/overlay.html").done((result) => {
+      $(result).appendTo("body");
       o.window = $("#displayHelpOverlay");
       o.window.text("jeden maly testik");
     });
@@ -35,7 +36,7 @@ export class displayHelp implements IGame.IKeyboardAction {
   }
 
   private createTable() {
-
+    
   }
 
 }

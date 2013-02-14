@@ -33,7 +33,7 @@ export class Basic implements IGame.IController {
       if (!o.device.exists()) {
         throw "Device does not exist!"
       } else {
-        o.getSong().done((arr) => {
+        o.getSong().done((arr: Uint8Array) => {
           o.init(arr);
         });
       }
@@ -60,7 +60,7 @@ export class Basic implements IGame.IController {
     return out;
   }
 
-  private init(arr: Uint8Array) {
+  private init(arr: Uint8Array): void {
     var o = this;
     o.song = new (<IGame.ISongNew> songsM[o.params.readOnly.c_iparser])(arr, o.params);
     o.scene = new (<IGame.ISceneNew> scenesM[o.params.readOnly.c_iscene])(o.song, o.params);
