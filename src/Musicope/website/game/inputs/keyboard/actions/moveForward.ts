@@ -8,12 +8,12 @@ export class moveForward implements IGame.IKeyboardAction {
   description = "move forward by the amount of 2 beats";
   keySequence = [key.rightArrow];
 
-  constructor(private params: IGame.IParams, private parser: IGame.IPostParser) { }
+  constructor(private params: IGame.IParams, private song: IGame.ISong) { }
 
   triggerAction() {
     var o = this;
-    var newTime = o.params.readOnly.p_elapsedTime + 2 * o.parser.timePerBeat;
-    var truncTime = Math.min(o.parser.timePerSong + 10, newTime);
+    var newTime = o.params.readOnly.p_elapsedTime + 2 * o.song.timePerBeat;
+    var truncTime = Math.min(o.song.timePerSong + 10, newTime);
     o.params.setParam("p_elapsedTime", truncTime);
   }
 

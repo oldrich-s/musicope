@@ -10,7 +10,7 @@ module IGame {
     velocityOff: number;
   }
 
-  export interface IPostParser {
+  export interface ISong {
     notesOutOfReach: bool;
     timePerBeat: number;
     timePerBar: number;
@@ -18,9 +18,11 @@ module IGame {
     noteValuePerBeat: number; // denominator in time signature: 2, 4, 8, 16 ...
     playerTracks: INote[][];
     sceneTracks: INoteScene[][];
+    minNoteId: number;
+    maxNoteId: number;
   }
 
-  export interface IPostParserNew {
-    new (midi: Uint8Array, params: IParams): IPostParser;
+  export interface ISongNew {
+    new (midi: Uint8Array, params: IParams): ISong;
   }
 }

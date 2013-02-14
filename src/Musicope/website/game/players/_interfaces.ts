@@ -7,7 +7,7 @@ module IGame {
   }
 
   export interface IPlayerNew {
-    new (device: IDevice, parser: IPostParser, metronome: IMetronome, scene: IScene, params: IParams): IPlayer;
+    new (device: IDevice, song: ISong, metronome: IMetronome, scene: IScene, params: IParams): IPlayer;
   }
 
 }

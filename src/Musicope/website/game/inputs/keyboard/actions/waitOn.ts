@@ -11,7 +11,7 @@ export class waitOn implements IGame.IKeyboardAction {
 
   private options = [[false, false], [true, true]];
 
-  constructor(private params: IGame.IParams, private parser: IGame.IPostParser) { }
+  constructor(private params: IGame.IParams, private song: IGame.ISong) { }
 
   triggerAction() {
     var o = this;

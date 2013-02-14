@@ -113,11 +113,11 @@
     <TypeScriptCompile Include="website\game\inputs\_references.ts" />
     <Content Include="website\game\metronomes\_interfaces.ts" />
     <TypeScriptCompile Include="website\game\metronomes\_load.ts" />
-    <TypeScriptCompile Include="website\game\postParsers\basic\_main.ts" />
+    <TypeScriptCompile Include="website\game\songs\basic\_main.ts" />
     <TypeScriptCompile Include="website\game\inputs\keyboard\overlays\basic.ts" />
     <TypeScriptCompile Include="website\game\inputs\keyboard\overlays\_load.ts" />
-    <Content Include="website\game\postParsers\_interfaces.ts" />
-    <TypeScriptCompile Include="website\game\postParsers\_load.ts" />
+    <Content Include="website\game\songs\_interfaces.ts" />
+    <TypeScriptCompile Include="website\game\songs\_load.ts" />
     <TypeScriptCompile Include="website\game\players\basic\_main.ts" />
     <TypeScriptCompile Include="website\game\controllers\basic\benchmark.ts" />
     <Content Include="website\game\players\_interfaces.ts" />

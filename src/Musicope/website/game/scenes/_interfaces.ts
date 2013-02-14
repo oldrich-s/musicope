@@ -10,7 +10,7 @@ module IGame {
   }
 
   export interface ISceneNew {
-    new (parser: IPostParser, params: IParams): IScene;
+    new (song: ISong, params: IParams): IScene;
   }
 
 }

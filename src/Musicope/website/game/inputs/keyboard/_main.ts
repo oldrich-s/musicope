@@ -8,7 +8,7 @@ export class Keyboard implements IGame.IInput {
   private actions: IGame.IKeyboardAction[] = [];
   private keys: number[] = [];
 
-  constructor(private params: IGame.IParams, private parser: IGame.IPostParser) {
+  constructor(private params: IGame.IParams, private song: IGame.ISong) {
     var o = this;
     o.initActions();
     o.signupActions();
@@ -17,7 +17,7 @@ export class Keyboard implements IGame.IInput {
   private initActions() {
     var o = this;
     for (var prop in actions) {
-      var action = new (<IGame.IKeyboardActionsNew> actions[prop])(o.params, o.parser);
+      var action = new (<IGame.IKeyboardActionsNew> actions[prop])(o.params, o.song);
       o.actions.push(action);
     }
   }

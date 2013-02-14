@@ -14,9 +14,8 @@ export class Basic implements IGame.IScene {
   private pausedColor: Int32Array;
   private unpausedColor: Int32Array;
 
-  constructor(private parser: IGame.IParser, public params: IGame.IParams) {
+  constructor(private song: IGame.ISong, public params: IGame.IParams) {
     var o = this;
-    o.parser = parser;
     o.setBackgrColors();
     o.canvas = o.getCanvas();
     o.setCanvasDim();
@@ -43,7 +42,7 @@ export class Basic implements IGame.IScene {
   redraw(time: number, isPaused: bool) {
     var o = this;
     o.setPausedState(isPaused);
-    var dx = 2 * time / o.parser.timePerSong;
+    var dx = 2 * time / o.song.timePerSong;
     var dy = -time * o.pixelsPerTime / o.canvas.height * 2;
     o.webgl.redraw(dx, dy, o.pressedNotes);
   }
@@ -72,7 +71,7 @@ export class Basic implements IGame.IScene {
     var o = this;
     o.canvas.width = window.innerWidth;
     o.canvas.height = window.innerHeight;
-    o.pixelsPerTime = o.canvas.height * 4 / (o.parser.noteValuePerBeat * o.params.readOnly.s_quartersPerHeight * o.parser.timePerBeat);
+    o.pixelsPerTime = o.canvas.height * 4 / (o.song.noteValuePerBeat * o.params.readOnly.s_quartersPerHeight * o.song.timePerBeat);
     $(window).resize(() => {
       o.canvas.width = window.innerWidth;
       o.canvas.height = window.innerHeight;
@@ -102,11 +101,11 @@ export class Basic implements IGame.IScene {
       pixelsPerTime: o.pixelsPerTime,
       sceneWidth: o.canvas.width,
       sceneHeight: o.canvas.height,
-      tracks: o.parser.sceneTracks,
+      tracks: o.song.sceneTracks,
       p_minNote: o.params.readOnly.p_minNote,
       p_maxNote: o.params.readOnly.p_maxNote,
-      minNoteId: o.parser.minNoteId,
-      maxNoteId: o.parser.maxNoteId
+      minNoteId: o.song.minNoteId,
+      maxNoteId: o.song.maxNoteId
     };
     drawScene.drawScene(input);
     var bufferData = Basic.concat(bag);

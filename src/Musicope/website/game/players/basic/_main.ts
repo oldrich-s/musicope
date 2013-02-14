@@ -3,16 +3,12 @@
 //import benchmarkM = module("./benchmark");
 //var benchmark = new benchmarkM.Benchmark();
 
-interface INote extends IGame.INotePlayer {
-  userTime: number;
-}
-
 export class Basic implements IGame.IPlayer {
 
-  private notes: INote[][];
-  private unknownNotes: IGame.INotePlayer[] = [];
+  private notes: IGame.INote[][];
+  private unknownNotes: IGame.INote[] = [];
 
-  constructor(private device: IDevice, private parser: IGame.IParser, private metronome: IGame.IMetronome,
+  constructor(private device: IDevice, private song: IGame.ISong, private metronome: IGame.IMetronome,
               private scene: IGame.IScene, private params: IGame.IParams) {
     var o = this;
 
@@ -37,7 +33,7 @@ export class Basic implements IGame.IPlayer {
   private correctTimesInParams() {
     var o = this;
     if (typeof o.params.readOnly.p_initTime == 'undefined') {
-      o.params.setParam("p_initTime", -2 * o.parser.timePerBar);
+      o.params.setParam("p_initTime", -2 * o.song.timePerBar);
     }
     if (typeof o.params.readOnly.p_elapsedTime == 'undefined') {
       o.params.setParam("p_elapsedTime", o.params.readOnly.p_initTime);
@@ -62,7 +58,7 @@ export class Basic implements IGame.IPlayer {
         while (o.waitId[i] > 0 && o.notes[i][o.waitId[i]] && o.notes[i][o.waitId[i]].time > o.params.readOnly.p_elapsedTime) { o.waitId[i]--; }
         o.playId[i] = o.waitId[i];
         for (var j = o.waitId[i]; j < o.notes[i].length; j++) {
-          o.notes[i][j].userTime = undefined;
+          o.notes[i][j]["userTime"] = undefined;
         }
       }
     });
@@ -70,7 +66,7 @@ export class Basic implements IGame.IPlayer {
 
   private addUserTimeToNotes() {
     var o = this;
-    o.notes = o.parser.playerTracks.map((notes) => {
+    o.notes = o.song.playerTracks.map((notes) => {
       return notes.map((note) => {
         var newNote = <any> $.extend(true, {}, note);
         newNote["userTime"] = undefined;
@@ -146,7 +142,7 @@ export class Basic implements IGame.IPlayer {
           var note = o.notes[i][id];
           var radius = Math.abs(o.notes[i][id].time - o.params.readOnly.p_elapsedTime) - 50;
           if (note.id === noteId && isNoteOn == note.on && radius < o.params.readOnly.p_radiuses[i]) {
-            o.notes[i][id].userTime = o.params.readOnly.p_elapsedTime;
+            o.notes[i][id]["userTime"] = o.params.readOnly.p_elapsedTime;
             found = true; break;
           }
           id++;
@@ -165,7 +161,7 @@ export class Basic implements IGame.IPlayer {
     var duration = currentTime - o.previousTime;
     o.previousTime = currentTime;
 
-    var isSongEnd = o.params.readOnly.p_elapsedTime > o.parser.timePerSong + 1000;
+    var isSongEnd = o.params.readOnly.p_elapsedTime > o.song.timePerSong + 1000;
     
     var doFreezeTime =
       isSongEnd ||
@@ -196,7 +192,7 @@ export class Basic implements IGame.IPlayer {
       while (lastIdsNoteBelowCurrentTimeMinusRadius()) {
         var note = o.notes[trackId][o.waitId[trackId]];
         var isSustain = note.id === -1;
-        var wasPlayedByUser = note.userTime;
+        var wasPlayedByUser = note["userTime"];
         var isNoteAboveMin = note.id >= o.params.readOnly.p_minNote;
         var isNoteBelowMax = note.id <= o.params.readOnly.p_maxNote;
         if (note.on && !isSustain && !wasPlayedByUser && isNoteAboveMin && isNoteBelowMax) {
@@ -222,7 +218,7 @@ export class Basic implements IGame.IPlayer {
     }
   }
 
-  private playSustain(note: INote) {
+  private playSustain(note: IGame.INote) {
     var o = this;
     var isSustain = o.params.readOnly.p_sustain && note.id == -1;
     if (isSustain) {
@@ -234,12 +230,12 @@ export class Basic implements IGame.IPlayer {
     }
   }
 
-  private playNote(note: INote, trackId: number) {
+  private playNote(note: IGame.INote, trackId: number) {
     var o = this;
     var playsUser = o.params.readOnly.p_userHands[trackId];
     var isBelowMin = note.id < o.params.readOnly.p_minNote;
     var isAboveMax = note.id > o.params.readOnly.p_maxNote;
-    var playOutOfReach = o.parser.notesOutOfReach && (isBelowMin || isAboveMax);
+    var playOutOfReach = o.song.notesOutOfReach && (isBelowMin || isAboveMax);
     if (!playsUser || playOutOfReach) {
       if (note.on) {
         o.device.out(144, note.id, Math.min(127, o.params.readOnly.p_volumes[trackId] * note.velocity));

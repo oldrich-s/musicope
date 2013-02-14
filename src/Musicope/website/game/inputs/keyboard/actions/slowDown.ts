@@ -8,7 +8,7 @@ export class slowDown implements IGame.IKeyboardAction {
   description = "slow down the song by 10%";
   keySequence = [key.downArrow];
 
-  constructor(private params: IGame.IParams, private parser: IGame.IPostParser) { }
+  constructor(private params: IGame.IParams, private song: IGame.ISong) { }
 
   triggerAction() {
     var o = this;

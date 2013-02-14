@@ -2,7 +2,7 @@
 
 import parsers = module("../../parsers/_load");
 
-export class Basic implements IGame.IPostParser {
+export class Basic implements IGame.ISong {
 
   timePerBeat: number;
   timePerBar: number;
