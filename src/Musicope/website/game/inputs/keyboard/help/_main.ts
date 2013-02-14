@@ -1,7 +1,7 @@
 /// <reference path="../../../_references.ts" />
 
-import key = module("../../../../../common/keyCodes");
-import load = module("../_load");
+import key = module("../../../../common/keyCodes");
+//import load = module("../_load");
 
 export class displayHelp implements IGame.IKeyboardAction {
 
@@ -9,8 +9,8 @@ export class displayHelp implements IGame.IKeyboardAction {
   description = "Displays help window";
   keySequence = [key.enter];
 
-  window: IJQuery.JQuery;
-  isDisplayed = false;
+  private window: IJQuery.JQuery;
+  private isDisplayed = false;
 
   constructor(private params: IGame.IParams, private song: IGame.ISong) {
     var o = this;
