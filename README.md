@@ -20,12 +20,13 @@ All the input *GET* parameters can be theoretically modified during the game pla
 
 ## Source Code description
 
-The source of the Musicope is written in [TypeScript][13]. TypeScript is simply JavaScript with types. You can use e.g. free [Microsoft Visual Studio Express for Web][14] to edit the TypeScript files.
+The source of the Musicope is written in [TypeScript][13]. TypeScript is simply JavaScript with types. You can use e.g. free [Microsoft Visual Studio Express for Web][14] to edit the TypeScript files. I use [nodejs][27] to run the [requirejs][28] optimizer.
 
-As mentioned, the game consist of two separate views (Game View and List View). Each view consists of the main [index.html][12], [index.css][17] and [_index.ts][15] file. All the TypeScript files are loaded dynamically by [RequireJS][16]. The interface of the input *GET* parameters is contained in [_interfaces.ts][3] whereas their respective default values can be found in [defaults.ts][5]. All the interfaces are loaded by [ _references.ts][23].
+As mentioned, the game consist of two separate views (Game View and List View). Each view consists of the main [index.html][12], [index.css][17] and [_index.ts][15] file. All the TypeScript files are loaded dynamically by [RequireJS][16]. The interface of the input *GET* parameters is contained in [_interfaces.ts][3] whereas their respective default values can be found in [defaults.ts][5]. All the interfaces are loaded by [_references.ts][23].
 
 All the views consist of plugins. Each plugin is contained in separate folder. Let's take [scenes][20] plugin as an example. Each plugin consists of [_interfaces.ts][21] which defines the interface of the plugin Class. Each plugin further contains [_load.ts][22] file which loads all the plugins of the specified interface. Whenever you create a plugin for a specified interface, place your plugin reference into the respective *_load.ts*.
 
+Others than that it is about studying the code :). If you have any question, you are welcome to the Musicope [forum][8].
 
 
 
@@ -54,3 +55,5 @@ All the views consist of plugins. Each plugin is contained in separate folder. L
 [24]: https://github.com/musicope/game/tree/master/src/Musicope/website
 [25]: http://synthesiagame.com/
 [26]: http://www.pianocrumbs.com/piano/
+[27]: http://nodejs.org/
+[28]: http://requirejs.org/docs/optimization.html
