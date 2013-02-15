@@ -8,7 +8,7 @@ Logic and source structure of the game will be given in the following brief over
 
 ## Game View
 
-[Game View][1] is the core of the game. It behaves as a completely separate web-page. You can therefore start the Game View separately by calling a single URL link such as [thisone][4]. 
+[Game View][1] is the core of the game. It behaves as a completely separate web-page. You can therefore start the Game View separately by calling a single URL link such as [this one][4]. 
 
 All the input parameters of the game are served by means of the *GET* parameters. The current list of all the possible parameters of the Game View can be found [here][3]. The only required parameter is *c_songUrl*. All the other parameters have their respective default [values][5]. The Game View does not store any data. Everything goes in and out by means of the *GET* parameters.
 
@@ -39,7 +39,7 @@ All the views consist of plugins. Each plugin is contained in separate folder. L
 [8]: http://qa.musicope.com/
 [9]: http://jazz-soft.net/
 [10]: https://github.com/musicope/game/tree/master/src/Musicope/website/game/inputs/keyboard/actions
-[11]: https://github.com/musicope/game/tree/master/src/Musicope/website/list/_paramsInterfaces.ts
+[11]: https://github.com/musicope/game/blob/master/src/Musicope/website/list/_params/_interfaces.ts
 [12]: https://github.com/musicope/game/tree/master/src/Musicope/website/game/index.html
 [13]: http://www.typescriptlang.org/
 [14]: http://www.microsoft.com/visualstudio/eng/products/visual-studio-express-for-web
