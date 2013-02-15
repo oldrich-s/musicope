@@ -8,14 +8,16 @@
 </head>
 <body>
 
-  <input class="params" data-bind="value: gameParams, valueUpdate:'afterkeydown'" placeholder="parameters"/>
-  <input autofocus="autofocus" class="query" data-bind="value: searchQuery, valueUpdate:'afterkeydown'" placeholder="Search" />
-  <div data-bind="foreach: filteredSongs">
-    <div align="center">
-      <a class="el" href="#" data-bind="click: $parent.redirect">
-        <span class="elName" data-bind="html: name"></span>
-        <span class="elPath" data-bind="html: path"></span>
-      </a>
+  <div class="midContainer">
+    <input class="gameParams" data-bind="value: gameParams, valueUpdate:'afterkeydown'" placeholder="parameters"/>
+    <input autofocus="autofocus" class="query" data-bind="value: searchQuery, valueUpdate:'afterkeydown'" placeholder="Search" />
+    <div data-bind="foreach: filteredSongs">
+      <div align="center">
+        <a class="el" href="#" data-bind="click: $parent.redirect">
+          <span class="elName" data-bind="html: name"></span>
+          <span class="elPath" data-bind="html: path"></span>
+        </a>
+      </div>
     </div>
   </div>
 

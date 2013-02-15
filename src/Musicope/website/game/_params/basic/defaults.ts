@@ -15,7 +15,7 @@ export var params: IGame.IParamsData = {
   p_deviceOut: "1",
   p_elapsedTime: undefined,
   p_initTime: undefined,
-  p_isPaused: true,  
+  p_isPaused: false,  
   p_minNote: 36,
   p_maxNote: 96,
   p_playOutOfReachNotes: false,

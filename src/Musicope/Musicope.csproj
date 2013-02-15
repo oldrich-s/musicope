@@ -118,7 +118,7 @@
     <Content Include="website\game\songs\_interfaces.ts" />
     <TypeScriptCompile Include="website\game\songs\_load.ts" />
     <TypeScriptCompile Include="website\game\players\basic\_main.ts" />
-    <TypeScriptCompile Include="website\game\controllers\basic\benchmark.ts" />
+    <TypeScriptCompile Include="website\common\benchmark\_main.ts" />
     <Content Include="website\game\players\_interfaces.ts" />
     <TypeScriptCompile Include="website\game\players\_load.ts" />
     <TypeScriptCompile Include="website\game\scenes\basic\drawScene.ts" />

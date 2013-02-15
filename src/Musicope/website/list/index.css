@@ -1,51 +1,62 @@
 ﻿body {
-  background-color: #542437;
+  background-color: #dee5d9;
   text-align: center;
+  margin:auto;
+}
+
+.midContainer {
+  background-color: #584169;
+  width: 70%;
+  padding: 10px;
+  margin:auto;
 }
 
 .search-match {
-  background-color: #0080dc;
+  background-color: #0068b2;
 }
 
 .query {
   font-size: xx-large;
-  width: 90%;
-  margin: 10px;
+  width: 80%;
+  margin-top: 10px;
   margin-bottom: 30px;
   padding: 10px;
-  border: 0px solid #ffe555;
+  border: 0;
+  border-radius: 20px;
+  background-color: #dee5d9;
+  outline: none
+}
+
+.query:focus {
   background-color: #fbeea5;
 }
 
-.params {
+.gameParams {
   color: #cbb645;
-  background-color: #ae2020;
+  background-color: #584169;
   font-size: medium;
   margin: 10px;
   padding: 10px;
-  border: 0px solid #632525;
-  width: 90%;
+  border: 0px solid #a78d00;
+  width: 80%;
 }
 
 .el {
   display: block;
-  width: 50%;
-  border: 3px outset #ffe555;
-  border-radius: 10px;
-  margin: 20px;
+  width: 80%;
+  border-bottom: 1px dotted #ffd800;
   padding: 10px;
   font-size: xx-large;
   font-family: Century Gothic, sans-serif;
-  background-color: #C02942;
 }
 
 .el:link, .el:visited {
   text-decoration:none;
-  color:#fbeea5;
+  color:#dee5d9;
 }
 
 .el:hover {
-  color: red;
+  color: #ffe035;
   border-color: #b7a43a;
 }
 
