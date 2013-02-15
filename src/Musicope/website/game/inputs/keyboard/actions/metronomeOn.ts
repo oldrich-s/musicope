@@ -4,7 +4,7 @@ import key = module("../../../../common/keyCodes");
 
 export class metronomeOn implements IGame.IKeyboardAction {
 
-  id = "metronome on";
+  id = "metronome";
   description = "toggle state of the metronome on/off";
   keySequence = [key.m];
 
@@ -17,7 +17,7 @@ export class metronomeOn implements IGame.IKeyboardAction {
 
   getCurrentState() {
     var o = this;
-    return o.p.params.readOnly.m_isOn;
+    return o.p.params.readOnly.m_isOn ? "on" : "off";
   }
 
 }

@@ -55,31 +55,6 @@ var blackNoteSpots = [
   1, 3, 4, 6, 7, 8, 10, 11, 13, 14, 15, 17, 18, 20, 21, 22, 24, 25, 27, 28, 29, 31, 32,
   34, 35, 36, 38, 39, 41, 42, 43, 45, 46, 48, 49, 50];
 
-function drawPianoBelowReach(loc: Local) {
-  var minId = whiteNoteIds.indexOf(loc.input.p_minNote);
-  if (minId > -1) {
-    var x1 = minId * loc.whiteWidth;
-    var y1 = loc.yEndOfPiano;
-    var color = [0, 0, 0, 0.5];
-    loc.input.drawRect(0, 0, x1, y1, [121], color, color);
-  }
-}
-
-function drawPianoAboveReach(loc: Local) {
-  var maxId = whiteNoteIds.indexOf(loc.input.p_maxNote);
-  if (maxId > -1) {
-    var x0 = (maxId + 1) * loc.whiteWidth;
-    var y1 = loc.yEndOfPiano;
-    var color = [0, 0, 0, 0.5];
-    loc.input.drawRect(x0, 0, loc.input.sceneWidth, y1, [121], color, color);
-  }
-}
-
-function drawPianoOutOfReach(loc: Local) {
-  drawPianoAboveReach(loc);
-  drawPianoBelowReach(loc);
-}
-
 function drawPianoBlackNotes(loc: Local) {
   blackNoteIds.forEach((id, i) => {
     var x0 = blackNoteSpots[i] * loc.whiteWidth - loc.blackWidth + 2;
@@ -91,17 +66,34 @@ function drawPianoBlackNotes(loc: Local) {
   });
 }
 
+function getColorForWhitePianoNotes(id: number, loc: Local) {
+  var unPressedColor = [1, 1, 1, 1];
+  var neverPlayedNote = id < loc.input.minPlayedNoteId || id > loc.input.maxPlayedNoteId;
+  var outOfReachNote = id < loc.input.p_minNote || id > loc.input.p_maxNote;
+  var color;
+  if (neverPlayedNote && !outOfReachNote) {
+    var notPlayedColor = hexToRgb(loc.input.readOnly.s_colUnPlayedNotesInReach);
+    color = notPlayedColor;
+  } else if (neverPlayedNote) {
+    var notPlayedColor = hexToRgb(loc.input.readOnly.s_colUnPlayedNotes);
+    color = notPlayedColor;
+  } else if (outOfReachNote) {
+    var outOfReachColor = hexToRgb(loc.input.readOnly.s_colOutOfReachNotes);
+    color = outOfReachColor;
+  } else {
+    color = unPressedColor;
+  }
+  return color;
+}
+
 function drawPianoWhiteNotes(loc: Local) {
   whiteNoteIds.forEach((id, i) => {
     var x0 = i * loc.whiteWidth;
     var x1 = x0 + loc.whiteWidth - 1;
     var y0 = 12;
     var y1 = loc.yEndOfPiano - 2;
-    var unPressedColor = [1, 1, 1, 1];
-    var notPlayedColor = hexToRgb(loc.input.readOnly.s_colUnPlayedNotes);
+    var color = getColorForWhitePianoNotes(id, loc);
     var activeColor = hexToRgb(loc.input.readOnly.s_colPianoWhite);
-    var neverPlayedNote = id < loc.input.minPlayedNoteId || id > loc.input.maxPlayedNoteId;
-    var color = neverPlayedNote ? notPlayedColor : unPressedColor;
     loc.input.drawRect(x0, y0, x1, y1, [id], color, activeColor);
   });
 }
@@ -131,7 +123,6 @@ function drawPiano(loc: Local) {
   drawPianoTimeBarColor(loc);
   drawPianoWhiteNotes(loc);
   drawPianoBlackNotes(loc);
-  drawPianoOutOfReach(loc);
 }
     
 function drawTrack(loc: Local, trackId: number) {

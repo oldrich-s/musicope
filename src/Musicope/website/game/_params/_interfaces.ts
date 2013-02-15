@@ -46,6 +46,8 @@ module IGame {
     s_colPaused: string;
     s_colUnPaused: string;
     s_colUnPlayedNotes: string;
+    s_colOutOfReachNotes: string;
+    s_colUnPlayedNotesInReach: string;
 
     // parsers
     f_normalize: number;

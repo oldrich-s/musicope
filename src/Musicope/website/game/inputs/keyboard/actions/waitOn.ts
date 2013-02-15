@@ -5,11 +5,12 @@ import utility = module("./_utility");
 
 export class waitOn implements IGame.IKeyboardAction {
 
-  id = "wait on";
+  id = "wait";
   description = "shall the song wait for the user?";
   keySequence = [key.w];
 
   private options = [[false, false], [true, true]];
+  private names = ["off", "on"];
 
   constructor(private p: IGame.IKeyboardParams) { }
 
@@ -20,7 +21,8 @@ export class waitOn implements IGame.IKeyboardAction {
 
   getCurrentState() {
     var o = this;
-    return o.p.params.readOnly.p_waits;
+    var i = o.options.indexOf(o.p.params.readOnly.p_waits);
+    return o.names[i];
   }
 
 }

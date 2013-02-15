@@ -4,7 +4,7 @@ import key = module("../../../../common/keyCodes");
 
 export class pauseOn implements IGame.IKeyboardAction {
 
-  id = "pause on";
+  id = "pause";
   description = "pause and unpause the game";
   keySequence = [key.space];
 
@@ -17,7 +17,7 @@ export class pauseOn implements IGame.IKeyboardAction {
 
   getCurrentState() {
     var o = this;
-    return o.p.params.readOnly.p_isPaused;
+    return o.p.params.readOnly.p_isPaused ? "on" : "off";
   }
 
 }

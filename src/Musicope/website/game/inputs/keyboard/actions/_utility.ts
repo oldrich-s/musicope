@@ -1,4 +1,4 @@
-function areEqual(param1: any, param2: any) {
+export function areEqual(param1: any, param2: any) {
   if ("every" in param1 && "every" in param2) {
     var areEqual = (<any[]> param1).every((param1i, i) => {
       return param1i == param2[i];

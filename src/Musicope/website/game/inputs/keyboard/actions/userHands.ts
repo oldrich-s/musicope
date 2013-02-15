@@ -10,6 +10,7 @@ export class userHands implements IGame.IKeyboardAction {
   keySequence = [key.h];
 
   private options = [[false, false], [false, true], [true, false], [true, true]];
+  private names = ["none", "right", "left", "both"];
 
   constructor(private p: IGame.IKeyboardParams) { }
 
@@ -20,7 +21,8 @@ export class userHands implements IGame.IKeyboardAction {
 
   getCurrentState() {
     var o = this;
-    return o.p.params.readOnly.p_userHands;
+    var i = o.options.indexOf(o.p.params.readOnly.p_userHands);
+    return o.names[i];
   }
 
 }
