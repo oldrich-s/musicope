@@ -24,5 +24,10 @@
   <script src="../_lib/purl/purl.js"></script>
   <script src="../_lib/pouch/pouch.js"></script>
   <script data-main="_index" src="../_lib/requirejs/require.js"></script>
+  <script>
+      require.config({
+        urlArgs: "bust=v1"
+      });
+  </script>
 </body>
 </html>
