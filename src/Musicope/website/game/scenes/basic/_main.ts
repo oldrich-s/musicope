@@ -104,8 +104,8 @@ export class Basic implements IGame.IScene {
       tracks: o.song.sceneTracks,
       p_minNote: o.params.readOnly.p_minNote,
       p_maxNote: o.params.readOnly.p_maxNote,
-      minNoteId: o.song.minNoteId,
-      maxNoteId: o.song.maxNoteId
+      minPlayedNoteId: o.song.minPlayedNoteId,
+      maxPlayedNoteId: o.song.maxPlayedNoteId
     };
     drawScene.drawScene(input);
     var bufferData = Basic.concat(bag);

@@ -235,7 +235,7 @@ export class Basic implements IGame.IPlayer {
     var playsUser = o.params.readOnly.p_userHands[trackId];
     var isBelowMin = note.id < o.params.readOnly.p_minNote;
     var isAboveMax = note.id > o.params.readOnly.p_maxNote;
-    var playOutOfReach = o.song.notesOutOfReach && (isBelowMin || isAboveMax);
+    var playOutOfReach = o.params.readOnly.p_playOutOfReachNotes && (isBelowMin || isAboveMax);
     if (!playsUser || playOutOfReach) {
       if (note.on) {
         o.device.out(144, note.id, Math.min(127, o.params.readOnly.p_volumes[trackId] * note.velocity));

@@ -9,8 +9,8 @@ export interface Input {
   tracks: IGame.INoteScene[][];
   p_minNote: number;
   p_maxNote: number;
-  minNoteId: number;
-  maxNoteId: number;
+  minPlayedNoteId: number;
+  maxPlayedNoteId: number;
 }
 
 interface Local {
@@ -100,7 +100,7 @@ function drawPianoWhiteNotes(loc: Local) {
     var unPressedColor = [1, 1, 1, 1];
     var notPlayedColor = hexToRgb(loc.input.readOnly.s_colUnPlayedNotes);
     var activeColor = hexToRgb(loc.input.readOnly.s_colPianoWhite);
-    var neverPlayedNote = id < loc.input.minNoteId || id > loc.input.maxNoteId;
+    var neverPlayedNote = id < loc.input.minPlayedNoteId || id > loc.input.maxPlayedNoteId;
     var color = neverPlayedNote ? notPlayedColor : unPressedColor;
     loc.input.drawRect(x0, y0, x1, y1, [id], color, activeColor);
   });

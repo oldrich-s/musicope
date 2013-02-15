@@ -9,11 +9,10 @@ export class Basic implements IGame.ISong {
   noteValuePerBeat: number; // denominator in time signature: 2, 4, 8, 16 ...
   playerTracks: IGame.INote[][];
 
-  notesOutOfReach = false;
   timePerSong: number;
   sceneTracks: IGame.INoteScene[][];
-  minNoteId = 200;
-  maxNoteId = 0;
+  minPlayedNoteId = 200;
+  maxPlayedNoteId = 0;
   
   constructor(midi: Uint8Array, private params: IGame.IParams) {
     var o = this;
@@ -96,8 +95,8 @@ export class Basic implements IGame.ISong {
     o.sceneTracks.forEach((notes) => {
       notes.forEach((note) => {
         if (note.id > 0) {
-          o.maxNoteId = Math.max(note.id, o.maxNoteId);
-          o.minNoteId = Math.min(note.id, o.minNoteId);
+          o.maxPlayedNoteId = Math.max(note.id, o.maxPlayedNoteId);
+          o.minPlayedNoteId = Math.min(note.id, o.minPlayedNoteId);
         }
       });
     });

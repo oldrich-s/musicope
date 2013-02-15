@@ -11,15 +11,14 @@ module IGame {
   }
 
   export interface ISong {
-    notesOutOfReach: bool;
     timePerBeat: number;
     timePerBar: number;
     timePerSong: number;
     noteValuePerBeat: number; // denominator in time signature: 2, 4, 8, 16 ...
     playerTracks: INote[][];
     sceneTracks: INoteScene[][];
-    minNoteId: number;
-    maxNoteId: number;
+    minPlayedNoteId: number;
+    maxPlayedNoteId: number;
   }
 
   export interface ISongNew {
