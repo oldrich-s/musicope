@@ -1,3 +1,7 @@
+
+import displayHelpM = module("./displayHelp/_main");
+export var displayHelp: IGame.IKeyboardActionsNew = displayHelpM.displayHelp;
+
 import metronomeOnM = module("./metronomeOn");
 export var metronomeOn: IGame.IKeyboardActionsNew = metronomeOnM.metronomeOn;
 

@@ -67,8 +67,8 @@
   </PropertyGroup>
   <ItemGroup>
     <TypeScriptCompile Include="website\game\parsers\midi\_main.ts" />
-    <TypeScriptCompile Include="website\game\inputs\keyboard\help\_main.ts" />
-    <Content Include="website\game\inputs\keyboard\help\overlay.html" />
+    <TypeScriptCompile Include="website\game\inputs\keyboard\actions\displayHelp\_main.ts" />
+    <Content Include="website\game\inputs\keyboard\actions\displayHelp\overlay.html" />
     <Content Include="website\game\parsers\_interfaces.ts" />
     <TypeScriptCompile Include="website\game\parsers\_load.ts" />
     <Content Include="website\list\build.r" />

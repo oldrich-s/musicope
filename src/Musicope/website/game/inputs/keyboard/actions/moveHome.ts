@@ -8,16 +8,16 @@ export class moveHome implements IGame.IKeyboardAction {
   description = "move to the initial state of the song";
   keySequence = [key.home];
 
-  constructor(private params: IGame.IParams, private song: IGame.ISong) { }
+  constructor(private p: IGame.IKeyboardParams) { }
 
   triggerAction() {
     var o = this;
-    o.params.setParam("p_elapsedTime", o.params.readOnly.p_initTime);
+    o.p.params.setParam("p_elapsedTime", o.p.params.readOnly.p_initTime);
   }
 
   getCurrentState() {
     var o = this;
-    return o.params.readOnly.p_elapsedTime / 1000;
+    return o.p.params.readOnly.p_elapsedTime / 1000;
   }
 
 }

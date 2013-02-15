@@ -8,16 +8,16 @@ export class pauseOn implements IGame.IKeyboardAction {
   description = "pause and unpause the game";
   keySequence = [key.space];
 
-  constructor(private params: IGame.IParams, private song: IGame.ISong) { }
+  constructor(private p: IGame.IKeyboardParams) { }
 
   triggerAction() {
     var o = this;
-    o.params.setParam("p_isPaused", !o.params.readOnly.p_isPaused);
+    o.p.params.setParam("p_isPaused", !o.p.params.readOnly.p_isPaused);
   }
 
   getCurrentState() {
     var o = this;
-    return o.params.readOnly.p_isPaused;
+    return o.p.params.readOnly.p_isPaused;
   }
 
 }

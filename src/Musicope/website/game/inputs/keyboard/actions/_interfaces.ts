@@ -10,8 +10,15 @@ module IGame {
     getCurrentState(): any;
   }
 
+  export interface IKeyboardParams {
+    params: IParams;
+    song: ISong;
+    /// IGame.IKeyboardAction[];
+    actions: IJQuery.JQueryPromise;
+  }
+
   export interface IKeyboardActionsNew {
-    new (params: IParams, song: ISong): IKeyboardAction;
+    new (params: IKeyboardParams): IKeyboardAction;
   }
 
 }

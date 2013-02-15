@@ -6,21 +6,21 @@ import utility = module("./_utility");
 export class userHands implements IGame.IKeyboardAction {
 
   id = "user hands";
-  description = "Toggle which hands the user plays.";
+  description = "toggle which hands the user plays.";
   keySequence = [key.h];
 
   private options = [[false, false], [false, true], [true, false], [true, true]];
 
-  constructor(private params: IGame.IParams, private song: IGame.ISong) { }
+  constructor(private p: IGame.IKeyboardParams) { }
 
   triggerAction() {
     var o = this;
-    o.params.setParam("p_userHands", utility.toggle(o.params.readOnly.p_userHands, o.options));
+    o.p.params.setParam("p_userHands", utility.toggle(o.p.params.readOnly.p_userHands, o.options));
   }
 
   getCurrentState() {
     var o = this;
-    return o.params.readOnly.p_userHands;
+    return o.p.params.readOnly.p_userHands;
   }
 
 }

@@ -1,7 +1,7 @@
 /// <reference path="../../_references.ts" />
 
-import actions = module("./actions/_load");
-import overlays = module("./overlays/_load");
+import actionsM = module("./actions/_load");
+import overlaysM = module("./overlays/_load");
 
 export class Keyboard implements IGame.IInput {
 
@@ -16,10 +16,17 @@ export class Keyboard implements IGame.IInput {
 
   private initActions() {
     var o = this;
-    for (var prop in actions) {
-      var action = new (<IGame.IKeyboardActionsNew> actions[prop])(o.params, o.song);
+    var deff = $.Deferred();
+    var keyboardParams: IGame.IKeyboardParams = {
+      params: o.params,
+      song: o.song,
+      actions: deff.promise()
+    }
+    for (var prop in actionsM) {
+      var action = new (<IGame.IKeyboardActionsNew> actionsM[prop])(keyboardParams);
       o.actions.push(action);
     }
+    deff.resolve(o.actions);
   }
 
   private signupActions() {
@@ -37,7 +44,7 @@ export class Keyboard implements IGame.IInput {
       if (match) {
         o.keys = [];
         o.actions[i].triggerAction();
-        overlays.basic.display(o.actions[i].id, o.actions[i].getCurrentState());
+        overlaysM.basic.display(o.actions[i].id, o.actions[i].getCurrentState());
         return;
       }
     }
