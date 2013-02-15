@@ -6,19 +6,24 @@ import paramService = module("../../../common/services.params");
 export class Basic implements IGame.IParams {
 
   readOnly: IGame.IParamsData;
-  private subscribtions: { regex: RegExp; callback: (param: string, value: any) => void; }[] = [] ;
+  private subscriptions = {} ;
 
   constructor() {
     var o = this;
     o.readOnly = paramService.getUrlParams(defParams.params);
   }
 
-  subscribe(regex: string, callback: (param: string, value: any) => void) {
+  subscribe(id: string, regex: string, callback: (param: string, value: any) => void) {
     var o = this;
-    o.subscribtions.push({
+    o.subscriptions[id] = {
       regex: new RegExp(regex),
       callback: callback
-    });
+    };
+  }
+
+  unsubscribe(id: string) {
+    var o = this;
+    delete o.subscriptions[id];
   }
 
   setParam(name: string, value: any, dontNotifyOthers?: bool) {
@@ -42,10 +47,12 @@ export class Basic implements IGame.IParams {
 
   private call(param: string, value: any) {
     var o = this;
-    o.subscribtions.forEach((s) => {
-      if (param.search(s.regex) > -1) {
-        s.callback(param, value);
+    for (var prop in o.subscriptions) {
+      var s = o.subscriptions[prop];
+      if (param.search(s["regex"]) > -1) {
+        s["callback"](param, value);
       }
-    });
+    }
   }
+
 }

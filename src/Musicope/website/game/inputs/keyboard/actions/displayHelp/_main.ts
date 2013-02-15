@@ -16,10 +16,6 @@ export class displayHelp implements IGame.IKeyboardAction {
     $.get("inputs/keyboard/actions/displayHelp/overlay.html").done((result) => {
       $(result).appendTo("body");
       o.window = $("#displayHelpOverlay");
-      p.actions.done((actions: IGame.IKeyboardAction[]) => {
-        var table = o.window.children("table");
-        o.fillTable(table, actions);
-      });
     });
     
   }
@@ -28,8 +24,7 @@ export class displayHelp implements IGame.IKeyboardAction {
     var o = this;
     o.isDisplayed = !o.isDisplayed;
     o.p.params.setParam("p_isPaused", o.isDisplayed);
-    var text = o.isDisplayed ? "block" : "none";
-    o.window.css("display", text);
+    o.display();
   }
 
   getCurrentState() {
@@ -37,8 +32,26 @@ export class displayHelp implements IGame.IKeyboardAction {
     return o.isDisplayed;
   }
 
-  private fillTable(table: IJQuery.JQuery, actions: IGame.IKeyboardAction[]) {
+  private display() {
     var o = this;
+    if (o.isDisplayed) {
+      o.p.actions.done((actions: IGame.IKeyboardAction[]) => {
+        o.p.params.subscribe("displayHelp", ".*", (name, value) => {
+          o.refillTable(actions);
+        });  
+        o.refillTable(actions);
+        o.window.css("display", "block");
+      });
+    } else {
+      o.p.params.unsubscribe("displayHelp");
+      o.window.css("display", "none");
+    }
+  }
+
+  private refillTable(actions: IGame.IKeyboardAction[]) {
+    var o = this;
+    var table = o.window.children("table");
+    table.find("tr:has(td)").html("");
     var sortedActions = actions.sort((a,b) => {
       return a.id > b.id;
     });

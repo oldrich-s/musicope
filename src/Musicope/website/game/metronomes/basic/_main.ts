@@ -26,7 +26,7 @@ export class Basic implements IGame.IMetronome {
 
   private subscribe() {
     var o = this;
-    o.params.subscribe("^m_.+$", (name, value) => {
+    o.params.subscribe("metronomes.Basic", "^m_.+$", (name, value) => {
       o.reset();
     });
   }
