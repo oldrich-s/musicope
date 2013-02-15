@@ -62,9 +62,10 @@ export class Basic implements IGame.IScene {
     }
   }
 
-  private getCanvas() {
-    var canvas: HTMLCanvasElement = (<any> $('#canvas')[0]);
-    return canvas;
+  private getCanvas(): HTMLCanvasElement {
+    var c = $("<canvas class='canvas' />").appendTo("body");
+    c.css({ position: 'absolute', left: 0, top: 0 });
+    return <any> c[0];
   }
 
   private setCanvasDim() {

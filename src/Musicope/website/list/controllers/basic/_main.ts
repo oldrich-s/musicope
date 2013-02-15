@@ -12,18 +12,14 @@ var o: AppViewModel;
 
 class AppViewModel {
 
-  templates: KnockoutObservableArray;
-  selectedTemplate: KnockoutObservableString;
   filteredSongs: KnockoutObservableArray;
   searchQuery: KnockoutObservableString;
-  gameParams: KnockoutComputed;
+  gameParams: KnockoutObservableString;
   private songs: ISong[] = [];
   private pouch: ph.DB;
 
   constructor() {
     o = this;
-    o.initTemplates();
-    o.initSelectedTemplate();
     o.initGameParams();
     o.initSearchQuery();
     o.initFilteredSongs();
@@ -39,44 +35,9 @@ class AppViewModel {
     });
   }
 
-  private initTemplates() {
-    var o = this;
-    var defaultTemplates = [
-      { name: "none", value: "p_deviceIn=0&p_deviceOut=1&p_waits=[0,0]&p_userHands=[0,0]" },
-      { name: "left", value: "p_deviceIn=0&p_deviceOut=1&p_waits=[0,0]&p_userHands=[1,0]" },
-      { name: "right", value: "p_deviceIn=0&p_deviceOut=1&p_waits=[0,0]&p_userHands=[0,1]" },
-      { name: "both", value: "p_deviceIn=0&p_deviceOut=1&p_waits=[0,0]&p_userHands=[1,1]" },
-      { name: "wait for none", value: "p_deviceIn=0&p_deviceOut=1&p_waits=[1,1]&p_userHands=[0,0]" },
-      { name: "wait for left", value: "p_deviceIn=0&p_deviceOut=1&p_waits=[1,1]&p_userHands=[1,0]" },
-      { name: "wait for right", value: "p_deviceIn=0&p_deviceOut=1&p_waits=[1,1]&p_userHands=[0,1]" },
-      { name: "wait for both", value: "p_deviceIn=0&p_deviceOut=1&p_waits=[1,1]&p_userHands=[1,1]" }
-    ];
-    var templates = localM.get("templates", defaultTemplates);
-    o.templates = ko.observableArray(templates);
-    o.templates.subscribe((templates) => {
-      localM.set("templates", JSON.stringify(templates));
-    });
-  }
-
-  private initSelectedTemplate() {
-    var template = localM.get("selectedTemplate", "");
-    o.selectedTemplate = ko.observable(template);
-    o.selectedTemplate.subscribe((template) => {
-      localM.set("selectedTemplate", template);
-    });
-  }
-
   private initGameParams() {
-    o.gameParams = ko.computed(() => {
-      var selectedName = o.selectedTemplate();
-      var selectedTemplates = o.templates().filter((templ) => {
-        return templ["name"] == selectedName;
-      });
-      if (selectedTemplates.length > 0) {
-        return selectedTemplates[0]["value"];
-      }
-    });
-    o.gameParams.subscribe((params) => { localM.set("params", params); });
+    o.gameParams = ko.observable(localM.get("gameParams", ""));
+    o.gameParams.subscribe((query) => { localM.set("gameParams", query); });
   }
 
   private initSearchQuery() {

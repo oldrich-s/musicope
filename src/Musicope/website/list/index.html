@@ -7,8 +7,8 @@
   <link rel="stylesheet" href="index.css" />
 </head>
 <body>
-  <select class="templates" data-bind="options: templates, optionsText: 'name', optionsValue: 'name', optionsCaption: 'Select hand:', value: selectedTemplate">
-  <input class="params" data-bind="value: gameParams, valueUpdate:'afterkeydown'" placeholder="parameters" disabled="disabled"/>
+
+  <input class="params" data-bind="value: gameParams, valueUpdate:'afterkeydown'" placeholder="parameters"/>
   <input autofocus="autofocus" class="query" data-bind="value: searchQuery, valueUpdate:'afterkeydown'" placeholder="Search" />
   <div data-bind="foreach: filteredSongs">
     <div align="center">

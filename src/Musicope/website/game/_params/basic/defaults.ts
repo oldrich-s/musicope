@@ -12,7 +12,7 @@ export var params: IGame.IParamsData = {
 
   // players
   p_deviceIn: "0",
-  p_deviceOut: "0",
+  p_deviceOut: "1",
   p_elapsedTime: undefined,
   p_initTime: undefined,
   p_isPaused: false,  
@@ -24,7 +24,7 @@ export var params: IGame.IParamsData = {
   p_sustain: true,
   p_userHands: [false, false],
   p_volumes: [1, 1],
-  p_waits: [false, false],
+  p_waits: [true, true],
 
   // metronomes
   m_channel: 153,
