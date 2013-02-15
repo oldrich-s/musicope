@@ -24,7 +24,7 @@
   border: 0;
   border-radius: 20px;
   background-color: #dee5d9;
-  outline: none
+  outline: none;
 }
 
 .query:focus {
@@ -39,12 +39,13 @@
   padding: 10px;
   border: 0px solid #a78d00;
   width: 80%;
+  outline: none;
 }
 
 .el {
   display: block;
   width: 80%;
-  border-bottom: 1px dotted #ffd800;
+  border-bottom: 1px solid white;
   padding: 10px;
   font-size: xx-large;
   font-family: Century Gothic, sans-serif;
@@ -57,7 +58,7 @@
 
 .el:hover {
   color: #ffe035;
-  border-color: #b7a43a;
+  border-color: #ffe035;
 }
 
 .elName {
