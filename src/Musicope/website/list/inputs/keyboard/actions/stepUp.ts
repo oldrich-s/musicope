@@ -2,21 +2,20 @@
 
 import key = module("../../../../common/keyCodes");
 
-export class stepDown implements IList.IKeyboardAction {
+export class stepUp implements IList.IKeyboardAction {
 
-  id = "step down";
+  id = "step up";
   description = "";
-  keySequence = [key.downArrow];
+  keySequence = [key.upArrow];
 
   constructor(private p: IList.IKeyboardParams) { }
 
   triggerAction() {
     var o = this;
-    var index = o.p.inputParams.listIndex();
-    o.p.inputParams.listIndex(index + 1);
+    var index = o.p.inputParams.listIndex() - 1;
+    var trimmedIndex = index < 0 ? 0 : index;
+    o.p.inputParams.listIndex(trimmedIndex);
   }
-
-  //private check
 
   getCurrentState() {
     var o = this;

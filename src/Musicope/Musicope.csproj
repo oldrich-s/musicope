@@ -88,6 +88,7 @@
     <TypeScriptCompile Include="website\list\controllers\_load.ts" />
     <TypeScriptCompile Include="website\list\inputs\keyboard\_main.ts" />
     <TypeScriptCompile Include="website\list\inputs\keyboard\actions\stepDown.ts" />
+    <TypeScriptCompile Include="website\list\inputs\keyboard\actions\stepUp.ts" />
     <Content Include="website\list\inputs\keyboard\actions\_interfaces.ts" />
     <TypeScriptCompile Include="website\list\inputs\keyboard\actions\_load.ts" />
     <Content Include="website\list\inputs\_interfaces.ts" />

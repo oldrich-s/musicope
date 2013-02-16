@@ -8,16 +8,17 @@
 </head>
 <body>
 
-  <div class="midContainer">
+  <div id="header">
+    <input autofocus="autofocus" id="query" data-bind="value: searchQuery, valueUpdate:'afterkeydown'" placeholder="Search" />
     <input class="gameParams" data-bind="value: gameParams, valueUpdate:'afterkeydown'" placeholder="parameters"/>
-    <input autofocus="autofocus" class="query" data-bind="value: searchQuery, valueUpdate:'afterkeydown'" placeholder="Search" />
-    <div data-bind="foreach: filteredSongs">
-      <div align="center">
-        <a class="el" href="#" data-bind="click: $parent.redirect">
-          <span class="elName" data-bind="html: name"></span>
-          <span class="elPath" data-bind="html: path"></span>
-        </a>
-      </div>
+  </div>
+
+  <div class="midContainer">
+    <div data-bind="foreach: filteredSongs" align="center">
+      <a class="el" href="#" data-bind="click: function(data, event) { $parent.redirect($index, data, event) }, css: { elFocus: $parent.listIndex() == $index(), elFocusFirst: $index() == 0 }">
+        <span class="elName" data-bind="html: name"></span>
+        <span class="elPath" data-bind="html: path"></span>
+      </a>
     </div>
   </div>
 
@@ -28,7 +29,7 @@
   <script data-main="_index" src="../_lib/requirejs/require.js"></script>
   <script>
       require.config({
-        urlArgs: "bust=v1"
+        urlArgs: "bust=v2"
       });
   </script>
 </body>

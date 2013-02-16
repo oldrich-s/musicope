@@ -12,6 +12,7 @@ var o: AppViewModel;
 
 class AppViewModel {
 
+  listIndex: KnockoutObservableNumber;
   filteredSongs: KnockoutObservableArray;
   searchQuery: KnockoutObservableString;
   gameParams: KnockoutObservableString;
@@ -22,11 +23,14 @@ class AppViewModel {
     o = this;
     o.initGameParams();
     o.initSearchQuery();
+    o.initListIndex();
     o.initFilteredSongs();
     o.loadSongs();
+    o.initInputs();
   }
 
-  redirect(song: ISong) {
+  redirect(indexFn: ()=>number, song: ISong) {
+    localM.set("listIndex", indexFn());
     lastPlayedSongs.add(song.url).done(() => {
       var pars: string = o.gameParams();
       if (!pars) { pars = ""; }
@@ -41,8 +45,19 @@ class AppViewModel {
   }
 
   private initSearchQuery() {
-    o.searchQuery = ko.observable(localM.get("query", ""));
-    o.searchQuery.subscribe((query) => { localM.set("query", query); });
+    var initQuery = localM.get("query", "");
+    o.searchQuery = ko.observable(initQuery);
+    o.searchQuery.subscribe((query) => {
+      if (query !== initQuery) {
+        o.listIndex(0);
+      }
+      localM.set("query", query);
+    });
+  }
+
+  private initListIndex() {
+    o.listIndex = ko.observable(localM.get("listIndex", 0));
+    o.listIndex.subscribe((i) => { localM.set("listIndex", i); });
   }
 
   private loadSongs() {
@@ -59,6 +74,16 @@ class AppViewModel {
     xhr.send();
   }
 
+  private initInputs() {
+    var o = this;
+    var params: IList.IInputParams = {
+      listIndex: o.listIndex
+    };
+    for (var prop in inputsM) {
+      new (<IList.IInputNew> inputsM[prop])(params);
+    }
+  }
+
   private createSongsFromUrls(urls: string[]): ISong[] {
     return urls.map((path) => {
       var vals = path.match(/^(.*\/)([^\/]+)\.([^.]+)$/);
@@ -70,7 +95,7 @@ class AppViewModel {
     o.filteredSongs = ko.observableArray();
     ko.computed(function () {
       var query: string = o.searchQuery();
-      if (query.length == 0) {
+      if (query === "ls") {
         lastPlayedSongs.getAll().done((songs: lastPlayedSongs.LastPlayedSong[]) => {
           var songUrls = songs.map((song) => {
             return song.url;

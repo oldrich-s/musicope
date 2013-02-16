@@ -7,7 +7,7 @@ export class Keyboard implements IList.IInput {
   private actions: IList.IKeyboardAction[] = [];
   private keys: number[] = [];
 
-  constructor() {
+  constructor(private params: IList.IInputParams) {
     var o = this;
     o.initActions();
     o.signupActions();
@@ -17,6 +17,7 @@ export class Keyboard implements IList.IInput {
     var o = this;
     var deff = $.Deferred();
     var keyboardParams: IList.IKeyboardParams = {
+      inputParams: o.params
     }
     for (var prop in actionsM) {
       var action = new (<IList.IKeyboardActionsNew> actionsM[prop])(keyboardParams);

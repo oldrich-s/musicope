@@ -11,6 +11,7 @@ module IList {
   }
 
   export interface IKeyboardParams {
+    inputParams: IInputParams;
   }
 
   export interface IKeyboardActionsNew {

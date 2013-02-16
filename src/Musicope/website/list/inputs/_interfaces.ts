@@ -2,10 +2,14 @@
 
 module IList {
 
+  export interface IInputParams {
+    listIndex: KnockoutObservableNumber;
+  }
+
   export interface IInput {}
 
   export interface IInputNew {
-    new (): IInput;
+    new (params: IInputParams): IInput;
   }
 
 }
