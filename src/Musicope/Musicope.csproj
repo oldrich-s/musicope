@@ -86,6 +86,13 @@
     <TypeScriptCompile Include="website\list\controllers\basic\_main.ts" />
     <Content Include="website\list\controllers\_interfaces.ts" />
     <TypeScriptCompile Include="website\list\controllers\_load.ts" />
+    <TypeScriptCompile Include="website\list\inputs\keyboard\_main.ts" />
+    <TypeScriptCompile Include="website\list\inputs\keyboard\actions\stepDown.ts" />
+    <Content Include="website\list\inputs\keyboard\actions\_interfaces.ts" />
+    <TypeScriptCompile Include="website\list\inputs\keyboard\actions\_load.ts" />
+    <Content Include="website\list\inputs\_interfaces.ts" />
+    <TypeScriptCompile Include="website\list\inputs\_load.ts" />
+    <TypeScriptCompile Include="website\list\inputs\_references.ts" />
     <Content Include="website\list\_params\_interfaces.ts" />
     <TypeScriptCompile Include="website\list\_params\_load.ts" />
     <Content Include="website\common\devices\_interfaces.ts" />
@@ -134,11 +141,6 @@
     <TypeScriptCompile Include="website\list\_index.ts" />
     <Content Include="website\list\index.css" />
     <Content Include="website\list\index.html" />
-    <TypeScriptCompile Include="website\list\inputs\keyboard\_main.ts" />
-    <TypeScriptCompile Include="website\list\inputs\mouse\_main.ts" />
-    <TypeScriptCompile Include="website\list\inputs\piano\_main.ts" />
-    <Content Include="website\list\inputs\_interfaces.ts" />
-    <TypeScriptCompile Include="website\list\inputs\_load.ts" />
     <TypeScriptCompile Include="website\list\controllers\basic\lastPlayedSongs.ts" />
     <Content Include="website\list\_references.ts" />
     <Content Include="website\_lib\jquery\jquery.d.ts" />

@@ -9,6 +9,7 @@
   width: 70%;
   padding: 10px;
   margin:auto;
+  padding-bottom: 50px;
 }
 
 .search-match {
@@ -49,6 +50,7 @@
   padding: 10px;
   font-size: xx-large;
   font-family: Century Gothic, sans-serif;
+  outline: none;
 }
 
 .el:link, .el:visited {
@@ -57,8 +59,16 @@
 }
 
 .el:hover {
-  color: #ffe035;
+  color: #e2c730;
   border-color: #ffe035;
+  margin-left: 5px;
+}
+
+.el:focus {
+  color: #e2c730;
+  border-color: #ffe035;
+  margin-left: 5px;
+  background-color: #523d62;
 }
 
 .elName {
