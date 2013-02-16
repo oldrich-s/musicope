@@ -232,17 +232,19 @@ export class Basic implements IGame.IPlayer {
 
   private playNote(note: IGame.INote, trackId: number) {
     var o = this;
-    var playsUser = o.params.readOnly.p_userHands[trackId];
-    var isBelowMin = note.id < o.params.readOnly.p_minNote;
-    var isAboveMax = note.id > o.params.readOnly.p_maxNote;
-    var playOutOfReach = o.params.readOnly.p_playOutOfReachNotes && (isBelowMin || isAboveMax);
-    if (!playsUser || playOutOfReach) {
-      if (note.on) {
-        o.device.out(144, note.id, Math.min(127, o.params.readOnly.p_volumes[trackId] * note.velocity));
-        o.scene.setPressedNote(note.id);
-      } else {
-        o.device.out(144, note.id, 0);
-        o.scene.unsetPressedNote(note.id);
+    if (note.id > 0) {
+      var playsUser = o.params.readOnly.p_userHands[trackId];
+      var isBelowMin = note.id < o.params.readOnly.p_minNote;
+      var isAboveMax = note.id > o.params.readOnly.p_maxNote;
+      var playOutOfReach = o.params.readOnly.p_playOutOfReachNotes && (isBelowMin || isAboveMax);
+      if (!playsUser || playOutOfReach) {
+        if (note.on) {
+          o.device.out(144, note.id, Math.min(127, o.params.readOnly.p_volumes[trackId] * note.velocity));
+          o.scene.setPressedNote(note.id);
+        } else {
+          o.device.out(144, note.id, 0);
+          o.scene.unsetPressedNote(note.id);
+        }
       }
     }
   }
