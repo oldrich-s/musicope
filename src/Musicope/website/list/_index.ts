@@ -2,4 +2,4 @@
 
 import controllers = module("./controllers/_load");
 
-var c = new controllers.Basic();
+ko.applyBindings(new controllers.Basic());

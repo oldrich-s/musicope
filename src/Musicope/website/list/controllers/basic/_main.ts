@@ -5,18 +5,17 @@ import localM = module("../../../common/services.local");
 import inputsM = module("../../inputs/_load");
 import lastPlayedSongs = module("./lastPlayedSongs");
 
-interface ISong { path: string; extension: string; name: string; url: string; }
-
 var params = new paramsM.Basic();
-var o: AppViewModel;
+var o: Basic;
 
-class AppViewModel {
+export class Basic implements IList.IController {
 
   listIndex: KnockoutObservableNumber;
   filteredSongs: KnockoutObservableArray;
   searchQuery: KnockoutObservableString;
   gameParams: KnockoutObservableString;
-  private songs: ISong[] = [];
+
+  private songs: IList.ISong[] = [];
   private pouch: ph.DB;
 
   constructor() {
@@ -29,7 +28,7 @@ class AppViewModel {
     o.initInputs();
   }
 
-  redirect(indexFn: ()=>number, song: ISong) {
+  redirect(indexFn: () => number, song: IList.ISong) {
     localM.set("listIndex", indexFn());
     lastPlayedSongs.add(song.url).done(() => {
       var pars: string = o.gameParams();
@@ -77,14 +76,14 @@ class AppViewModel {
   private initInputs() {
     var o = this;
     var params: IList.IInputParams = {
-      listIndex: o.listIndex
+      controller: o
     };
     for (var prop in inputsM) {
       new (<IList.IInputNew> inputsM[prop])(params);
     }
   }
 
-  private createSongsFromUrls(urls: string[]): ISong[] {
+  private createSongsFromUrls(urls: string[]): IList.ISong[] {
     return urls.map((path) => {
       var vals = path.match(/^(.*\/)([^\/]+)\.([^.]+)$/);
       return { path: vals[1], name: vals[2], extension: vals[3], url: path };
@@ -138,7 +137,7 @@ class AppViewModel {
     });
   }
 
-  private colorSongsByQueries(songs: ISong[], queries: string[]) {
+  private colorSongsByQueries(songs: IList.ISong[], queries: string[]) {
     function color(str: string) {
       queries.forEach((query) => {
         str = str.replace(new RegExp(query, 'gi'), '{$&}');
@@ -157,10 +156,4 @@ class AppViewModel {
     });
   }
 
-}
-
-export class Basic {
-  constructor() {
-    ko.applyBindings(new AppViewModel());
-  }
 }

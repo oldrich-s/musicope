@@ -8,18 +8,32 @@ export class stepUp implements IList.IKeyboardAction {
   description = "";
   keySequence = [key.upArrow];
 
-  constructor(private p: IList.IKeyboardParams) { }
+  private contr: IList.IController;
+
+  constructor(p: IList.IKeyboardParams) {
+    var o = this;
+    o.contr = p.inputParams.controller;
+  }
 
   triggerAction() {
     var o = this;
-    var index = o.p.inputParams.listIndex() - 1;
+    var index = o.contr.listIndex() - 1;
     var trimmedIndex = index < 0 ? 0 : index;
-    o.p.inputParams.listIndex(trimmedIndex);
+    o.contr.listIndex(trimmedIndex);
+    o.correctPosition();
   }
 
   getCurrentState() {
     var o = this;
     return 0;
+  }
+
+  private correctPosition() {
+    var el = $(".elFocus");
+    var rely: number = el.offset()["top"] + el.height() - $(window).scrollTop();
+    if (rely < 0.2 * window.innerHeight) {
+      $(window).scrollTop(el.offset()["top"] - 2 * el.height());
+    }
   }
 
 }

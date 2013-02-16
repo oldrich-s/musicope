@@ -3,7 +3,7 @@
 module IList {
 
   export interface IInputParams {
-    listIndex: KnockoutObservableNumber;
+    controller: IList.IController;
   }
 
   export interface IInput {}
