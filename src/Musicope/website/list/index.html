@@ -14,7 +14,7 @@
   </div>
 
   <div class="midContainer">
-    <div data-bind="foreach: filteredSongs" align="center">
+    <div data-bind="foreach: displayedSongs" align="center">
       <a class="el" href="#" data-bind="click: function(data, event) { $parent.redirect($index, data, event) }, css: { elFocus: $parent.listIndex() == $index(), elFocusFirst: $index() == 0 }">
         <span class="elName" data-bind="html: name"></span>
         <span class="elPath" data-bind="html: path"></span>

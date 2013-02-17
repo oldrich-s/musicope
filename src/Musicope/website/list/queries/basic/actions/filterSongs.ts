@@ -19,27 +19,16 @@ export class filterSongs implements IList.IQueryBasicAction {
   triggerAction(query: string) {
     var o = this;
     var filteredSongs = o.getFilteredAndColoredSongs(query);
-    o.contr.filteredSongs(filteredSongs);
+    o.contr.displayedSongs(filteredSongs);
   }
 
   private getFilteredAndColoredSongs(query: string) {
     var o = this;
-    var queries = o.splitQuery(query);
+    var queries = toolsM.splitQuery(query);
     var filteredSongs = toolsM.filterSongsByQueries(o.contr.songs, queries);
     var slicedSongs = filteredSongs.slice(0, 40);
     var coloredSongs = toolsM.colorSongsByQueries(slicedSongs, queries);
     return coloredSongs;
   }
-
-  private splitQuery(query: string) {
-    var queries = query.toLowerCase().split(" ");
-    var trimmedQueries: string[] = queries.map((query) => { return query.trim(); });
-    var nonEmptyQueries = trimmedQueries.filter((query) => { return query != ""; });
-    return nonEmptyQueries;
-  }
-
-  
-
-  
 
 }

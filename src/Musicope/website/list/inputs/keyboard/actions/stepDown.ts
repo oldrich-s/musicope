@@ -18,7 +18,7 @@ export class stepDown implements IList.IKeyboardAction {
   triggerAction() {
     var o = this;
     var index = o.contr.listIndex() + 1;
-    var length = o.contr.filteredSongs().length;
+    var length = o.contr.displayedSongs().length;
     var trimmedIndex = index >= length ? length - 1 : index;
     o.contr.listIndex(trimmedIndex);
     o.correctPosition();

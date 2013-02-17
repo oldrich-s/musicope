@@ -41,3 +41,11 @@ export function filterSongsByQueries(songs: IList.ISong[], queries: string[]) {
     });
   });
 }
+
+export function splitQuery(query: string) {
+  var queries = query.toLowerCase().split(" ");
+  var trimmedQueries: string[] = queries.map((query) => { return query.trim(); });
+  var nonEmptyQueries = trimmedQueries.filter((query) => { return query != ""; });
+  return nonEmptyQueries;
+}
+

@@ -10,7 +10,7 @@ module IList {
 
   export interface IController {
     listIndex: KnockoutObservableNumber;
-    filteredSongs: KnockoutObservableArray;
+    displayedSongs: KnockoutObservableArray;
     searchQuery: KnockoutObservableString;
     gameParams: KnockoutObservableString;
     songs: IList.ISong[];

@@ -2,10 +2,9 @@
 
 import actionsM = module("./actions/_load");
 
-export class QueryBasic implements IList.IQuery {
+export class Basic implements IList.IQuery {
 
   private actions: IList.IQueryBasicAction[] = [];
-  private query: string;
   private contr: IList.IController;
 
   constructor(private params: IList.IQueryParams) {
@@ -34,7 +33,7 @@ export class QueryBasic implements IList.IQuery {
     });
   }
 
-  private assignOnQueryChange() {
+  assignOnQueryChange() {
     var o = this;
     ko.computed(function () {
       var query: string = o.contr.searchQuery();

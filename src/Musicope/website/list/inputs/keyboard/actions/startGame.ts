@@ -17,7 +17,7 @@ export class startGame implements IList.IKeyboardAction {
 
   triggerAction() {
     var o = this;
-    var song = o.contr.filteredSongs()[o.contr.listIndex()];
+    var song = o.contr.displayedSongs()[o.contr.listIndex()];
     o.contr.redirect(o.contr.listIndex, song);
   }
 
