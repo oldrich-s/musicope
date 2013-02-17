@@ -9,9 +9,8 @@ module IList {
   export interface IQueryBasicAction {
     id: string;
     description: string;
-    query: string;
-    triggerAction(): void;
-    getCurrentState(): any;
+    regexp: RegExp;
+    triggerAction(queryMatch: string[]): void;
   }
 
   export interface IQueryBasicActionNew {

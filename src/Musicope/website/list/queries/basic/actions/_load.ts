@@ -1,2 +1,2 @@
-//import startGameM = module("./startGame");
-//export var startGame: IList.IKeyboardActionsNew = startGameM.startGame;
+import lastPlayedSongsM = module("./lastPlayedSongs");
+export var lastPlayedSongs: IList.IQueryBasicActionNew = lastPlayedSongsM.lastPlayedSongs;

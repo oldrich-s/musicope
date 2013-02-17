@@ -3,6 +3,7 @@
 module IList {
 
   export interface IQueryParams {
+    controller: IList.IController;
   }
 
   export interface IQuery {}
