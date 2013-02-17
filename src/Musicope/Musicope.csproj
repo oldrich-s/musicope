@@ -100,6 +100,7 @@
     <TypeScriptCompile Include="website\list\queries\basic\actions\filterSongs.ts" />
     <Content Include="website\list\queries\basic\actions\_interfaces.ts" />
     <TypeScriptCompile Include="website\list\queries\basic\actions\_load.ts" />
+    <TypeScriptCompile Include="website\list\queries\basic\actions\_tools.ts" />
     <Content Include="website\list\queries\_interfaces.ts" />
     <TypeScriptCompile Include="website\list\queries\_load.ts" />
     <TypeScriptCompile Include="website\list\queries\_references.ts" />

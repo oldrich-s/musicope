@@ -14,8 +14,21 @@ export class lastPlayedSongs implements IList.IQueryBasicAction {
     o.contr = p.inputParams.controller;
   }
 
-  triggerAction(queryMatch: string[]) {
+  triggerAction(query: string) {
     var o = this;
+  }
+
+  private createSongsFromUrls(urls: string[]): IList.ISong[] {
+    return urls.map((path) => {
+      var vals = path.match(/^(.*\/)([^\/]+)\.([^.]+)$/);
+      var song = {
+        path: vals[1],
+        name: vals[2],
+        extension: vals[3],
+        url: path
+      }
+      return ;
+    });
   }
 
 }

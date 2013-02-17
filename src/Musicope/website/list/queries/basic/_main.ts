@@ -39,9 +39,9 @@ export class QueryBasic implements IList.IQuery {
     ko.computed(function () {
       var query: string = o.contr.searchQuery();
       o.actions.forEach((action) => {
-        var queryMatch = query.match(action.regexp);
-        if (queryMatch && queryMatch.length > 0) {
-          action.triggerAction(queryMatch);
+        var pos = query.search(action.regexp);
+        if (pos !== -1) {
+          action.triggerAction(query);
         }
       });
     });

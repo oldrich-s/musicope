@@ -11,7 +11,7 @@ module IList {
     description: string;
     regexp: RegExp;
     priority: number;
-    triggerAction(queryMatch: string[]): void;
+    triggerAction(query: string): void;
   }
 
   export interface IQueryBasicActionNew {
