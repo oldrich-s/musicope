@@ -1,7 +1,7 @@
 /// <reference path="../../../_references.ts" />
 
 import key = module("../../../../common/keyCodes");
-import utility = module("./_utility");
+import toolsM = module("./_tools");
 
 export class waitOn implements IGame.IKeyboardAction {
 
@@ -16,7 +16,7 @@ export class waitOn implements IGame.IKeyboardAction {
 
   triggerAction() {
     var o = this;
-    o.p.params.setParam("p_waits", utility.toggle(o.p.params.readOnly.p_waits, o.options));
+    o.p.params.setParam("p_waits", toolsM.toggle(o.p.params.readOnly.p_waits, o.options));
   }
 
   getCurrentState() {

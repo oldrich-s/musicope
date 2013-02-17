@@ -78,7 +78,7 @@
     <TypeScriptCompile Include="website\game\inputs\keyboard\actions\speedUp.ts" />
     <TypeScriptCompile Include="website\game\inputs\keyboard\actions\slowDown.ts" />
     <TypeScriptCompile Include="website\game\inputs\keyboard\actions\waitOn.ts" />
-    <TypeScriptCompile Include="website\game\inputs\keyboard\actions\_utility.ts" />
+    <TypeScriptCompile Include="website\game\inputs\keyboard\actions\_tools.ts" />
     <None Include="website\game\build.r" />
     <Content Include="website\index.html" />
     <TypeScriptCompile Include="website\list\_params\basic\_main.ts" />

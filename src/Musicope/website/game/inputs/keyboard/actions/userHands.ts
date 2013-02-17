@@ -1,7 +1,7 @@
 /// <reference path="../../../_references.ts" />
 
 import key = module("../../../../common/keyCodes");
-import utility = module("./_utility");
+import toolsM = module("./_tools");
 
 export class userHands implements IGame.IKeyboardAction {
 
@@ -16,7 +16,7 @@ export class userHands implements IGame.IKeyboardAction {
 
   triggerAction() {
     var o = this;
-    o.p.params.setParam("p_userHands", utility.toggle(o.p.params.readOnly.p_userHands, o.options));
+    o.p.params.setParam("p_userHands", toolsM.toggle(o.p.params.readOnly.p_userHands, o.options));
   }
 
   getCurrentState() {
