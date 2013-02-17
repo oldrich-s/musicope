@@ -15,7 +15,7 @@ export class Basic implements IList.IController {
   searchQuery: KnockoutObservableString;
   gameParams: KnockoutObservableString;
 
-  private songs: IList.ISong[] = [];
+  songs: IList.ISong[] = [];
   private pouch: ph.DB;
 
   constructor() {

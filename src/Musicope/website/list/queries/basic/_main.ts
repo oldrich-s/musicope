@@ -12,6 +12,7 @@ export class QueryBasic implements IList.IQuery {
     var o = this;
     o.contr = params.controller;
     o.pushActions();
+    o.sortActions();
     o.assignOnQueryChange();
   }
 
@@ -24,6 +25,13 @@ export class QueryBasic implements IList.IQuery {
       var constr: IList.IQueryBasicActionNew = actionsM[prop];
       o.actions.push(new constr(params));
     }
+  }
+
+  private sortActions() {
+    var o = this;
+    o.actions.sort((a, b) => {
+      return a.priority > b.priority;
+    });
   }
 
   private assignOnQueryChange() {

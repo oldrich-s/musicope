@@ -10,6 +10,7 @@ module IList {
     id: string;
     description: string;
     regexp: RegExp;
+    priority: number;
     triggerAction(queryMatch: string[]): void;
   }
 

@@ -5,6 +5,7 @@ export class lastPlayedSongs implements IList.IQueryBasicAction {
   id = "last played songs";
   description = "";
   regexp = /^lps$/;
+  priority = 10;
 
   private contr: IList.IController;
 

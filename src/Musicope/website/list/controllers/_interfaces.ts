@@ -13,6 +13,7 @@ module IList {
     filteredSongs: KnockoutObservableArray;
     searchQuery: KnockoutObservableString;
     gameParams: KnockoutObservableString;
+    songs: IList.ISong[];
     redirect(indexFn: () => number, song: ISong);
   }
 
