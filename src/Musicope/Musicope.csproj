@@ -95,6 +95,12 @@
     <Content Include="website\list\inputs\_interfaces.ts" />
     <TypeScriptCompile Include="website\list\inputs\_load.ts" />
     <TypeScriptCompile Include="website\list\inputs\_references.ts" />
+    <TypeScriptCompile Include="website\list\queries\basic\_main.ts" />
+    <Content Include="website\list\queries\basic\actions\_interfaces.ts" />
+    <TypeScriptCompile Include="website\list\queries\basic\actions\_load.ts" />
+    <Content Include="website\list\queries\_interfaces.ts" />
+    <TypeScriptCompile Include="website\list\queries\_load.ts" />
+    <TypeScriptCompile Include="website\list\queries\_references.ts" />
     <Content Include="website\list\_params\_interfaces.ts" />
     <TypeScriptCompile Include="website\list\_params\_load.ts" />
     <Content Include="website\common\devices\_interfaces.ts" />

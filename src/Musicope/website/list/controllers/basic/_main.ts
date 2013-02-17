@@ -26,6 +26,7 @@ export class Basic implements IList.IController {
     o.initFilteredSongs();
     o.loadSongs();
     o.initInputs();
+    o.scrollToFocusedEl();
   }
 
   redirect(indexFn: () => number, song: IList.ISong) {
@@ -36,6 +37,18 @@ export class Basic implements IList.IController {
       if (pars.charAt(0) !== "&") { pars = "&" + pars; }
       window.location.href = "../game/index.html?c_songUrl=" + decodeURIComponent(song.url) + pars;
     });
+  }
+
+  private scrollToFocusedEl() {
+    var el = $(".elFocus");
+    if (el && el.length > 0) {
+      var index = o.listIndex();
+      var rely: number = el.offset()["top"] - $(window).scrollTop();
+      var dy = 0.5 * window.innerHeight - rely;
+      $(window).scrollTop($(window).scrollTop() - dy);
+    } else {
+      setTimeout(o.scrollToFocusedEl, 100);
+    }
   }
 
   private initGameParams() {
