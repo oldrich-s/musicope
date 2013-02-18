@@ -129,7 +129,14 @@ export class Basic implements IGame.ISong {
         notesPlayer.push({ on: true, time: note.timeOn, id: note.id, velocity: note.velocityOn });
         notesPlayer.push({ on: false, time: note.timeOff, id: note.id, velocity: note.velocityOff });
       });
-      return notesPlayer.sort((a, b) => { return a.time - b.time; });
+      return notesPlayer.sort((a, b) => {
+        var dt = a.time - b.time;
+        if (dt !== 0) {
+          return dt;
+        } else {
+          return a.on ? 1 : -1;
+        }
+      });
     });
   }
 
