@@ -79,8 +79,7 @@ export class Basic implements IGame.IController {
       if (isEnd && o.params.readOnly.c_callbackUrl) {
         o.redirect();
       } else {
-        benchmark.displayFPS();
-        //benchmark.displayHeapSize();
+        benchmark.display();
         o.requestAnimationFrame.call(window, _step);
       }
     }
