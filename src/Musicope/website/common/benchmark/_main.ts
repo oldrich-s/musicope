@@ -30,7 +30,7 @@ export class Benchmark {
       o.id = 0;
       var fps = o.getFPS();
       var heapSize = o.getHeapSize();
-      o.dom.html("fps = " + fps + "<br />heapSize = " + heapSize);
+      o.dom.html("fps = " + fps + "<br />dHeapSize = " + heapSize);
     }
   }
 
