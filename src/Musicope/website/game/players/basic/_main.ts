@@ -44,7 +44,7 @@ export class Basic implements IGame.IPlayer {
 
   private subscribeToParamsChange() {
     var o = this;
-    o.params.subscribe("players.Basic", "^p_.+$", (name, value) => {
+    o.params.subscribe("players.Basic", "^p_elapsedTime$", (name, value) => {
       o.reset();
     });
   }
