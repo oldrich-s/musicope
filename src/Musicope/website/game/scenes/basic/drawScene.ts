@@ -124,6 +124,9 @@ function drawPiano(loc: Local) {
   drawPianoWhiteNotes(loc);
   drawPianoBlackNotes(loc);
 }
+
+function drawSustainNotes() {
+}
     
 function drawTrack(loc: Local, trackId: number) {
   var whiteNoteColor = hexToRgb(loc.input.readOnly.s_colWhites[trackId]);

@@ -11,15 +11,17 @@ export class Basic implements IGame.ISong {
   sustainNotes: IGame.ISustainNote[];
 
   timePerSong: number;
-  sceneTracks: IGame.INoteScene[][];
   minPlayedNoteId = 200;
   maxPlayedNoteId = 0;
+  sceneTracks: IGame.INoteScene[][];
+  sceneSustainNotes: IGame.ISustainNoteScene[];
   
   constructor(midi: Uint8Array, private params: IGame.IParams) {
     var o = this;
     o.setParamsFromParser(new parsers.Midi(midi));
     o.sortPlayerTracksByHands();
     o.normalizeVolumeOfPlayerTracks();
+    o.computeSceneSustainNotes();
     o.computeSceneTracks();
     o.setMinMaxNoteId();
     o.computeCleanedPlayerTracks();
@@ -58,6 +60,23 @@ export class Basic implements IGame.ISong {
     }
   }
 
+  private computeSceneSustainNotes() {
+    var o = this;
+    o.sceneSustainNotes = [];
+    var tempNote: IGame.ISustainNote;
+    o.sustainNotes.forEach((note) => {
+      if (note.on) {
+        if (tempNote) {
+          o.sceneSustainNotes.push({ timeOn: tempNote.time, timeOff: note.time });
+        }
+        tempNote = note;
+      } else if (tempNote) {
+        o.sceneSustainNotes.push({ timeOn: tempNote.time, timeOff: note.time });
+        tempNote = undefined;
+      }
+    });
+  }
+
   private computeSceneTracks() {
     var o = this;
     o.sceneTracks = o.playerTracks.map((playerNotes) => {
@@ -69,7 +88,7 @@ export class Basic implements IGame.ISong {
             sceneNotes.push(noteScene);
           }
           tempNotes[note.id] = note;
-        } else if (!note.on) {
+        } else {
           var tn = tempNotes[note.id];
           if (tn) {
             var noteScene = o.getSceneNote(tempNotes[note.id], note);

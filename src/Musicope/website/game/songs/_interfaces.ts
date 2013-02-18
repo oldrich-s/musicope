@@ -2,6 +2,11 @@
 // time units = miliseconds
 module IGame {
 
+  export interface ISustainNoteScene {
+    timeOn: number;
+    timeOff: number;
+  }
+
   export interface INoteScene {
     timeOn: number;
     timeOff: number;
@@ -18,6 +23,7 @@ module IGame {
     playerTracks: INote[][];
     sceneTracks: INoteScene[][];
     sustainNotes: ISustainNote[];
+    sceneSustainNotes: IGame.ISustainNoteScene[];
     minPlayedNoteId: number;
     maxPlayedNoteId: number;
   }
