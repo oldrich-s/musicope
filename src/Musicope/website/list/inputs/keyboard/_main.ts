@@ -30,17 +30,18 @@ export class Keyboard implements IList.IInput {
     var o = this;
     $(document).keydown((e) => {
       o.keys.push(e.which);
-      o.analyzePressedKeys();
+      o.analyzePressedKeys(e);
     });
   }
 
-  private analyzePressedKeys() {
+  private analyzePressedKeys(e: IJQuery.JQueryEventObject) {
     var o = this;
     for (var i = 0; i < o.actions.length; i++) {
       var match = o.doActionKeysMatch(o.actions[i]);
       if (match) {
         o.keys = [];
         o.actions[i].triggerAction();
+        e.preventDefault();
         return;
       }
     }

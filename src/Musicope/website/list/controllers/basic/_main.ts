@@ -4,7 +4,6 @@ import paramsM = module("../../_params/_load");
 import localM = module("../../../common/services.local");
 import inputsM = module("../../inputs/_load");
 import queriesM = module("../../queries/_load");
-import lastPlayedSongs = module("./lastPlayedSongs");
 
 var params = new paramsM.Basic();
 var o: Basic;
@@ -18,17 +17,17 @@ export class Basic implements IList.IController {
 
   songs: IList.ISong[] = [];
 
-  private basicQuery: IList.IQuery;
+  private queryManager: IList.IQuery;
 
   constructor() {
     o = this;
-    o.initGameParams();
-    o.initSearchQuery();
-    o.initListIndex();
+    o.koInitGameParams();
+    o.koInitSearchQuery();
+    o.koInitListIndex();
     o.initInputs();
     o.loadSongs();
-    o.createBasicQuery();
     o.scrollToFocusedEl();
+    o.initQueryManager();
     o.assignOnQueryUpdate();
   }
 
@@ -36,7 +35,7 @@ export class Basic implements IList.IController {
     var o = this;
     var index = indexFn();
     localM.set("listIndex", index);
-    o.basicQuery.onRedirect(index).done(() => {
+    o.queryManager.onRedirect(index).done(() => {
       var pars: string = o.gameParams();
       if (!pars) { pars = ""; }
       if (pars.charAt(0) !== "&") { pars = "&" + pars; }
@@ -44,20 +43,12 @@ export class Basic implements IList.IController {
     });
   }
 
-  private assignOnQueryUpdate() {
-    var o = this;
-    ko.computed(() => {
-      var query: string = o.searchQuery();
-      o.basicQuery.onQueryUpdate(query);
-    });
-  }
-
-  private initGameParams() {
+  private koInitGameParams() {
     o.gameParams = ko.observable(localM.get("gameParams", ""));
     o.gameParams.subscribe((query) => { localM.set("gameParams", query); });
   }
 
-  private initSearchQuery() {
+  private koInitSearchQuery() {
     var initQuery = localM.get("query", "");
     o.searchQuery = ko.observable(initQuery);
     o.searchQuery.subscribe((query) => {
@@ -68,7 +59,7 @@ export class Basic implements IList.IController {
     });
   }
 
-  private initListIndex() {
+  private koInitListIndex() {
     o.listIndex = ko.observable(localM.get("listIndex", 0));
     o.listIndex.subscribe((i) => { localM.set("listIndex", i); });
   }
@@ -123,11 +114,19 @@ export class Basic implements IList.IController {
     }
   }
 
-  private createBasicQuery() {
+  private initQueryManager() {
     var params: IList.IQueryParams = {
       controller: o
     };
-    o.basicQuery = new queriesM.basic(params);
+    o.queryManager = new queriesM.basic(params);
+  }
+
+  private assignOnQueryUpdate() {
+    var o = this;
+    ko.computed(() => {
+      var query: string = o.searchQuery();
+      o.queryManager.onQueryUpdate(query);
+    });
   }
 
 }

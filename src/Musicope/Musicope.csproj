@@ -152,7 +152,6 @@
     <TypeScriptCompile Include="website\list\_index.ts" />
     <Content Include="website\list\index.css" />
     <Content Include="website\list\index.html" />
-    <TypeScriptCompile Include="website\list\controllers\basic\lastPlayedSongs.ts" />
     <Content Include="website\list\_references.ts" />
     <Content Include="website\_lib\jquery\jquery.d.ts" />
     <Content Include="website\_lib\jquery\jquery.js" />

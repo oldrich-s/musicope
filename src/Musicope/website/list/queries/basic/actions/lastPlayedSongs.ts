@@ -26,7 +26,7 @@ export class lastPlayedSongs implements IList.IQueryBasicAction {
 
   onRedirect(displayedSongsIndex: number) {
     var o = this;
-    var song: IList.ISong = o.contr.displayedSongs[displayedSongsIndex];
+    var song: IList.ISong = o.contr.displayedSongs()[displayedSongsIndex];
     return o.addUrlToLastPlayedSongs(song.url);
   }
 
