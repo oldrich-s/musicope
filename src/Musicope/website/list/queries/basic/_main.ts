@@ -12,7 +12,6 @@ export class Basic implements IList.IQuery {
     o.contr = params.controller;
     o.pushActions();
     o.sortActions();
-    o.assignOnQueryChange();
   }
 
   private pushActions() {
@@ -33,17 +32,25 @@ export class Basic implements IList.IQuery {
     });
   }
 
-  assignOnQueryChange() {
+  onQueryUpdate(query: string) {
     var o = this;
-    ko.computed(function () {
-      var query: string = o.contr.searchQuery();
-      o.actions.forEach((action) => {
-        var pos = query.search(action.regexp);
-        if (pos !== -1) {
-          action.triggerAction(query);
-        }
-      });
+    o.actions.forEach((action) => {
+      var pos = query.search(action.regexp);
+      if (pos !== -1) {
+        action.onQueryUpdate(query);
+      }
     });
+  }
+
+  onRedirect(displayedSongsIndex: number): IJQuery.JQueryPromise {
+    var o = this;
+    var promises = [];
+    o.actions.forEach((action) => {
+      if (action.onRedirect) {
+        promises.push(action.onRedirect(displayedSongsIndex));
+      }
+    });
+    return $.when.call(null, promises);
   }
 
 }

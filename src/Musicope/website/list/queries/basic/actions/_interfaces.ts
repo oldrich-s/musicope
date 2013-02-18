@@ -11,7 +11,8 @@ module IList {
     description: string;
     regexp: RegExp;
     priority: number;
-    triggerAction(query: string): void;
+    onQueryUpdate(query: string): void;
+    onRedirect?: (displayedSongsIndex: number) => IJQuery.JQueryPromise;
   }
 
   export interface IQueryBasicActionNew {

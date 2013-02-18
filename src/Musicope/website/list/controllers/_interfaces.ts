@@ -14,7 +14,7 @@ module IList {
     searchQuery: KnockoutObservableString;
     gameParams: KnockoutObservableString;
     songs: IList.ISong[];
-    redirect(indexFn: () => number, song: ISong);
+    redirect(indexFn: () => number, song: ISong): void;
   }
 
   export interface IControllerNew {

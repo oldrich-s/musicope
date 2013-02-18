@@ -16,7 +16,7 @@ export class filterSongs implements IList.IQueryBasicAction {
     o.contr = p.inputParams.controller;
   }
 
-  triggerAction(query: string) {
+  onQueryUpdate(query: string) {
     var o = this;
     var filteredSongs = o.getFilteredAndColoredSongs(query);
     o.contr.displayedSongs(filteredSongs);

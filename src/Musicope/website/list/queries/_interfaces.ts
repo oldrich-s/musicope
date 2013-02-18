@@ -6,7 +6,10 @@ module IList {
     controller: IList.IController;
   }
 
-  export interface IQuery {}
+  export interface IQuery {
+    onQueryUpdate(query: string): void;
+    onRedirect(displayedSongsIndex: number): IJQuery.JQueryPromise;
+  }
 
   export interface IQueryNew {
     new (params: IQueryParams): IQuery;

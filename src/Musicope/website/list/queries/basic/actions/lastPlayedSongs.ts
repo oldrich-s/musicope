@@ -19,9 +19,15 @@ export class lastPlayedSongs implements IList.IQueryBasicAction {
     o.contr = p.inputParams.controller;
   }
 
-  triggerAction(query: string) {
+  onQueryUpdate(query: string) {
     var o = this;
     o.getAllSortedLastPlayedSongs();
+  }
+
+  onRedirect(displayedSongsIndex: number) {
+    var o = this;
+    var song: IList.ISong = o.contr.displayedSongs[displayedSongsIndex];
+    return o.addUrlToLastPlayedSongs(song.url);
   }
 
   private getAllSortedLastPlayedSongs() {
@@ -37,7 +43,7 @@ export class lastPlayedSongs implements IList.IQueryBasicAction {
         }
       });
     });
-    return done;
+    return done.promise();
   }
 
   private sortSongsByUrl(songs: LastPlayedSong[]) {
@@ -72,7 +78,7 @@ export class lastPlayedSongs implements IList.IQueryBasicAction {
           }
         });
       });
-    return done;
+    return done.promise();
   }
 
   private indexOfSameUrl(songs: LastPlayedSong[], url: string) {

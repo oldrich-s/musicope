@@ -11,10 +11,10 @@ var o: Basic;
 
 export class Basic implements IList.IController {
 
-  listIndex: KnockoutObservableNumber;
-  displayedSongs = ko.observableArray();
-  searchQuery: KnockoutObservableString;
   gameParams: KnockoutObservableString;
+  searchQuery: KnockoutObservableString;
+  displayedSongs = ko.observableArray();
+  listIndex: KnockoutObservableNumber;
 
   songs: IList.ISong[] = [];
 
@@ -29,15 +29,26 @@ export class Basic implements IList.IController {
     o.loadSongs();
     o.createBasicQuery();
     o.scrollToFocusedEl();
+    o.assignOnQueryUpdate();
   }
 
   redirect(indexFn: () => number, song: IList.ISong) {
-    localM.set("listIndex", indexFn());
-    lastPlayedSongs.add(song.url).done(() => {
+    var o = this;
+    var index = indexFn();
+    localM.set("listIndex", index);
+    o.basicQuery.onRedirect(index).done(() => {
       var pars: string = o.gameParams();
       if (!pars) { pars = ""; }
       if (pars.charAt(0) !== "&") { pars = "&" + pars; }
       window.location.href = "../game/index.html?c_songUrl=" + decodeURIComponent(song.url) + pars;
+    });
+  }
+
+  private assignOnQueryUpdate() {
+    var o = this;
+    ko.computed(() => {
+      var query: string = o.searchQuery();
+      o.basicQuery.onQueryUpdate(query);
     });
   }
 
