@@ -29,8 +29,9 @@ export class Benchmark {
     if (o.id++ > o.displayEvery) {
       o.id = 0;
       var fps = o.getFPS();
-      var heapSize = o.getHeapSize();
-      o.dom.html("fps = " + fps + "<br />dHeapSize = " + heapSize);
+      var heapSizePerSec = o.getHeapSize() / (o.displayEvery / fps) / 1000;
+      var roundedHeapSize = Math.round(100 * heapSizePerSec) / 100;
+      o.dom.html("fps = " + fps + "<br />dHeapSize = " + roundedHeapSize + " kB/s");
     }
   }
 
@@ -46,7 +47,7 @@ export class Benchmark {
   private getHeapSize() {
     var o = this;
     var heapSize = window.performance.memory.usedJSHeapSize;
-    var out = Math.round(100 * (heapSize - o.lastHeapSize)) / 100;
+    var out = heapSize - o.lastHeapSize;
     o.lastHeapSize = heapSize;
     return out;
   }
