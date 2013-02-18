@@ -8,6 +8,7 @@ export class Basic implements IGame.ISong {
   timePerBar: number;
   noteValuePerBeat: number; // denominator in time signature: 2, 4, 8, 16 ...
   playerTracks: IGame.INote[][];
+  sustainNotes: IGame.ISustainNote[];
 
   timePerSong: number;
   sceneTracks: IGame.INoteScene[][];
@@ -31,6 +32,7 @@ export class Basic implements IGame.ISong {
     o.timePerBar = parser.timePerBar;
     o.timePerBeat = parser.timePerBeat;
     o.playerTracks = parser.tracks;
+    o.sustainNotes = parser.sustainNotes;
   }
 
   private sortPlayerTracksByHands() {
@@ -94,10 +96,8 @@ export class Basic implements IGame.ISong {
     var o = this;
     o.sceneTracks.forEach((notes) => {
       notes.forEach((note) => {
-        if (note.id > 0) {
-          o.maxPlayedNoteId = Math.max(note.id, o.maxPlayedNoteId);
-          o.minPlayedNoteId = Math.min(note.id, o.minPlayedNoteId);
-        }
+        o.maxPlayedNoteId = Math.max(note.id, o.maxPlayedNoteId);
+        o.minPlayedNoteId = Math.min(note.id, o.minPlayedNoteId);
       });
     });
   }
