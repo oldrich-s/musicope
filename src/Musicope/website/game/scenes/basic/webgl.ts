@@ -27,8 +27,8 @@ export class WebGL {
   redraw(dx: number, dy: number, pressedNotes: Int32Array) {
     var o = this;
     o.gl.clear(o.gl.COLOR_BUFFER_BIT);
-    o.gl.uniform1f(o.udx, dx);
-    o.gl.uniform1f(o.udy, dy);
+    o.gl.uniform1f(o.udx, dx); // creates garbage! ca 200
+    o.gl.uniform1f(o.udy, dy); // creates garbage! ca 200
     o.gl.uniform1iv(o.uactive, pressedNotes);
     o.gl.drawArrays(o.gl.TRIANGLES, 0, o.attrLength);
   }

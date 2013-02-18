@@ -184,13 +184,10 @@ export class Basic implements IGame.IPlayer {
 
     o.stops[trackId] = false;
 
-    function lastIdsNoteBelowCurrentTimeMinusRadius() {
-      return o.notes[trackId][o.waitId[trackId]] && o.notes[trackId][o.waitId[trackId]].time < o.params.readOnly.p_elapsedTime - o.params.readOnly.p_radiuses[trackId]
-    }
-
     var isWait = o.params.readOnly.p_userHands[trackId] && o.params.readOnly.p_waits[trackId];
     if (isWait) {
-      while (lastIdsNoteBelowCurrentTimeMinusRadius()) {
+      while ( o.notes[trackId][o.waitId[trackId]] &&
+              o.notes[trackId][o.waitId[trackId]].time < o.params.readOnly.p_elapsedTime - o.params.readOnly.p_radiuses[trackId]) {
         var note = o.notes[trackId][o.waitId[trackId]];
         var wasPlayedByUser = note["userTime"];
         var isNoteAboveMin = note.id >= o.params.readOnly.p_minNote;
@@ -207,10 +204,8 @@ export class Basic implements IGame.IPlayer {
   private playId = [0, 0];
   private playNotes(trackId: number) {
     var o = this;
-    function lastIdsNoteBelowCurrentTime() {
-      return o.notes[trackId][o.playId[trackId]] && o.notes[trackId][o.playId[trackId]].time < o.params.readOnly.p_elapsedTime;
-    }
-    while (lastIdsNoteBelowCurrentTime()) {
+    while ( o.notes[trackId][o.playId[trackId]] &&
+            o.notes[trackId][o.playId[trackId]].time < o.params.readOnly.p_elapsedTime) {
       var note = o.notes[trackId][o.playId[trackId]];
       o.playNote(note, trackId);
       o.playId[trackId]++;
@@ -220,10 +215,8 @@ export class Basic implements IGame.IPlayer {
   private sustainId = 0;
   private playSustainNotes() {
     var o = this;
-    function sustainIdNoteBelowCurrentTime() {
-      return o.song.sustainNotes[o.sustainId] && o.song.sustainNotes[o.sustainId].time < o.params.readOnly.p_elapsedTime;
-    }
-    while (sustainIdNoteBelowCurrentTime()) {
+    while ( o.song.sustainNotes[o.sustainId] &&
+            o.song.sustainNotes[o.sustainId].time < o.params.readOnly.p_elapsedTime) {
       var note = o.song.sustainNotes[o.sustainId];
       o.playSustainNote(note);
       o.sustainId++;
