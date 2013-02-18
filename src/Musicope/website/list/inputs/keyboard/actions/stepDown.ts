@@ -1,6 +1,7 @@
 /// <reference path="../../../_references.ts" />
 
 import key = module("../../../../common/keyCodes");
+import toolsM = module("./_tools");
 
 export class stepDown implements IList.IKeyboardAction {
 
@@ -21,21 +22,12 @@ export class stepDown implements IList.IKeyboardAction {
     var length = o.contr.displayedSongs().length;
     var trimmedIndex = index >= length ? length - 1 : index;
     o.contr.listIndex(trimmedIndex);
-    o.correctPosition();
+    toolsM.correctPosition();
   }
 
   getCurrentState() {
     var o = this;
     return 0;
-  }
-
-  private correctPosition() {
-    var el = $(".elFocus");
-    var rely: number = el.offset()["top"] - $(window).scrollTop();
-    if (rely > 0.8 * window.innerHeight) {
-      var dy = window.innerHeight - 2 * el.height() - rely;
-      $(window).scrollTop($(window).scrollTop() - dy);
-    }
   }
 
 }
