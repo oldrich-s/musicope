@@ -5,13 +5,14 @@ export class Midi implements IGame.IParser {
   timePerBeat: number;
   timePerBar: number;
   noteValuePerBeat: number; // denominator in time signature: 2, 4, 8, 16 ...
+  tracks: IGame.INote[][] = [];
+  sustainNotes: IGame.ISustainNote[] = [];
 
   private ticksPerQuarter: number;
   private timePerQuarter: number;
   private timePerTick: number;
   private beatsPerBar: number;
-  private tracks: IGame.INote[][] = [];
-
+  
   constructor(private midi: Uint8Array) {
     var o = this;
     o.parseHeader();
@@ -30,8 +31,12 @@ export class Midi implements IGame.IParser {
   private parsePlayerTracks() {
     var o = this;
     var trackIndexes = Midi.indexesOf(o.midi, [77, 84, 114, 107]);
-    trackIndexes.forEach((index, i) => { o.parsePlayerTrack(i, index + 4); });
-    if (o.tracks[0].length == 0) { o.tracks.shift(); }
+    trackIndexes.forEach((index, i) => {
+      o.parsePlayerTrack(i, index + 4);
+    });
+    if (o.tracks[0].length == 0) {
+      o.tracks.shift();
+    }
   }
 
   private parsePlayerTrack(trackId: number, index: number) {
@@ -127,11 +132,9 @@ export class Midi implements IGame.IParser {
         break;
       case 11: // controller
         var id = o.midi[index++];
+        var value = o.midi[index++];
         if (id == 64) { // sustain
-          var value = o.midi[index++];
-          o.tracks[trackId].push({ on: value != 0, time: time, velocity: value, id: -1 });
-        } else {
-          index++;
+          o.sustainNotes.push({ on: value > 63, time: time });
         }
         break;
       case 12: // program change
