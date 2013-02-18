@@ -33,7 +33,7 @@ Others than that it is about studying the code :). If you have any question, you
 [1]: https://github.com/musicope/game/tree/master/src/Musicope/website/game
 [2]: https://github.com/musicope/game/tree/master/src/Musicope/website/list
 [3]: https://github.com/musicope/game/blob/master/src/Musicope/website/game/_params/_interfaces.ts
-[4]: http://piano.musicope.com/game/index.html?c_songUrl=../songs/G%20Major%20Music/0.0%20-%20First%20Pieces/A%20Tisket,%20A%20Tasket.mid&
+[4]: http://piano.musicope.com/game/index.html?c_songUrl=../songs/G%20Major%20Music/Keyboard%20Classics/Fur%20Elise-Beethoven.mid&
 [5]: https://github.com/musicope/game/blob/master/src/Musicope/website/game/_params/basic/defaults.ts
 [6]: http://musicope.com/
 [7]: https://github.com/musicope/game/issues
