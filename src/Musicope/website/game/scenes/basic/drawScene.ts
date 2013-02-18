@@ -7,6 +7,7 @@ export interface Input {
   sceneWidth: number;
   sceneHeight: number;
   tracks: IGame.INoteScene[][];
+  sustainNotes: IGame.ISustainNoteScene[];
   p_minNote: number;
   p_maxNote: number;
   minPlayedNoteId: number;
@@ -125,22 +126,29 @@ function drawPiano(loc: Local) {
   drawPianoBlackNotes(loc);
 }
 
-function drawSustainNotes() {
+function drawSustainNotes(loc: Local) {
+  var color = hexToRgb(loc.input.readOnly.s_colSustain);
+  loc.input.sustainNotes.forEach((note) => {
+    var y0 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOn + 1;
+    var y1 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOff - 2;
+    var ipos = whiteNoteIds.length;
+    var x0 = ipos * loc.whiteWidth + 3;
+    var x1 = x0 + loc.whiteWidth - 5;
+    loc.input.drawRect(x0, y0, x1, y1, [200], color, color);
+  });
 }
     
 function drawTrack(loc: Local, trackId: number) {
   var whiteNoteColor = hexToRgb(loc.input.readOnly.s_colWhites[trackId]);
   var blackNoteColor = hexToRgb(loc.input.readOnly.s_colBlacks[trackId]);
-  var sustainColor = hexToRgb(loc.input.readOnly.s_colSustain);
   loc.input.tracks[trackId].forEach(function (note) {
     var y0 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOn + 1;
     var y1 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOff - 2;
-    var ipos = note.id == -1 ? whiteNoteIds.length : whiteNoteIds.indexOf(note.id);
+    var ipos = whiteNoteIds.indexOf(note.id);
     if (ipos >= 0) {
       var x0 = ipos * loc.whiteWidth + 3;
       var x1 = x0 + loc.whiteWidth - 5;
-      var color = note.id === -1 ? sustainColor : whiteNoteColor;
-      loc.input.drawRect(x0, y0, x1, y1, [trackId + 200], color, color);
+      loc.input.drawRect(x0, y0, x1, y1, [trackId + 200], whiteNoteColor, whiteNoteColor);
     } else {
       var pos = blackNoteIds.indexOf(note.id);
       if (pos >= 0) {
@@ -165,6 +173,7 @@ export function drawScene(input: Input) {
   input.readOnly.s_views.forEach((view, i) => {
     if (view === "full") { drawTrack(loc, i); }
   });
+  drawSustainNotes(loc);
   drawPiano(loc);
 }
   

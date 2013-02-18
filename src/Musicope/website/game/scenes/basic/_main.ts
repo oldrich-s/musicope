@@ -23,8 +23,8 @@ export class Basic implements IGame.IScene {
     o.setupScene();
 
   }
- 
-    
+
+
   setPressedNote(noteId: number) {
     this.pressedNotes[noteId] = 1;
   }
@@ -38,7 +38,7 @@ export class Basic implements IGame.IScene {
       this.pressedNotes[i] = 0;
     }
   }
-  
+
   redraw(time: number, isPaused: bool) {
     var o = this;
     o.setPausedState(isPaused);
@@ -89,11 +89,11 @@ export class Basic implements IGame.IScene {
     ];
     o.webgl = new webgl.WebGL(o.canvas, attributes);
   }
-      
+
   private setupScene() {
     var o = this;
     var bag: Float32Array[] = [];
-      
+
     var input: drawScene.Input = {
       drawRect: (x0, y0, x1, y1, ids, color, activeColor) => {
         bag.push(o.rect(x0, y0, x1, y1, ids, [color], [activeColor]));
@@ -103,6 +103,7 @@ export class Basic implements IGame.IScene {
       sceneWidth: o.canvas.width,
       sceneHeight: o.canvas.height,
       tracks: o.song.sceneTracks,
+      sustainNotes: o.song.sceneSustainNotes,
       p_minNote: o.params.readOnly.p_minNote,
       p_maxNote: o.params.readOnly.p_maxNote,
       minPlayedNoteId: o.song.minPlayedNoteId,
