@@ -25,6 +25,7 @@ export class Basic implements IGame.IPlayer {
     o.playNotes(0);
     o.setIfWaitOnUser(1);
     o.playNotes(1);
+    o.playSustainNotes();
     o.metronome.play(o.params.readOnly.p_elapsedTime);
     o.scene.redraw(o.params.readOnly.p_elapsedTime, o.params.readOnly.p_isPaused);
     return isSongEnd;
@@ -191,11 +192,10 @@ export class Basic implements IGame.IPlayer {
     if (isWait) {
       while (lastIdsNoteBelowCurrentTimeMinusRadius()) {
         var note = o.notes[trackId][o.waitId[trackId]];
-        var isSustain = note.id === -1;
         var wasPlayedByUser = note["userTime"];
         var isNoteAboveMin = note.id >= o.params.readOnly.p_minNote;
         var isNoteBelowMax = note.id <= o.params.readOnly.p_maxNote;
-        if (note.on && !isSustain && !wasPlayedByUser && isNoteAboveMin && isNoteBelowMax) {
+        if (note.on && !wasPlayedByUser && isNoteAboveMin && isNoteBelowMax) {
           o.stops[trackId] = true;
           break;
         }
@@ -212,16 +212,27 @@ export class Basic implements IGame.IPlayer {
     }
     while (lastIdsNoteBelowCurrentTime()) {
       var note = o.notes[trackId][o.playId[trackId]];
-      o.playSustain(note);
       o.playNote(note, trackId);
       o.playId[trackId]++;
     }
   }
 
-  private playSustain(note: IGame.INote) {
+  private sustainId = 0;
+  private playSustainNotes() {
     var o = this;
-    var isSustain = o.params.readOnly.p_sustain && note.id == -1;
-    if (isSustain) {
+    function sustainIdNoteBelowCurrentTime() {
+      return o.song.sustainNotes[o.sustainId] && o.song.sustainNotes[o.sustainId].time < o.params.readOnly.p_elapsedTime;
+    }
+    while (sustainIdNoteBelowCurrentTime()) {
+      var note = o.song.sustainNotes[o.sustainId];
+      o.playSustainNote(note);
+      o.sustainId++;
+    }
+  }
+
+  private playSustainNote(note: IGame.ISustainNote) {
+    var o = this;
+    if (o.params.readOnly.p_sustain) {
       if (note.on) {
         o.device.out(176, 64, 127);
       } else {
@@ -232,19 +243,17 @@ export class Basic implements IGame.IPlayer {
 
   private playNote(note: IGame.INote, trackId: number) {
     var o = this;
-    if (note.id > 0) {
-      var playsUser = o.params.readOnly.p_userHands[trackId];
-      var isBelowMin = note.id < o.params.readOnly.p_minNote;
-      var isAboveMax = note.id > o.params.readOnly.p_maxNote;
-      var playOutOfReach = o.params.readOnly.p_playOutOfReachNotes && (isBelowMin || isAboveMax);
-      if (!playsUser || playOutOfReach) {
-        if (note.on) {
-          o.device.out(144, note.id, Math.min(127, o.params.readOnly.p_volumes[trackId] * note.velocity));
-          o.scene.setPressedNote(note.id);
-        } else {
-          o.device.out(144, note.id, 0);
-          o.scene.unsetPressedNote(note.id);
-        }
+    var playsUser = o.params.readOnly.p_userHands[trackId];
+    var isBelowMin = note.id < o.params.readOnly.p_minNote;
+    var isAboveMax = note.id > o.params.readOnly.p_maxNote;
+    var playOutOfReach = o.params.readOnly.p_playOutOfReachNotes && (isBelowMin || isAboveMax);
+    if (!playsUser || playOutOfReach) {
+      if (note.on) {
+        o.device.out(144, note.id, Math.min(127, o.params.readOnly.p_volumes[trackId] * note.velocity));
+        o.scene.setPressedNote(note.id);
+      } else {
+        o.device.out(144, note.id, 0);
+        o.scene.unsetPressedNote(note.id);
       }
     }
   }
