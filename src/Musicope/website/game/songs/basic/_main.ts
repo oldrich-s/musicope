@@ -54,9 +54,11 @@ export class Basic implements IGame.ISong {
         });
       });
       var scaleVel = o.params.readOnly.f_normalize / (sumVelocity / n);
-      o.playerTracks.forEach((notes) => {
-        notes.forEach((note) => { note.velocity = Math.max(0, Math.min(127, scaleVel * note.velocity)); });
-      });
+      if (scaleVel < 1.0) {
+        o.playerTracks.forEach((notes) => {
+          notes.forEach((note) => { note.velocity = Math.max(0, Math.min(127, scaleVel * note.velocity)); });
+        });
+      }
     }
   }
 

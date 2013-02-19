@@ -7,6 +7,9 @@ export class Basic implements IGame.IPlayer {
 
   private notes: IGame.INote[][];
   private unknownNotes: IGame.INote[] = [];
+  private playId = [0, 0];
+  private previousTime: number;
+  private stops = [false, false];
 
   constructor(private device: IDevice, private song: IGame.ISong, private metronome: IGame.IMetronome,
               private scene: IGame.IScene, private params: IGame.IParams) {
@@ -27,6 +30,7 @@ export class Basic implements IGame.IPlayer {
     o.playNotes(1);
     o.playSustainNotes();
     o.metronome.play(o.params.readOnly.p_elapsedTime);
+    o.hideTimeBarIfStops();
     o.scene.redraw(o.params.readOnly.p_elapsedTime, o.params.readOnly.p_isPaused);
     return isSongEnd;
   }
@@ -51,7 +55,7 @@ export class Basic implements IGame.IPlayer {
 
   private reset() {
     var o = this;
-    o.scene.unsetAllPressedNotes();
+    o.scene.unsetAllActiveIds();
     o.metronome.reset();
     o.waitId.forEach((_, i) => {
       if (o.notes[i].length > 0) {
@@ -99,8 +103,8 @@ export class Basic implements IGame.IPlayer {
         var idMaches = Math.abs(noteId - oldId) == 12;
         var isDoubleNote = isNoteOn && isSimilarTime && idMaches && velocity == oldVelocity;
         if (!isDoubleNote) {
-          if (isNoteOn) { o.scene.setPressedNote(noteId); }
-          else if (isNoteOff) { o.scene.unsetPressedNote(noteId); }
+          if (isNoteOn) { o.scene.setActiveId(noteId); }
+          else if (isNoteOff) { o.scene.unsetActiveId(noteId); }
           o.addToNotes(isNoteOn, noteId, velocity);
         }
         oldTimeStamp = timeStamp;
@@ -153,8 +157,6 @@ export class Basic implements IGame.IPlayer {
     return found;
   }
 
-  private previousTime: number;
-  private stops = [false, false];
   private updateTime() {
     var o = this;
     var currentTime = o.device.time();
@@ -201,7 +203,6 @@ export class Basic implements IGame.IPlayer {
     }
   }
 
-  private playId = [0, 0];
   private playNotes(trackId: number) {
     var o = this;
     while ( o.notes[trackId][o.playId[trackId]] &&
@@ -243,11 +244,22 @@ export class Basic implements IGame.IPlayer {
     if (!playsUser || playOutOfReach) {
       if (note.on) {
         o.device.out(144, note.id, Math.min(127, o.params.readOnly.p_volumes[trackId] * note.velocity));
-        o.scene.setPressedNote(note.id);
+        o.scene.setActiveId(note.id);
       } else {
         o.device.out(144, note.id, 0);
-        o.scene.unsetPressedNote(note.id);
+        o.scene.unsetActiveId(note.id);
       }
+    }
+  }
+
+  private hideTimeBarIfStops() {
+    var o = this;
+    if (o.stops[0] || o.stops[1]) {
+      o.scene.setActiveId(2);
+      o.scene.setActiveId(1);
+    } else {
+      o.scene.unsetActiveId(2);
+      o.scene.unsetActiveId(1);
     }
   }
 

@@ -6,7 +6,7 @@ import webgl = module("./webgl");
 export class Basic implements IGame.IScene {
 
   private pixelsPerTime: number;
-  private pressedNotes = new Int32Array(127);
+  private activeIds = new Int32Array(127);
 
   private canvas: HTMLCanvasElement;
   private webgl: webgl.WebGL;
@@ -25,17 +25,17 @@ export class Basic implements IGame.IScene {
   }
 
 
-  setPressedNote(noteId: number) {
-    this.pressedNotes[noteId] = 1;
+  setActiveId(id: number) {
+    this.activeIds[id] = 1;
   }
 
-  unsetPressedNote(noteId: number) {
-    this.pressedNotes[noteId] = 0;
+  unsetActiveId(id: number) {
+    this.activeIds[id] = 0;
   }
 
-  unsetAllPressedNotes() {
-    for (var i = 0; i < this.pressedNotes.length; i++) {
-      this.pressedNotes[i] = 0;
+  unsetAllActiveIds() {
+    for (var i = 0; i < this.activeIds.length; i++) {
+      this.activeIds[i] = 0;
     }
   }
 
@@ -44,7 +44,7 @@ export class Basic implements IGame.IScene {
     o.setPausedState(isPaused);
     var dx = 2 * time / o.song.timePerSong;
     var dy = -time * o.pixelsPerTime / o.canvas.height * 2;
-    o.webgl.redraw(dx, dy, o.pressedNotes);
+    o.webgl.redraw(dx, dy, o.activeIds);
   }
 
   private setBackgrColors() {

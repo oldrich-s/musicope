@@ -4,9 +4,9 @@ module IGame {
 
   export interface IScene {
     redraw(time: number, isPaused: bool): void;
-    setPressedNote(noteId: number): void;
-    unsetPressedNote(noteId: number): void;
-    unsetAllPressedNotes(): void;
+    setActiveId(id: number): void;
+    unsetActiveId(id: number): void;
+    unsetAllActiveIds(): void;
   }
 
   export interface ISceneNew {

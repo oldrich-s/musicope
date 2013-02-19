@@ -100,17 +100,19 @@ function drawPianoWhiteNotes(loc: Local) {
 }
 
 function drawPianoTimeBarColor(loc: Local) {
-  var color = hexToRgb(loc.input.readOnly.s_colTime, 0.8);
+  var color = hexToRgb(loc.input.readOnly.s_colTime, 0.9);
+  var activeColor = hexToRgb(loc.input.readOnly.s_colTime, 0.2);
   var y0 = loc.yEndOfPiano;
   var y1 = loc.yEndOfTimeBar;
-  loc.input.drawRect(0, y0, 1, y1, [151, 152, 152, 151], color, color);
+  loc.input.drawRect(0, y0, 1, y1, [1, 2, 2, 1], color, activeColor);
 }
 
 function drawPianoTimeBarWhite(loc: Local) {
   var y0 = loc.yEndOfPiano;
   var y1 = loc.yEndOfTimeBar;
-  var color = [1, 1, 1, 0.8];
-  loc.input.drawRect(0, y0, loc.input.sceneWidth, y1, [152, 151, 151, 152], color, color);
+  var color = [1, 1, 1, 0.9];
+  var activeColor = [1, 1, 1, 0.2]
+  loc.input.drawRect(0, y0, loc.input.sceneWidth, y1, [2, 1, 1, 2], color, activeColor);
 }
 
 function drawPianoBackBlack(loc: Local) {
@@ -120,10 +122,10 @@ function drawPianoBackBlack(loc: Local) {
 
 function drawPiano(loc: Local) {
   drawPianoBackBlack(loc);
-  drawPianoTimeBarWhite(loc);
-  drawPianoTimeBarColor(loc);
   drawPianoWhiteNotes(loc);
   drawPianoBlackNotes(loc);
+  drawPianoTimeBarWhite(loc);
+  drawPianoTimeBarColor(loc);
 }
 
 function drawSustainNotes(loc: Local) {
@@ -162,12 +164,15 @@ function drawTrack(loc: Local, trackId: number) {
 
 export function drawScene(input: Input) {
   var whiteWidth = Math.floor(input.sceneWidth / whiteNoteIds.length);
+  var maxRadius = Math.max.apply(null, input.readOnly.p_radiuses);
+  var timePerSceneHeigth = input.sceneHeight / input.pixelsPerTime;
+  var timeBarHeight = maxRadius / timePerSceneHeigth;
   var loc: Local = {
     input: input,  
     whiteWidth: whiteWidth,    
     blackWidth: Math.round(0.25 * whiteWidth),
     yEndOfTimeBar: Math.floor(0.2 * input.sceneHeight),
-    yEndOfPiano: Math.floor(0.17 * input.sceneHeight),
+    yEndOfPiano: Math.floor((0.2 - timeBarHeight) * input.sceneHeight),
     remainder: input.sceneWidth - whiteWidth * whiteNoteIds.length,
   }
   input.readOnly.s_views.forEach((view, i) => {

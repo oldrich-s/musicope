@@ -12,7 +12,7 @@ void main() {
 
   if (id > 199) { // movable
     gl_Position = vec4(a_position.x, a_position.y + u_dy, 0, 1);
-  } else if(id == 152) {
+  } else if(id == 2) {
     gl_Position = vec4(a_position.x + u_dx, a_position.y, 0, 1);
   } else { // fixed
     gl_Position = vec4(a_position.x, a_position.y, 0, 1);
