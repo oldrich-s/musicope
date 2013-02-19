@@ -101,7 +101,7 @@ function drawPianoWhiteNotes(loc: Local) {
 
 function drawPianoTimeBarColor(loc: Local) {
   var color = hexToRgb(loc.input.readOnly.s_colTime, 0.9);
-  var activeColor = hexToRgb(loc.input.readOnly.s_colTime, 0.2);
+  var activeColor = hexToRgb(loc.input.readOnly.s_colTime, 0.4);
   var y0 = loc.yEndOfPiano;
   var y1 = loc.yEndOfTimeBar;
   loc.input.drawRect(0, y0, 1, y1, [1, 2, 2, 1], color, activeColor);
@@ -111,7 +111,7 @@ function drawPianoTimeBarWhite(loc: Local) {
   var y0 = loc.yEndOfPiano;
   var y1 = loc.yEndOfTimeBar;
   var color = [1, 1, 1, 0.9];
-  var activeColor = [1, 1, 1, 0.2]
+  var activeColor = [1, 1, 1, 0.4]
   loc.input.drawRect(0, y0, loc.input.sceneWidth, y1, [2, 1, 1, 2], color, activeColor);
 }
 
