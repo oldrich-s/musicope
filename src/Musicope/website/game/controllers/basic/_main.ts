@@ -8,8 +8,8 @@ import songsM = module("../../songs/_load");
 import playersM = module("../../players/_load");
 import scenesM = module("../../scenes/_load");
 
-import benchmarkM = module("../../../common/benchmark/_main");
-var benchmark = new benchmarkM.Benchmark();
+//import benchmarkM = module("../../../common/benchmark/_main");
+//var benchmark = new benchmarkM.Benchmark();
 
 export class Basic implements IGame.IController {
 
@@ -79,7 +79,7 @@ export class Basic implements IGame.IController {
       if (isEnd && o.params.readOnly.c_callbackUrl) {
         o.redirect();
       } else {
-        benchmark.display();
+        //benchmark.display();
         o.requestAnimationFrame.call(window, _step);
       }
     }

@@ -3,7 +3,7 @@
 export class Benchmark {
 
   private displayEvery = 20;
-  private dom: IJQuery.JQuery;
+  private dom: HTMLElement;
 
   private lastHeapSize = 0;
   private heapSizeId = 0;
@@ -13,8 +13,8 @@ export class Benchmark {
 
   constructor() {
     var o = this;
-    o.dom = $("<div />").appendTo("body");
-    o.dom.css({
+    var domjq = $("<div />").appendTo("body");
+    domjq.css({
       position: "absolute",
       top: 40,
       left: 0,
@@ -22,6 +22,7 @@ export class Benchmark {
       color: "white",
       "z-index": 100
     });
+    o.dom = domjq[0];
   }
 
   display() {
@@ -31,7 +32,7 @@ export class Benchmark {
       var fps = o.getFPS();
       var heapSizePerSec = o.getHeapSize() / (o.displayEvery / fps) / 1000;
       var roundedHeapSize = Math.round(100 * heapSizePerSec) / 100;
-      o.dom.html("fps = " + fps + "<br />dHeapSize = " + roundedHeapSize + " kB/s");
+      o.dom.innerText = "fps = " + fps + ", " + roundedHeapSize + " kB/s";
     }
   }
 
