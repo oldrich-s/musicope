@@ -42,7 +42,7 @@ export class lastPlayedSongs implements IList.IQueryBasicAction {
     new Pouch("idb://musicope", (err, db) => {
       db.get("lastPlayedSongs", (err, data) => {
         if (data && data["songs"]) {
-          var sortedSongs = o.sortSongsByUrl(data["songs"]);
+          var sortedSongs = o.sortSongsByUrl(data["songs"] || []);
           done.resolve(sortedSongs, data, db);
         } else {
           done.resolve([], {}, db);
@@ -86,6 +86,7 @@ export class lastPlayedSongs implements IList.IQueryBasicAction {
         if (index === -1) {
           songs.push({ url: url, num: 0 });
           if (songs.length > 20) { songs.shift(); }
+          index = songs.length - 1;
         }
         data["songs"][index]["num"]++;
         data["songs"] = songs;
