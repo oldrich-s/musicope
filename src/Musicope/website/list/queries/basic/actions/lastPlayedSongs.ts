@@ -21,10 +21,10 @@ export class lastPlayedSongs implements IList.IQueryBasicAction {
 
   onQueryUpdate(query: string) {
     var o = this;
-    o.getAllSortedLastPlayedSongs().done((lastPlayedSongs: LastPlayedSong[]) => {
-      var songs = o.getSongsFromLastPlayedSongs(lastPlayedSongs);
+    o.getAllSortedLastPlayedSongs().done((data) => {
+      var songs = o.getSongsFromLastPlayedSongs(data["songs"]);
       songs.forEach((song, i) => {
-        song.name += " (" + lastPlayedSongs[i].num + ")";
+        song.name += " (" + data["songs"][i].num + ")";
       });
       o.contr.displayedSongs(songs);
     });
@@ -42,10 +42,10 @@ export class lastPlayedSongs implements IList.IQueryBasicAction {
     new Pouch("idb://musicope", (err, db) => {
       db.get("lastPlayedSongs", (err, data) => {
         if (data && data["songs"]) {
-          var sortedSongs = o.sortSongsByUrl(data["songs"] || []);
-          done.resolve(sortedSongs, data, db);
+          data["songs"] = o.sortSongsByUrl(data["songs"]);
+          done.resolve(data, db);
         } else {
-          done.resolve([], {}, db);
+          done.resolve({ songs: [] }, db);
         }
       });
     });
@@ -81,8 +81,9 @@ export class lastPlayedSongs implements IList.IQueryBasicAction {
     var o = this;
     var done = $.Deferred();
     o.getAllSortedLastPlayedSongs().done(
-      (songs: LastPlayedSong[], data, db: ph.DB) => {
-        var index = o.indexOfSameUrl(data["songs"], url);
+      (data, db: ph.DB) => {
+        var songs: LastPlayedSong[] = data["songs"];
+        var index = o.indexOfSameUrl(songs, url);
         if (index === -1) {
           songs.push({ url: url, num: 0 });
           if (songs.length > 20) { songs.shift(); }
