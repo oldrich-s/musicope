@@ -66,10 +66,13 @@
     <TypeScriptSourceMap>false</TypeScriptSourceMap>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="website\proxy.php">
+      <SubType>Designer</SubType>
+    </Content>
     <TypeScriptCompile Include="website\game\parsers\midi\_main.ts" />
     <TypeScriptCompile Include="website\game\inputs\keyboard\actions\displayHelp\_main.ts" />
     <TypeScriptCompile Include="website\common\devices\empty\_main.ts" />
-    <Content Include="website\game\inputs\keyboard\actions\displayHelp\overlay.html" />
+    <Content Include="website\game\inputs\keyboard\actions\displayHelp\_assets\overlay.html" />
     <Content Include="website\game\parsers\_interfaces.ts" />
     <TypeScriptCompile Include="website\game\parsers\_load.ts" />
     <Content Include="website\list\build.r" />
@@ -169,8 +172,8 @@
     <Content Include="website\_lib\webgl\webgl.d.ts" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="website\game\scenes\basic\assets\fragment.glsl" />
-    <Content Include="website\game\scenes\basic\assets\vertex.glsl" />
+    <Content Include="website\game\scenes\basic\_assets\fragment.glsl" />
+    <Content Include="website\game\scenes\basic\_assets\vertex.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -183,6 +186,6 @@
   <PropertyGroup>
     <PostBuildEvent>node "$(ProjectDir)website\r.js" -o "$(ProjectDir)website\game\build.r"
 node "$(ProjectDir)website\r.js" -o "$(ProjectDir)website\list\build.r"
-$(SolutionDir)..\outputter\exec\outputter.exe "$(SolutionDir)..\.."</PostBuildEvent>
+$(SolutionDir)..\outputter\exec\Outputter.exe "$(SolutionDir)..\.."</PostBuildEvent>
   </PropertyGroup>
 </Project>

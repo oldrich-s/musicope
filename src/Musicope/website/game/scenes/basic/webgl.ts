@@ -55,8 +55,8 @@ export class WebGL {
   private initShaders() {
     var o = this;
 
-    var vertexShader = o.getShader("scenes/basic/assets/vertex.glsl");
-    var fragmentShader = o.getShader("scenes/basic/assets/fragment.glsl");
+    var vertexShader = o.getShader("scenes/basic/_assets/vertex.glsl");
+    var fragmentShader = o.getShader("scenes/basic/_assets/fragment.glsl");
     var shaderProgram = this.gl.createProgram();
     this.gl.attachShader(shaderProgram, vertexShader);
     this.gl.attachShader(shaderProgram, fragmentShader);

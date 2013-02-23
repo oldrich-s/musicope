@@ -5,12 +5,12 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>2b29720e-799a-484e-920d-63077bb13950</ProjectGuid>
+    <ProjectGuid>9bc40d66-c41d-49aa-ad4a-97e7548675e8</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>outputter</RootNamespace>
-    <AssemblyName>outputter</AssemblyName>
+    <RootNamespace>Outputter</RootNamespace>
+    <AssemblyName>Outputter</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <Name>outputter</Name>
+    <Name>Outputter</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -21,7 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <DocumentationFile>bin\Debug\outputter.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\Outputter.XML</DocumentationFile>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -32,7 +32,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <DocumentationFile>bin\Release\outputter.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\Outputter.XML</DocumentationFile>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>

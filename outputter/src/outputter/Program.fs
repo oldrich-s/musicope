@@ -1,16 +1,18 @@
 ﻿open System.IO
 
-let createAllDirs(sourcePath, destinationPath) =
-  let dirs = Directory.GetDirectories(sourcePath, "*", SearchOption.AllDirectories)
-  for dir in dirs do
-    Directory.CreateDirectory(dir.Replace(sourcePath, destinationPath)) |> ignore
-
 let copyFiles(sourcePath, destinationPath) =
   let files = Directory.GetFiles(sourcePath, "*.*", SearchOption.AllDirectories)
   for fromFile in files do
-    let toFile = fromFile.Replace(sourcePath, destinationPath)
-    if File.Exists toFile then File.Delete toFile
-    File.Copy(fromFile, toFile)
+    if  (fromFile.Contains @"\_assets\" ||
+        fromFile.Contains "index." ||
+        fromFile.Contains @"\_lib\" ||
+        fromFile.EndsWith @".php") &&
+        fromFile.EndsWith ".js.map" = false &&
+        fromFile.EndsWith ".ts" = false then
+      let toFile = FileInfo (fromFile.Replace(sourcePath, destinationPath))
+      if toFile.Exists then toFile.Delete()
+      toFile.Directory.Create()
+      File.Copy(fromFile, toFile.FullName)
 
 let eraseFiles(path, searchPattern) =
   let files = Directory.GetFiles(path, searchPattern, SearchOption.AllDirectories)
@@ -26,7 +28,6 @@ let eraseWebSiteJSMAP root =
 let copyAll root =
   let libPathIn = Path.Combine(root, "github", "src", "Musicope")
   let libPathOut = Path.Combine(root, "output")
-  createAllDirs(libPathIn, libPathOut)
   copyFiles(libPathIn, libPathOut)
 
 [<EntryPoint>]
