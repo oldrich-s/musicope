@@ -21,7 +21,13 @@ export class lastPlayedSongs implements IList.IQueryBasicAction {
 
   onQueryUpdate(query: string) {
     var o = this;
-    o.getAllSortedLastPlayedSongs();
+    o.getAllSortedLastPlayedSongs().done((lastPlayedSongs: LastPlayedSong[]) => {
+      var songs = o.getSongsFromLastPlayedSongs(lastPlayedSongs);
+      songs.forEach((song, i) => {
+        song.name += " (" + lastPlayedSongs[i].num + ")";
+      });
+      o.contr.displayedSongs(songs);
+    });
   }
 
   onRedirect(displayedSongsIndex: number) {
@@ -57,13 +63,27 @@ export class lastPlayedSongs implements IList.IQueryBasicAction {
     return sortedSongs;
   }
 
+  private getSongsFromLastPlayedSongs(songs: LastPlayedSong[]) {
+    var songs: IList.ISong[] = songs.map((lastSong) => {
+      var vals = lastSong.url.match(/^(.*\/)([^\/]+)\.([^.]+)$/);
+      var song: IList.ISong = {
+        path: vals[1],
+        name: vals[2],
+        extension: vals[3],
+        url: lastSong.url
+      };
+      return song;
+    });
+    return songs;
+  }
+
   private addUrlToLastPlayedSongs(url: string) {
     var o = this;
     var done = $.Deferred();
     o.getAllSortedLastPlayedSongs().done(
       (songs: LastPlayedSong[], data, db: ph.DB) => {
         var index = o.indexOfSameUrl(data["songs"], url);
-        if (index !== -1) {
+        if (index === -1) {
           songs.push({ url: url, num: 0 });
           if (songs.length > 20) { songs.shift(); }
         }

@@ -50,7 +50,7 @@ export class Basic implements IList.IQuery {
         promises.push(action.onRedirect(displayedSongsIndex));
       }
     });
-    return $.when.call(null, promises);
+    return $.when.apply(null, promises);
   }
 
 }

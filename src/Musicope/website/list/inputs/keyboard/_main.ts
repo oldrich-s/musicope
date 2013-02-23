@@ -15,7 +15,6 @@ export class Keyboard implements IList.IInput {
 
   private initActions() {
     var o = this;
-    var deff = $.Deferred();
     var keyboardParams: IList.IKeyboardParams = {
       inputParams: o.params
     }
@@ -23,7 +22,6 @@ export class Keyboard implements IList.IInput {
       var action = new (<IList.IKeyboardActionsNew> actionsM[prop])(keyboardParams);
       o.actions.push(action);
     }
-    deff.resolve(o.actions);
   }
 
   private signupActions() {
