@@ -9,6 +9,7 @@ module IGame {
     c_iplayer: string;
     c_iparser: string;
     c_callbackUrl: string;
+    c_proxy: bool;
 
     // players
     p_deviceIn: string;

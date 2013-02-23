@@ -155,6 +155,7 @@
     <Content Include="website\list\index.css" />
     <Content Include="website\list\index.html" />
     <Content Include="website\list\_references.ts" />
+    <TypeScriptCompile Include="website\_lib\base64\base64.ts" />
     <Content Include="website\_lib\jquery\jquery.d.ts" />
     <Content Include="website\_lib\jquery\jquery.js" />
     <Content Include="website\_lib\knockout\knockout.d.ts" />

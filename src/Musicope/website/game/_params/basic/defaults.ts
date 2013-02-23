@@ -9,6 +9,7 @@ export var params: IGame.IParamsData = {
   c_iplayer: "Basic",
   c_iparser: "Basic",
   c_callbackUrl: undefined,
+  c_proxy: false,
 
   // players
   p_deviceIn: "0",

@@ -8,6 +8,8 @@ import songsM = module("../../songs/_load");
 import playersM = module("../../players/_load");
 import scenesM = module("../../scenes/_load");
 
+import base64 = module("../../../_lib/base64/base64");
+
 //import benchmarkM = module("../../../common/benchmark/_main");
 //var benchmark = new benchmarkM.Benchmark();
 
@@ -42,21 +44,12 @@ export class Basic implements IGame.IController {
 
   private getSong() {
     var o = this;
-
     var out = $.Deferred();
-
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', o.params.readOnly.c_songUrl);
-    xhr.responseType = 'arraybuffer';
-
-    xhr.onload = function (e) {
-      if (this.status == 200) {
-        var arr = new Uint8Array(xhr.response);
-        out.resolve(arr);
-
-      }
-    }
-    xhr.send();
+    var url = "../proxy.php?url=" + encodeURIComponent(o.params.readOnly.c_songUrl);
+    $.get(url).done((text: string) => {
+      var arr = base64.decode(text);
+      out.resolve(arr);
+    });
     return out;
   }
 
