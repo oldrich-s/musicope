@@ -45,6 +45,35 @@ export class Basic implements IGame.IController {
   private getSong() {
     var o = this;
     var out = $.Deferred();
+    var isLocal = o.params.readOnly.c_songUrl.indexOf("../") == 0;
+    if (isLocal) {
+      return o.getSongLocal();
+    } else {
+      return o.getSongRemote();
+    }
+  }
+
+  private getSongLocal() {
+    var o = this;
+    var out = $.Deferred();
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', o.params.readOnly.c_songUrl);
+    xhr.responseType = 'arraybuffer';
+
+    xhr.onload = function (e) {
+      if (this.status == 200) {
+        var arr = new Uint8Array(xhr.response);
+        out.resolve(arr);
+
+      }
+    }
+    xhr.send();
+    return out.promise();
+  }
+
+  private getSongRemote() {
+    var o = this;
+    var out = $.Deferred();
     var url = "../proxy.php?url=" + encodeURIComponent(o.params.readOnly.c_songUrl);
     $.get(url).done((text: string) => {
       var arr = base64.decode(text);

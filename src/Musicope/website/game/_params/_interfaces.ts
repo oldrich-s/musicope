@@ -9,7 +9,6 @@ module IGame {
     c_iplayer: string;
     c_iparser: string;
     c_callbackUrl: string;
-    c_proxy: bool;
 
     // players
     p_deviceIn: string;
@@ -26,6 +25,7 @@ module IGame {
     p_userHands: bool[];
     p_volumes: number[];
     p_waits: bool[];
+    p_maxVelocity: number[];
 
     // metronomes
     m_channel: number;

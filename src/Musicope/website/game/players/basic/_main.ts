@@ -243,7 +243,12 @@ export class Basic implements IGame.IPlayer {
     var playOutOfReach = o.params.readOnly.p_playOutOfReachNotes && (isBelowMin || isAboveMax);
     if (!playsUser || playOutOfReach) {
       if (note.on) {
-        o.device.out(144, note.id, Math.min(127, o.params.readOnly.p_volumes[trackId] * note.velocity));
+        var velocity = o.params.readOnly.p_volumes[trackId] * note.velocity;
+        var maxVelocity = o.params.readOnly.p_maxVelocity[trackId];
+        if (maxVelocity && velocity > maxVelocity) {
+          velocity = maxVelocity;
+        }
+        o.device.out(144, note.id, Math.min(127, velocity));
         o.scene.setActiveId(note.id);
       } else {
         o.device.out(144, note.id, 0);

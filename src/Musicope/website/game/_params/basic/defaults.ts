@@ -9,7 +9,6 @@ export var params: IGame.IParamsData = {
   c_iplayer: "Basic",
   c_iparser: "Basic",
   c_callbackUrl: undefined,
-  c_proxy: false,
 
   // players
   p_deviceIn: "0",
@@ -26,6 +25,7 @@ export var params: IGame.IParamsData = {
   p_userHands: [false, false],
   p_volumes: [1, 1],
   p_waits: [true, true],
+  p_maxVelocity: [90, 90],
 
   // metronomes
   m_channel: 153,
