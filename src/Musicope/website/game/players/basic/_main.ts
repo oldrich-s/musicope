@@ -10,6 +10,7 @@ export class Basic implements IGame.IPlayer {
   private playId = [0, 0];
   private previousTime: number;
   private stops = [false, false];
+  private isSongEnd = false;
 
   constructor(private device: IDevice, private song: IGame.ISong, private metronome: IGame.IMetronome,
               private scene: IGame.IScene, private params: IGame.IParams) {
@@ -20,10 +21,10 @@ export class Basic implements IGame.IPlayer {
     o.addUserTimeToNotes();
     o.initDevice();
   }
-
+  
   step() {
     var o = this;
-    var isSongEnd = o.updateTime();
+    o.isSongEnd = o.updateTime();
     o.setIfWaitOnUser(0);
     o.playNotes(0);
     o.setIfWaitOnUser(1);
@@ -32,7 +33,11 @@ export class Basic implements IGame.IPlayer {
     o.metronome.play(o.params.readOnly.p_elapsedTime);
     o.hideTimeBarIfStops();
     o.scene.redraw(o.params.readOnly.p_elapsedTime, o.params.readOnly.p_isPaused);
-    return isSongEnd;
+  }
+  
+  isEnd() {
+    var o = this;
+    return o.isSongEnd;
   }
 
   private correctTimesInParams() {

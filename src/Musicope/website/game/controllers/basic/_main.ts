@@ -97,12 +97,11 @@ export class Basic implements IGame.IController {
   private step() {
     var o = this;
     function _step() {
-      var isEnd = o.player.step();
-      if (isEnd && o.params.readOnly.c_callbackUrl) {
+      if (o.params.readOnly.c_callbackUrl && o.player.isEnd()) {
         o.redirect();
       } else {
-        //benchmark.display();
         o.requestAnimationFrame.call(window, _step);
+        o.player.step();
       }
     }
     _step();
