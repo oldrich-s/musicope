@@ -13,7 +13,7 @@ export class displayHelp implements IGame.IKeyboardAction {
 
   constructor(private p: IGame.IKeyboardParams) {
     var o = this;
-    $.get("inputs/keyboard/actions/displayHelp/_assets/overlay.html").done((result) => {
+    $.get("inputs/keyboard/actions/displayHelp/_assets/overlay.html?1").done((result) => {
       $(result).appendTo("body");
       o.window = $("#displayHelpOverlay");
     });
