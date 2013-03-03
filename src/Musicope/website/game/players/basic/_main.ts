@@ -105,8 +105,8 @@ export class Basic implements IGame.IPlayer {
       var isNoteOff = (kind > 127 && kind < 144) || (kind > 143 && kind < 160 && velocity == 0);
       if (isNoteOff || isNoteOn) {
         var isSimilarTime = Math.abs(timeStamp - oldTimeStamp) < 3;
-        var idMaches = Math.abs(noteId - oldId) == 12;
-        var isDoubleNote = isNoteOn && isSimilarTime && idMaches && velocity == oldVelocity;
+        var idMaches = noteId - oldId == 12 || noteId - oldId == 24;
+        var isDoubleNote = isSimilarTime && idMaches && velocity == oldVelocity;
         if (!isDoubleNote) {
           if (isNoteOn) { o.scene.setActiveId(noteId); }
           else if (isNoteOff) { o.scene.unsetActiveId(noteId); }

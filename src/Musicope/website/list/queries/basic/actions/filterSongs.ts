@@ -26,7 +26,7 @@ export class filterSongs implements IList.IQueryBasicAction {
     var o = this;
     var queries = toolsM.splitQuery(query);
     var filteredSongs = toolsM.filterSongsByQueries(o.contr.songs, queries);
-    var slicedSongs = filteredSongs.slice(0, 40);
+    var slicedSongs = filteredSongs;//.slice(0, 40);
     var coloredSongs = toolsM.colorSongsByQueries(slicedSongs, queries);
     return coloredSongs;
   }
