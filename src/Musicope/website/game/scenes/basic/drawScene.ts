@@ -162,6 +162,19 @@ function drawTrack(loc: Local, trackId: number) {
   });
 }
 
+function drawBlackActiveNotes(loc: Local) {
+  blackNoteIds.forEach((id, i) => {
+    var x0 = blackNoteSpots[i] * loc.whiteWidth - loc.blackWidth + 2;
+    var x1 = x0 + 2 * loc.blackWidth - 3;
+    var y0 = loc.yEndOfPiano;
+    var y1 = loc.input.sceneHeight;
+    var color1 = [0, 0, 0.15, 1];
+    var color2 = [0, 0.1, 0, 1];
+    var color = (i - 1) % 5 === 0 || (i - 2) % 5 === 0 ? color1 : color2;
+    loc.input.drawRect(x0, y0, x1, y1, [id], color, color);
+  });
+}
+
 export function drawScene(input: Input) {
   var whiteWidth = Math.floor(input.sceneWidth / whiteNoteIds.length);
   var maxRadius = Math.max.apply(null, input.readOnly.p_radiuses);
@@ -175,6 +188,7 @@ export function drawScene(input: Input) {
     yEndOfPiano: Math.floor((0.2 - timeBarHeight) * input.sceneHeight),
     remainder: input.sceneWidth - whiteWidth * whiteNoteIds.length,
   }
+  drawBlackActiveNotes(loc);
   input.readOnly.s_views.forEach((view, i) => {
     if (view === "full") { drawTrack(loc, i); }
   });
