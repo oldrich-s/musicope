@@ -120,12 +120,17 @@ function drawPianoBackBlack(loc: Local) {
   loc.input.drawRect(0, 0, loc.input.sceneWidth + 1, y1, [150], [0, 0, 0, 1], [0, 0, 0, 1]);
 }
 
-function drawPiano(loc: Local) {
-  drawPianoBackBlack(loc);
-  drawPianoWhiteNotes(loc);
-  drawPianoBlackNotes(loc);
+function drawTimeBar(loc: Local) {
   drawPianoTimeBarWhite(loc);
   drawPianoTimeBarColor(loc);
+}
+
+function drawPiano(loc: Local) {
+  if (loc.input.readOnly.s_showPiano) {
+    drawPianoBackBlack(loc);
+    drawPianoWhiteNotes(loc);
+    drawPianoBlackNotes(loc);
+  }
 }
 
 function drawSustainNotes(loc: Local) {
@@ -162,37 +167,42 @@ function drawTrack(loc: Local, trackId: number) {
   });
 }
 
-function drawBlackActiveNotes(loc: Local) {
-  blackNoteIds.forEach((id, i) => {
-    var x0 = blackNoteSpots[i] * loc.whiteWidth - loc.blackWidth + 2;
-    var x1 = x0 + 2 * loc.blackWidth - 3;
-    var y0 = loc.yEndOfPiano;
-    var y1 = loc.input.sceneHeight;
-    var color1 = [0, 0, 0.15, 1];
-    var color2 = [0, 0.1, 0, 1];
-    var color = (i - 1) % 5 === 0 || (i - 2) % 5 === 0 ? color1 : color2;
-    loc.input.drawRect(x0, y0, x1, y1, [id], color, color);
-  });
+function drawBlackRails(loc: Local) {
+  if (loc.input.readOnly.s_showBlackRails) {
+    blackNoteIds.forEach((id, i) => {
+      var x0 = blackNoteSpots[i] * loc.whiteWidth - loc.blackWidth + 2;
+      var x1 = x0 + 2 * loc.blackWidth - 3;
+      var y0 = loc.yEndOfPiano;
+      var y1 = loc.input.sceneHeight;
+      var color1 = hexToRgb(loc.input.readOnly.s_colorBlackRails2);
+      var color2 = hexToRgb(loc.input.readOnly.s_colorBlackRails3);
+      var color = (i - 1) % 5 === 0 || (i - 2) % 5 === 0 ? color1 : color2;
+      loc.input.drawRect(x0, y0, x1, y1, [id], color, color);
+    });
+  }
 }
 
 export function drawScene(input: Input) {
   var whiteWidth = Math.floor(input.sceneWidth / whiteNoteIds.length);
   var maxRadius = Math.max.apply(null, input.readOnly.p_radiuses);
   var timePerSceneHeigth = input.sceneHeight / input.pixelsPerTime;
-  var timeBarHeight = maxRadius / timePerSceneHeigth;
+  var timeBarHeight = input.sceneHeight * maxRadius / timePerSceneHeigth;
+  var yEndOfTimeBar = Math.floor(input.readOnly.s_showPiano ? 0.2 * input.sceneHeight : timeBarHeight);
   var loc: Local = {
     input: input,  
     whiteWidth: whiteWidth,    
     blackWidth: Math.round(0.25 * whiteWidth),
-    yEndOfTimeBar: Math.floor(0.2 * input.sceneHeight),
-    yEndOfPiano: Math.floor((0.2 - timeBarHeight) * input.sceneHeight),
+    yEndOfTimeBar: yEndOfTimeBar,
+    yEndOfPiano: yEndOfTimeBar - timeBarHeight,
     remainder: input.sceneWidth - whiteWidth * whiteNoteIds.length,
   }
-  drawBlackActiveNotes(loc);
+  drawBlackRails(loc);
   input.readOnly.s_views.forEach((view, i) => {
     if (view === "full") { drawTrack(loc, i); }
   });
   drawSustainNotes(loc);
   drawPiano(loc);
+  drawTimeBar(loc);
+
 }
   

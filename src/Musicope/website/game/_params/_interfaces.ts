@@ -36,8 +36,12 @@ module IGame {
     m_velocity: number;
 
     // scenes
+    s_showPiano: bool;
     s_views: string[];
     s_quartersPerHeight: number;
+    s_showBlackRails: bool;
+    s_colorBlackRails2: string;
+    s_colorBlackRails3: string;
     s_colWhites: string[];
     s_colBlacks: string[];
     s_colTime: string;

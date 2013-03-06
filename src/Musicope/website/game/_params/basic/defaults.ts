@@ -40,8 +40,12 @@ export var params: IGame.IParamsData = {
   f_trackIds: [1, 0],
 
   // scenes
+  s_showPiano: true,
   s_views: ["full", "full"],
   s_quartersPerHeight: 10,
+  s_showBlackRails: true,
+  s_colorBlackRails2: "#371313",
+  s_colorBlackRails3: "#282200",
   s_colWhites: ["#ff5252", "#ffd800"],
   s_colBlacks: ["#b73f3f", "#a78d00"],
   s_colTime: "#0094ff",
