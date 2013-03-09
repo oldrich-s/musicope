@@ -4,8 +4,8 @@ import paramsM = module("../../_params/_load");
 import localM = module("../../../common/services.local");
 import inputsM = module("../../inputs/_load");
 import queriesM = module("../../queries/_load");
+import songsM = module("./songs");
 
-var params = new paramsM.Basic();
 var o: Basic;
 
 export class Basic implements IList.IController {
@@ -18,6 +18,7 @@ export class Basic implements IList.IController {
   songs: IList.ISong[] = [];
 
   private queryManager: IList.IQuery;
+  private params = new paramsM.Basic();
 
   constructor() {
     o = this;
@@ -25,7 +26,12 @@ export class Basic implements IList.IController {
     o.koInitSearchQuery();
     o.koInitListIndex();
     o.initInputs();
-    o.loadSongs();
+
+    songsM.getSongs(o.params).done((songs: IList.ISong[]) => {
+      o.songs = songs;
+      o.searchQuery.valueHasMutated();
+    });
+
     o.scrollToFocusedEl();
     o.initQueryManager();
     o.assignOnQueryUpdate();
@@ -72,34 +78,6 @@ export class Basic implements IList.IController {
     for (var prop in inputsM) {
       new (<IList.IInputNew> inputsM[prop])(params);
     }
-  }
-
-  private loadSongs() {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', params.readOnly.l_songsUrl);
-    xhr.responseType = 'text';
-    xhr.onload = function (e) {
-      if (this.status == 200) {
-        var paths = JSON.parse(this.responseText);
-        o.songs = o.getSongsFromUrls(paths);
-        o.searchQuery.valueHasMutated();
-      }
-    }
-    xhr.send();
-  }
-
-  private getSongsFromUrls(urls: string[]) {
-    var songs: IList.ISong[] = urls.map((path) => {
-      var vals = path.match(/^(.*\/)([^\/]+)\.([^.]+)$/);
-      var song: IList.ISong = {
-        path: vals[1],
-        name: vals[2],
-        extension: vals[3],
-        url: path
-      };
-      return song;
-    });
-    return songs;
   }
 
   private scrollToFocusedEl() {

@@ -66,6 +66,7 @@
     <TypeScriptSourceMap>false</TypeScriptSourceMap>
   </PropertyGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="website\list\controllers\basic\songs.ts" />
     <Content Include="website\proxy.php">
       <SubType>Designer</SubType>
     </Content>

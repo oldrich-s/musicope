@@ -70,7 +70,8 @@ export class lastPlayedSongs implements IList.IQueryBasicAction {
         path: vals[1],
         name: vals[2],
         extension: vals[3],
-        url: lastSong.url
+        url: lastSong.url,
+        db: undefined
       };
       return song;
     });

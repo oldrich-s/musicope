@@ -6,6 +6,7 @@ module IList {
     extension: string;
     name: string;
     url: string;
+    db: {};
   }
 
   export interface IController {
