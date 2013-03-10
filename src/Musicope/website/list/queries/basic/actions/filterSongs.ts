@@ -26,9 +26,22 @@ export class filterSongs implements IList.IQueryBasicAction {
     var o = this;
     var queries = toolsM.splitQuery(query);
     var filteredSongs = toolsM.filterSongsByQueries(o.contr.songs, queries);
-    var slicedSongs = filteredSongs.slice(0, 100);
+    var sortedSongs = o.sortSongs(filteredSongs);
+    var slicedSongs = sortedSongs.slice(0, 100);
     var coloredSongs = toolsM.colorSongsByQueries(slicedSongs, queries);
     return coloredSongs;
+  }
+
+  private sortSongs(songs: IList.ISong[]) {
+    return songs.sort((a, b) => {
+      var votesa = a.db["votes"]();
+      var votesb = b.db["votes"]();
+      if (votesa !== votesb) {
+        return votesb - votesa;
+      } else {
+        return a.name > b.name ? 1 : (a.name === b.name ? 0 : -1);
+      }
+    });
   }
 
 }
