@@ -6,7 +6,7 @@ export class startGame implements IList.IKeyboardAction {
 
   id = "start game";
   description = "";
-  keySequence = [key.enter];
+  key = key.enter;
 
   private contr: IList.IController;
 

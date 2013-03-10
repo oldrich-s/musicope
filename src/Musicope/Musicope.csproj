@@ -67,6 +67,8 @@
   </PropertyGroup>
   <ItemGroup>
     <TypeScriptCompile Include="website\list\controllers\basic\songs.ts" />
+    <TypeScriptCompile Include="website\list\inputs\keyboard\actions\voteUp.ts" />
+    <TypeScriptCompile Include="website\list\inputs\keyboard\actions\voteDown.ts" />
     <Content Include="website\proxy.php">
       <SubType>Designer</SubType>
     </Content>

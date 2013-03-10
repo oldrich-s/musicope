@@ -6,3 +6,9 @@ export var stepUp: IList.IKeyboardActionsNew = stepUpM.stepUp;
 
 import startGameM = module("./startGame");
 export var startGame: IList.IKeyboardActionsNew = startGameM.startGame;
+
+import voteUpM = module("./voteUp");
+export var voteUp: IList.IKeyboardActionsNew = voteUpM.voteUp;
+
+import voteDownM = module("./voteDown");
+export var voteDown: IList.IKeyboardActionsNew = voteDownM.voteDown;

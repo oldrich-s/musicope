@@ -7,7 +7,7 @@ export class stepUp implements IList.IKeyboardAction {
 
   id = "step up";
   description = "";
-  keySequence = [key.upArrow];
+  key = key.upArrow;
 
   private contr: IList.IController;
 

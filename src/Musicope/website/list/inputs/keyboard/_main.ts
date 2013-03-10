@@ -5,7 +5,6 @@ import actionsM = module("./actions/_load");
 export class Keyboard implements IList.IInput {
 
   private actions: IList.IKeyboardAction[] = [];
-  private keys: number[] = [];
 
   constructor(private params: IList.IInputParams) {
     var o = this;
@@ -27,7 +26,6 @@ export class Keyboard implements IList.IInput {
   private signupActions() {
     var o = this;
     $(document).keydown((e) => {
-      o.keys.push(e.which);
       o.analyzePressedKeys(e);
     });
   }
@@ -35,9 +33,7 @@ export class Keyboard implements IList.IInput {
   private analyzePressedKeys(e: IJQuery.JQueryEventObject) {
     var o = this;
     for (var i = 0; i < o.actions.length; i++) {
-      var match = o.doActionKeysMatch(o.actions[i]);
-      if (match) {
-        o.keys = [];
+      if (o.doActionKeysMatch(o.actions[i], e)) {
         o.actions[i].triggerAction();
         e.preventDefault();
         return;
@@ -45,13 +41,12 @@ export class Keyboard implements IList.IInput {
     }
   }
 
-  private doActionKeysMatch(action: IList.IKeyboardAction) {
-    var o = this;
-    var matchFound = action.keySequence.every((key, i) => {
-      var oldId = o.keys.length - action.keySequence.length + i;
-      return o.keys[oldId] && o.keys[oldId] === key;
-    });
-    return matchFound;
+  private doActionKeysMatch(action: IList.IKeyboardAction, e: IJQuery.JQueryEventObject) {
+    var sameKeys = action.key === e.which;
+    var sameAlt = (!action.isAlt && !e["altKey"]) || (action.isAlt && e["altKey"]);
+    var sameCtrl = (!action.isCtrl && !e["ctrlKey"]) || (action.isCtrl && e["ctrlKey"]);
+    var sameShift = (!action.isShift && !e["shiftKey"]) || (action.isShift && e["shiftKey"]);
+    return sameKeys && sameAlt && sameCtrl && sameShift;
   }
 
 }

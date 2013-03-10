@@ -83,13 +83,17 @@
   width: 0; 
   height: 0; 
   border-style: solid;
-  border-width: 0 20px 10px 20px;
+  border-width: 0 20px 15px 20px;
   border-color: transparent transparent #dee5d9 transparent;
+}
+
+.vote-up:hover {
+  border-bottom-color: #e2c730;
 }
 
 .vote-count {
   display: block;
-  font-size: xx-large;
+  font-size: x-large;
   color:#dee5d9;
 }
 
@@ -98,9 +102,14 @@
   width: 0; 
   height: 0; 
   border-style: solid;
-  border-width: 10px 20px 0 20px;
+  border-width: 15px 20px 0 20px;
   border-color: #dee5d9 transparent transparent transparent;
 }
+
+.vote-down:hover {
+  border-top-color: #e2c730;
+}
+
 
 .elLink {
   font-size: xx-large;

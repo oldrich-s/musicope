@@ -3,11 +3,12 @@
 import key = module("../../../../common/keyCodes");
 import toolsM = module("./_tools");
 
-export class stepDown implements IList.IKeyboardAction {
+export class voteUp implements IList.IKeyboardAction {
 
-  id = "step down";
+  id = "vote up";
   description = "";
-  key = key.downArrow;
+  key = key.upArrow;
+  isCtrl = true;
 
   private contr: IList.IController;
 
@@ -18,11 +19,8 @@ export class stepDown implements IList.IKeyboardAction {
 
   triggerAction() {
     var o = this;
-    var index = o.contr.listIndex() + 1;
-    var length = o.contr.displayedSongs().length;
-    var trimmedIndex = index >= length ? length - 1 : index;
-    o.contr.listIndex(trimmedIndex);
-    toolsM.correctPosition();
+    var song: IList.ISong = o.contr.displayedSongs()[o.contr.listIndex()];
+    song.db["votes"](song.db["votes"]() + 1);
   }
 
   getCurrentState() {
