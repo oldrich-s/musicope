@@ -2,21 +2,41 @@
 
 function saveToDB(doc: any) {
   new Pouch("idb://musicope", (err, db) => {
-    db.put(ko.toJS(doc), (error) => {
-      throw "cannot save to DB";
+    db.put(ko.toJS(doc), (error, response) => {
+      if (error) {
+        throw "cannot save to DB";
+      } else {
+        doc["_rev"] = response["rev"];
+      }
     });
   });
 }
 
-function toKnockout(doc: {}) {
+var defaults = [{ prop: "votes", value: 0 }];
+
+function createIfNotExist(doc: any, id: string) {
+  if (!doc) {
+    var doc2 = { _id: id };
+    defaults.forEach((v) => {
+      doc2[v.prop] = v.value;
+    });
+    return doc2;
+  } else {
+    return doc;
+  }
+}
+
+function toKnockout(doc: any) {
   var koDoc = {};
   for (var prop in doc) {
-    koDoc[prop] = ko.observable(doc[prop]);
-  }
-  for (var prop in doc) {
-    koDoc[prop].subscribe((v) => {
-      saveToDB(koDoc);
-    });
+    if (prop !== "_id" && prop !== "_rev") {
+      koDoc[prop] = ko.observable(doc[prop]);
+      koDoc[prop].subscribe((v) => {
+        saveToDB(koDoc);
+      });
+    } else {
+      koDoc[prop] = doc[prop];
+    }
   }
   return koDoc;
 }
@@ -25,11 +45,12 @@ function getDocsFromDB(ids: string[]) {
   var done = $.Deferred();
   new Pouch("idb://musicope", (err, db) => {
     var keys: string[] = ids.map((id) => {
-      return encodeURIComponent(song.url);
+      return btoa(id);
     });
     db.allDocs({ keys: keys, include_docs: true }, (err, response: ph.AllDocsResponse) => {
-      var koDocs = response.rows.map((row) => {
-        return row.doc ? toKnockout(row.doc) : undefined;
+      var koDocs = response.rows.map((row, i) => {
+        var doc = createIfNotExist(row.doc, keys[i]);
+        return toKnockout(doc);
       });
       done.resolve(koDocs);
     });

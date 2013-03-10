@@ -13,11 +13,16 @@
     <input class="gameParams" data-bind="value: gameParams, valueUpdate:'afterkeydown'" placeholder="parameters"/>
   </div>
 
-  <div class="midContainer">
-    <div data-bind="foreach: displayedSongs" align="center">
-      <a class="el" href="#" data-bind="click: function(data, event) { $parent.redirect($index, data, event) }, css: { elFocus: $parent.listIndex() == $index(), elFocusFirst: $index() == 0 }">
-        <span class="elName" data-bind="html: name"></span>
-        <span class="elPath" data-bind="html: path"></span>
+  <div class="midContainer" data-bind="foreach: displayedSongs" align="center">
+    <div class="el" data-bind="css: { elFocus: $parent.listIndex() == $index(), elFocusFirst: $index() == 0 }">
+      <div class="vote">
+        <a class="vote-up" href="#" data-bind="click: function(data, event) { data.db.votes(data.db.votes() + 1); }"></a>
+        <span class="vote-count" data-bind="text: db.votes"></span>
+        <a class="vote-down" href="#" data-bind="click: function(data, event) { data.db.votes(data.db.votes() - 1); }"></a>
+      </div>
+      <a class="elLink" href="#" data-bind="click: function(data, event) { $parent.redirect($index, data, event) }">
+        <span class="elLinkName" data-bind="html: name"></span>
+        <span class="elLinkPath" data-bind="html: path"></span>
       </a>
     </div>
   </div>
@@ -29,7 +34,7 @@
   <script data-main="_index" src="../_lib/requirejs/require.js"></script>
   <script>
       require.config({
-        urlArgs: "bust=v7"
+        urlArgs: "bust=v8"
       });
   </script>
 </body>
