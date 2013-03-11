@@ -19,6 +19,7 @@ export var params: IGame.IParamsData = {
   p_minNote: 36,
   p_maxNote: 96,
   p_playOutOfReachNotes: false,
+  p_waitForOutOfReachNotes: true,
   p_radiuses: [200, 200],
   p_speed: 1,
   p_sustain: true,

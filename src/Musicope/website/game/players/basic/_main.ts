@@ -197,9 +197,13 @@ export class Basic implements IGame.IPlayer {
               o.notes[trackId][o.waitId[trackId]].time < o.params.readOnly.p_elapsedTime - o.params.readOnly.p_radiuses[trackId]) {
         var note = o.notes[trackId][o.waitId[trackId]];
         var wasPlayedByUser = note["userTime"];
-        var isNoteAboveMin = note.id >= o.params.readOnly.p_minNote;
-        var isNoteBelowMax = note.id <= o.params.readOnly.p_maxNote;
-        if (note.on && !wasPlayedByUser && isNoteAboveMin && isNoteBelowMax) {
+        var waitForOutOfReach = true;
+        if (!o.params.readOnly.p_waitForOutOfReachNotes) {
+          var isNoteAboveMin = note.id >= o.params.readOnly.p_minNote;
+          var isNoteBelowMax = note.id <= o.params.readOnly.p_maxNote;
+          waitForOutOfReach = isNoteAboveMin && isNoteBelowMax;
+        }
+        if (note.on && !wasPlayedByUser && waitForOutOfReach) {
           o.stops[trackId] = true;
           break;
         }

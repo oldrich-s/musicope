@@ -19,6 +19,7 @@ module IGame {
     p_minNote: number;
     p_maxNote: number;
     p_playOutOfReachNotes: bool;
+    p_waitForOutOfReachNotes: bool;
     p_radiuses: number[];
     p_speed: number;
     p_sustain: bool;
