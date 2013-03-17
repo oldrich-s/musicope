@@ -2,6 +2,9 @@
 import displayHelpM = module("./displayHelp/_main");
 export var displayHelp: IGame.IKeyboardActionsNew = displayHelpM.displayHelp;
 
+import hideNotesM = module("./hideNotes");
+export var hideNotes: IGame.IKeyboardActionsNew = hideNotesM.hideNotes;
+
 import metronomeOnM = module("./metronomeOn");
 export var metronomeOn: IGame.IKeyboardActionsNew = metronomeOnM.metronomeOn;
 

@@ -18,7 +18,7 @@ interface Local {
   blackWidth: number;
   yEndOfPiano: number;
   yEndOfTimeBar: number;
-  remainder: number;
+  xRemainder: number;
   whiteWidth: number;
   input: Input;
 }
@@ -55,6 +55,16 @@ var blackNoteIds = [
 var blackNoteSpots = [
   1, 3, 4, 6, 7, 8, 10, 11, 13, 14, 15, 17, 18, 20, 21, 22, 24, 25, 27, 28, 29, 31, 32,
   34, 35, 36, 38, 39, 41, 42, 43, 45, 46, 48, 49, 50];
+
+function drawNoteCover(loc: Local) {
+  if (loc.input.readOnly.s_noteCoverRelHeight > 0.0) {
+    var y0 = loc.yEndOfTimeBar;
+    var y1 = y0 + loc.input.readOnly.s_noteCoverRelHeight * (loc.input.sceneHeight - loc.yEndOfTimeBar);
+    var color = [0, 0, 0, 1];
+    var activeColor = [0, 0, 0, 0.5];
+    loc.input.drawRect(0, y0, loc.input.sceneWidth + 1, y1, [1], color, activeColor);
+  }
+}
 
 function drawPianoBlackNotes(loc: Local) {
   blackNoteIds.forEach((id, i) => {
@@ -194,7 +204,7 @@ export function drawScene(input: Input) {
     blackWidth: Math.round(0.25 * whiteWidth),
     yEndOfTimeBar: yEndOfTimeBar,
     yEndOfPiano: yEndOfTimeBar - timeBarHeight,
-    remainder: input.sceneWidth - whiteWidth * whiteNoteIds.length,
+    xRemainder: input.sceneWidth - whiteWidth * whiteNoteIds.length,
   }
   drawBlackRails(loc);
   input.readOnly.s_views.forEach((view, i) => {
@@ -203,6 +213,6 @@ export function drawScene(input: Input) {
   drawSustainNotes(loc);
   drawPiano(loc);
   drawTimeBar(loc);
-
+  drawNoteCover(loc);
 }
   

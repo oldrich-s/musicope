@@ -45,6 +45,7 @@ export var params: IGame.IParamsData = {
   s_views: ["full", "full"],
   s_quartersPerHeight: 10,
   s_showBlackRails: true,
+  s_noteCoverRelHeight: 0.0,
   s_colorBlackRails2: "#371313",
   s_colorBlackRails3: "#282200",
   s_colWhites: ["#ff5252", "#ffd800"],

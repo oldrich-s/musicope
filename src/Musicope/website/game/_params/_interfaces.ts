@@ -39,6 +39,7 @@ module IGame {
     // scenes
     s_showPiano: bool;
     s_views: string[];
+    s_noteCoverRelHeight: number;
     s_quartersPerHeight: number;
     s_showBlackRails: bool;
     s_colorBlackRails2: string;

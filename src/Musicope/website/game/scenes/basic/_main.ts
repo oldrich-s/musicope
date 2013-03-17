@@ -16,12 +16,12 @@ export class Basic implements IGame.IScene {
 
   constructor(private song: IGame.ISong, public params: IGame.IParams) {
     var o = this;
+    o.subscribeToParamsChange();
     o.setBackgrColors();
     o.canvas = o.getCanvas();
     o.setCanvasDim();
     o.setupWebGL();
     o.setupScene();
-
   }
 
 
@@ -45,6 +45,13 @@ export class Basic implements IGame.IScene {
     var dx = 2 * time / o.song.timePerSong;
     var dy = -time * o.pixelsPerTime / o.canvas.height * 2;
     o.webgl.redraw(dx, dy, o.activeIds);
+  }
+
+  private subscribeToParamsChange() {
+    var o = this;
+    o.params.subscribe("scene.Basic", "^s_noteCoverRelHeight$", (name, value) => {
+      o.setupScene();
+    });
   }
 
   private setBackgrColors() {

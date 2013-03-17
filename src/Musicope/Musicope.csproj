@@ -66,6 +66,8 @@
     <TypeScriptSourceMap>false</TypeScriptSourceMap>
   </PropertyGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="website\game\inputs\keyboard\actions\hideNotes.ts" />
+    <Content Include="website\_lib\webgl\webglhelper.js" />
     <TypeScriptCompile Include="website\list\controllers\basic\songs.ts" />
     <TypeScriptCompile Include="website\list\inputs\keyboard\actions\voteUp.ts" />
     <TypeScriptCompile Include="website\list\inputs\keyboard\actions\voteDown.ts" />
