@@ -6,7 +6,7 @@ export class metronomeOn implements IGame.IKeyboardAction {
 
   id = "metronome";
   description = "toggle state of the metronome on/off";
-  keySequence = [key.m];
+  key = key.m;
 
   constructor(private p: IGame.IKeyboardParams) { }
 

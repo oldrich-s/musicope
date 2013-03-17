@@ -6,11 +6,11 @@ import overlaysM = module("./overlays/_load");
 export class Keyboard implements IGame.IInput {
 
   private actions: IGame.IKeyboardAction[] = [];
-  private keys: number[] = [];
 
   constructor(private params: IGame.IParams, private song: IGame.ISong) {
     var o = this;
     o.initActions();
+    o.checkActionsDuplicates();
     o.signupActions();
   }
 
@@ -29,20 +29,30 @@ export class Keyboard implements IGame.IInput {
     deff.resolve(o.actions);
   }
 
-  private signupActions() {
+  private checkActionsDuplicates() {
     var o = this;
-    $(document).keydown((e) => {
-      o.keys.push(e.which);
-      o.analyzePressedKeys();
+    var keys = {};
+    o.actions.forEach((action) => {
+      if (keys[action.key]) {
+        var text = "duplicate keys: '" + keys[action.key] + "' vs '" + action.id + "'" ;
+        throw text;
+      }
+      keys[action.key] = action.id;
     });
   }
 
-  private analyzePressedKeys() {
+  private signupActions() {
+    var o = this;
+    $(document).keydown((e) => {
+      o.analyzePressedKeys(e);
+    });
+  }
+
+  private analyzePressedKeys(e: IJQuery.JQueryEventObject) {
     var o = this;
     for (var i = 0; i < o.actions.length; i++) {
-      var match = o.doActionKeysMatch(o.actions[i]);
+      var match = o.doActionKeysMatch(o.actions[i], e);
       if (match) {
-        o.keys = [];
         o.actions[i].triggerAction();
         overlaysM.basic.display(o.actions[i].id, o.actions[i].getCurrentState());
         return;
@@ -50,13 +60,9 @@ export class Keyboard implements IGame.IInput {
     }
   }
 
-  private doActionKeysMatch(action: IGame.IKeyboardAction) {
-    var o = this;
-    var matchFound = action.keySequence.every((key, i) => {
-      var oldId = o.keys.length - action.keySequence.length + i;
-      return o.keys[oldId] && o.keys[oldId] === key;
-    });
-    return matchFound;
+  private doActionKeysMatch(action: IGame.IKeyboardAction, e: IJQuery.JQueryEventObject) {
+    var sameKeys = action.key === e.which;
+    return sameKeys;
   }
 
 }

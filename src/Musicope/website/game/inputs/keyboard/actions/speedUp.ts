@@ -6,7 +6,7 @@ export class speedUp implements IGame.IKeyboardAction {
 
   id = "speed up";
   description =  "speed up the song by 10%";
-  keySequence = [key.upArrow];
+  key = key.upArrow;
 
   constructor(private p: IGame.IKeyboardParams) { }
 

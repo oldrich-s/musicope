@@ -7,7 +7,7 @@ export class waitOn implements IGame.IKeyboardAction {
 
   id = "wait";
   description = "shall the song wait for the user?";
-  keySequence = [key.w];
+  key = key.w;
 
   private options = [[false, false], [true, true]];
   private names = ["off", "on"];

@@ -6,7 +6,7 @@ export class moveBack implements IGame.IKeyboardAction {
 
   id = "move back";
   description = "move back by the amount of 2 beats";
-  keySequence = [key.leftArrow];
+  key = key.leftArrow;
 
   constructor(private p: IGame.IKeyboardParams) { }
 

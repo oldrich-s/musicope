@@ -3,11 +3,11 @@
 import key = module("../../../../common/keyCodes");
 import toolsM = module("./_tools");
 
-export class hideNotes implements IGame.IKeyboardAction {
+export class coverNotes implements IGame.IKeyboardAction {
 
-  id = "hide notes";
-  description = "Hides notes";
-  keySequence = [key.h];
+  id = "cover notes";
+  description = "Cover notes";
+  key = key.c;
 
   private states = [0.0, 0.2, 0.4, 0.6, 0.8];
 

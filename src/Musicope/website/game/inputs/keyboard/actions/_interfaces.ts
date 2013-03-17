@@ -5,7 +5,7 @@ module IGame {
   export interface IKeyboardAction {
     id: string;
     description: string;
-    keySequence: number[];
+    key: number;
     triggerAction(): void;
     getCurrentState(): any;
   }

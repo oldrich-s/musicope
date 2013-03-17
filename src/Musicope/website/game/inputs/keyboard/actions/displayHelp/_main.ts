@@ -6,7 +6,7 @@ export class displayHelp implements IGame.IKeyboardAction {
 
   id = "display help";
   description = "displays a help window";
-  keySequence = [keysM.enter];
+  key = keysM.enter;
 
   private window: IJQuery.JQuery;
   private isDisplayed = false;
@@ -62,20 +62,18 @@ export class displayHelp implements IGame.IKeyboardAction {
       var descriptionCell = $("<td class='descriptionCell'/>").appendTo(row);
       var currentCell = $("<td class='currentCell'/>").appendTo(row);
       idCell.text(action.id);
-      keyCell.text("" + o.keyCodesToNames(action.keySequence));
+      keyCell.text("" + o.keyCodeToName(action.key));
       descriptionCell.text(action.description);
       currentCell.text(o.tryRoundValue(action.getCurrentState()));
     });
   }
 
-  private keyCodesToNames(keyCodes: number[]): string[] {
-    return keyCodes.map((code) => {
-      for (var prop in keysM) {
-        if (keysM[prop] === code) {
-          return prop;
-        }
+  private keyCodeToName(keyCode: number): string {
+    for (var prop in keysM) {
+      if (keysM[prop] === keyCode) {
+        return prop;
       }
-    });
+    }
   }
 
   private tryRoundValue(value: any) {

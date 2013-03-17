@@ -6,7 +6,7 @@ export class moveForward implements IGame.IKeyboardAction {
 
   id = "move forward";
   description = "move forward by the amount of 2 beats";
-  keySequence = [key.rightArrow];
+  key = key.rightArrow;
 
   constructor(private p: IGame.IKeyboardParams) { }
 

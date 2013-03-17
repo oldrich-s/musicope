@@ -6,7 +6,7 @@ export class moveHome implements IGame.IKeyboardAction {
 
   id = "move home";
   description = "move to the initial state of the song";
-  keySequence = [key.home];
+  key = key.home;
 
   constructor(private p: IGame.IKeyboardParams) { }
 
