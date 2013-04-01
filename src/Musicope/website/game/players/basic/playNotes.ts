@@ -1,16 +1,20 @@
 /// <reference path="../../_references.ts" />
 
+var o: PlayNotes;
+
 export class PlayNotes {
 
-  private ids = [0, 0];
+  private ids: number[];
 
   constructor(private device: IDevice,
               private scene: IGame.IScene,
               private params: IGame.IParams,
-              private notes: IGame.INote[][] ) { }
+              private notes: IGame.INote[][]) {
+    o = this;
+    o.assignIds();
+  }
 
   play() {
-    var o = this;
     for (var trackId = 0; trackId < o.notes.length; trackId++) {
       while (o.isIdBelowCurrentTime(trackId)) {
         var note = o.notes[trackId][o.ids[trackId]];
@@ -21,37 +25,46 @@ export class PlayNotes {
   }
 
   reset(idsBelowCurrentTime: number[]) {
-    idsBelowCurrentTime.forEach(this.setId);
+    for (var i = 0; i < idsBelowCurrentTime.length; i++) {
+      o.ids[i] = idsBelowCurrentTime[i];
+    }
   }
 
-  private setId(id, i) { this.ids[i] = id; }
+  private assignIds() {
+    o.ids = o.notes.map(() => { return 0; });
+  }
 
   private isIdBelowCurrentTime(trackId: number) {
-    var o = this;
     return o.notes[trackId][o.ids[trackId]] &&
            o.notes[trackId][o.ids[trackId]].time < o.params.readOnly.p_elapsedTime;
   }
 
   private playNote(note: IGame.INote, trackId: number) {
-    var o = this;
     var playsUser = o.params.readOnly.p_userHands[trackId];
-    var isBelowMin = note.id < o.params.readOnly.p_minNote;
-    var isAboveMax = note.id > o.params.readOnly.p_maxNote;
-    var playOutOfReach = o.params.readOnly.p_playOutOfReachNotes && (isBelowMin || isAboveMax);
-    if (!playsUser || playOutOfReach) {
+    if (!playsUser || o.playOutOfReach(note)) {
       if (note.on) {
-        var velocity = o.params.readOnly.p_volumes[trackId] * note.velocity;
-        var maxVelocity = o.params.readOnly.p_maxVelocity[trackId];
-        if (maxVelocity && velocity > maxVelocity) {
-          velocity = maxVelocity;
-        }
-        o.device.out(144, note.id, Math.min(127, velocity));
+        o.device.out(144, note.id, Math.min(127, o.getVelocity(trackId, note)));
         o.scene.setActiveId(note.id);
       } else {
         o.device.out(144, note.id, 0);
         o.scene.unsetActiveId(note.id);
       }
     }
+  }
+
+  private playOutOfReach(note: IGame.INote) {
+    var isBelowMin = note.id < o.params.readOnly.p_minNote;
+    var isAboveMax = note.id > o.params.readOnly.p_maxNote;
+    o.params.readOnly.p_playOutOfReachNotes && (isBelowMin || isAboveMax);
+  }
+
+  private getVelocity(trackId: number, note: IGame.INote) {
+    var velocity = o.params.readOnly.p_volumes[trackId] * note.velocity;
+    var maxVelocity = o.params.readOnly.p_maxVelocity[trackId];
+    if (maxVelocity && velocity > maxVelocity) {
+      velocity = maxVelocity;
+    }
+    return velocity;
   }
 
 }

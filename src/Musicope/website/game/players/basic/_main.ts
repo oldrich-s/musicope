@@ -5,6 +5,8 @@ import playSustainsM = module("./playSustains");
 import waitForNoteM = module("./waitForNote");
 import fromDeviceM = module("./fromDevice");
 
+var o: Basic;
+
 export class Basic implements IGame.IPlayer {
   
   private previousTime: number;
@@ -15,14 +17,13 @@ export class Basic implements IGame.IPlayer {
 
   constructor(private device: IDevice, private song: IGame.ISong, private metronome: IGame.IMetronome,
               private scene: IGame.IScene, private params: IGame.IParams) {
-    var o = this;
+    o = this;
     o.correctTimesInParams();
     o.subscribeToParamsChange();
     o.assignClasses();
   }
 
   step() {
-    var o = this;
     o.playNotes.play();
     o.playSustains.play();
     o.metronome.play(o.params.readOnly.p_elapsedTime);
@@ -31,10 +32,8 @@ export class Basic implements IGame.IPlayer {
     o.hideTimeBarIfStops(isFreeze);
     return o.updateTime(isFreeze);
   }
-
   
   private correctTimesInParams() {
-    var o = this;
     if (typeof o.params.readOnly.p_initTime == 'undefined') {
       o.params.setParam("p_initTime", -2 * o.song.timePerBar);
     }
@@ -44,22 +43,12 @@ export class Basic implements IGame.IPlayer {
   }
 
   private subscribeToParamsChange() {
-    var o = this;
     o.params.subscribe("players.Basic", "^p_elapsedTime$", (name, value) => {
       o.reset();
     });
   }
 
-  private assignClasses() {
-    var o = this;
-    o.fromDevice = new fromDeviceM.FromDevice(o.device, o.scene, o.params, o.song.playerTracks);
-    o.playNotes = new playNotesM.PlayNotes(o.device, o.scene, o.params, o.song.playerTracks);
-    o.playSustains = new playSustainsM.PlaySustains(o.device, o.params, o.song.sustainNotes);
-    o.waitForNote = new waitForNoteM.WaitForNote(o.device, o.params, o.song.playerTracks, o.fromDevice.onNoteOn);
-  }
-
   private reset() {
-    var o = this;
     o.scene.unsetAllActiveIds();
     o.metronome.reset();
     var idsBelowCurrentTime = o.getIdsBelowCurrentTime();
@@ -68,12 +57,10 @@ export class Basic implements IGame.IPlayer {
   }
 
   private getIdsBelowCurrentTime(): number[] {
-    var o = this;
     return o.song.playerTracks.map(o.getIdBelowCurrentTime);
   }
 
   private getIdBelowCurrentTime(notes: IGame.INote[]) {
-    var o = this;
     if (notes.length > 0) {
       var id = notes.length - 1;
       while (id > 0 && notes[id] && notes[id].time > o.params.readOnly.p_elapsedTime) {
@@ -83,8 +70,14 @@ export class Basic implements IGame.IPlayer {
     }
   }
 
+  private assignClasses() {
+    o.fromDevice = new fromDeviceM.FromDevice(o.device, o.scene, o.params, o.song.playerTracks);
+    o.playNotes = new playNotesM.PlayNotes(o.device, o.scene, o.params, o.song.playerTracks);
+    o.playSustains = new playSustainsM.PlaySustains(o.device, o.params, o.song.sustainNotes);
+    o.waitForNote = new waitForNoteM.WaitForNote(o.device, o.params, o.song.playerTracks, o.fromDevice.onNoteOn);
+  }
+
   private updateTime(isFreeze: bool) {
-    var o = this;
     var currentTime = o.device.time();
     if (!o.previousTime) { o.previousTime = currentTime; }
     var duration = currentTime - o.previousTime;
@@ -106,9 +99,7 @@ export class Basic implements IGame.IPlayer {
     return isSongEnd;
   }
 
-  
   private hideTimeBarIfStops(isFreeze: bool) {
-    var o = this;
     if (isFreeze) {
       o.scene.setActiveId(2);
       o.scene.setActiveId(1);
@@ -117,9 +108,5 @@ export class Basic implements IGame.IPlayer {
       o.scene.unsetActiveId(1);
     }
   }
-
-
-
-  
 
 }
