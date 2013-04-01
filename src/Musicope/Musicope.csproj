@@ -67,6 +67,10 @@
   </PropertyGroup>
   <ItemGroup>
     <TypeScriptCompile Include="website\game\inputs\keyboard\actions\coverNotes.ts" />
+    <TypeScriptCompile Include="website\game\players\basic\fromDevice.ts" />
+    <TypeScriptCompile Include="website\game\players\basic\playNotes.ts" />
+    <TypeScriptCompile Include="website\game\players\basic\playSustains.ts" />
+    <TypeScriptCompile Include="website\game\players\basic\waitForNote.ts" />
     <Content Include="website\_lib\webgl\webglhelper.js" />
     <TypeScriptCompile Include="website\list\controllers\basic\songs.ts" />
     <TypeScriptCompile Include="website\list\inputs\keyboard\actions\voteUp.ts" />

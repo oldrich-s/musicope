@@ -3,8 +3,7 @@
 module IGame {
 
   export interface IPlayer {
-    step(): void;
-    isEnd(): bool;
+    step(): bool; // isEnd
   }
 
   export interface IPlayerNew {
