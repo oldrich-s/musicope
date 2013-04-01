@@ -96,25 +96,15 @@ export class Basic implements IGame.IPlayer {
 
   private deviceIn() {
     var o = this;
-    var oldTimeStamp = -1;
-    var oldVelocity = -1;
-    var oldId = -1;
     return function callback(timeStamp, kind, noteId, velocity) {
       o.sendBackToDevice(kind, noteId, velocity);
       var isNoteOn = kind > 143 && kind < 160 && velocity > 0;
       var isNoteOff = (kind > 127 && kind < 144) || (kind > 143 && kind < 160 && velocity == 0);
-      if (isNoteOff || isNoteOn) {
-        var isSimilarTime = Math.abs(timeStamp - oldTimeStamp) < 3;
-        var idMaches = noteId - oldId == 12 || noteId - oldId == 24;
-        var isDoubleNote = isSimilarTime && idMaches && velocity == oldVelocity;
-        if (!isDoubleNote) {
-          if (isNoteOn) { o.scene.setActiveId(noteId); }
-          else if (isNoteOff) { o.scene.unsetActiveId(noteId); }
-          o.addToNotes(isNoteOn, noteId, velocity);
-        }
-        oldTimeStamp = timeStamp;
-        oldVelocity = velocity;
-        oldId = noteId;
+      if (isNoteOn && !o.isDoubleNote(timeStamp, isNoteOn, noteId, velocity)) {
+        o.scene.setActiveId(noteId);
+        o.addNoteOnToNotes(noteId, velocity);
+      } else if (isNoteOff) {
+        o.scene.unsetActiveId(noteId);
       }
     }
   }
@@ -129,12 +119,26 @@ export class Basic implements IGame.IPlayer {
     }
   }
 
-  private addToNotes(isNoteOn, noteId, velocity) {
+  private oldTimeStamp = -1;
+  private oldVelocity = -1;
+  private oldId = -1;
+  private isDoubleNote(timeStamp: number, isNoteOn: bool, noteId: number, velocity: number) {
     var o = this;
-    var foundNote = o.addToKnownNotes(noteId, isNoteOn);
+    var isSimilarTime = Math.abs(timeStamp - o.oldTimeStamp) < 3;
+    var idMaches = Math.abs(noteId - o.oldId) == 12 || Math.abs(noteId - o.oldId) == 24;
+    var isDoubleNote = isSimilarTime && idMaches && velocity == o.oldVelocity;
+    o.oldTimeStamp = timeStamp;
+    o.oldVelocity = velocity;
+    o.oldId = noteId;
+    return isDoubleNote;
+  }
+
+  private addNoteOnToNotes(noteId, velocity) {
+    var o = this;
+    var foundNote = o.addNoteOnToKnownNotes(noteId);
     if (!foundNote) {
       o.unknownNotes.push({
-        on: isNoteOn,
+        on: true,
         time: o.params.readOnly.p_elapsedTime,
         id: noteId,
         velocity: velocity
@@ -142,7 +146,7 @@ export class Basic implements IGame.IPlayer {
     }
   }
 
-  private addToKnownNotes(noteId: number, isNoteOn: bool) {
+  private addNoteOnToKnownNotes(noteId: number) {
     var o = this;
     var found = false;
     o.params.readOnly.p_userHands.forEach((userHand, i) => {
@@ -151,7 +155,7 @@ export class Basic implements IGame.IPlayer {
         while (o.notes[i][id] && o.notes[i][id].time < o.params.readOnly.p_elapsedTime + o.params.readOnly.p_radiuses[i]) {
           var note = o.notes[i][id];
           var radius = Math.abs(o.notes[i][id].time - o.params.readOnly.p_elapsedTime) - 50;
-          if (note.id === noteId && isNoteOn == note.on && radius < o.params.readOnly.p_radiuses[i]) {
+          if (note.id === noteId && radius < o.params.readOnly.p_radiuses[i]) {
             o.notes[i][id]["userTime"] = o.params.readOnly.p_elapsedTime;
             found = true; break;
           }
