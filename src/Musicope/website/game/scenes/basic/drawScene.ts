@@ -123,6 +123,7 @@ function drawPianoTimeBarWhite(loc: Local) {
   var color = [1, 1, 1, 0.9];
   var activeColor = [1, 1, 1, 0.4]
   loc.input.drawRect(0, y0, loc.input.sceneWidth, y1, [2, 1, 1, 2], color, activeColor);
+  loc.input.drawRect(0, y1, loc.input.sceneWidth, 2 * y1 - y0, [3, 3, 3, 3], [1,0,0,0.4], activeColor);
 }
 
 function drawPianoBackBlack(loc: Local) {

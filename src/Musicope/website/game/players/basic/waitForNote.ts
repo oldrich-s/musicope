@@ -49,10 +49,12 @@ export class WaitForNote {
         var id = o.ids[i];
         while (o.isIdBelowCurrentTimePlusRadius(i, id)) {
           var note = o.notes[i][id];
-          var radius = Math.abs(o.notes[i][id].time - o.params.readOnly.p_elapsedTime) - 50;
-          if (note.id === noteId && radius < o.params.readOnly.p_radiuses[i]) {
-            o.notesPressedTime[i][id] = o.params.readOnly.p_elapsedTime;
-            break;
+          if (note.on && !o.notesPressedTime[i][id] && note.id === noteId) {
+            var radius = Math.abs(o.notes[i][id].time - o.params.readOnly.p_elapsedTime) - 50;
+            if (radius < o.params.readOnly.p_radiuses[i]) {
+              o.notesPressedTime[i][id] = o.params.readOnly.p_elapsedTime;
+              return;
+            }
           }
           id++;
         }

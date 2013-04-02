@@ -15,9 +15,10 @@ export class FromDevice {
               private params: IGame.IParams,
               private notes: IGame.INote[][]) {
     o = this;
+    o.initDevice();
   }
 
-  initDevice() {
+  private initDevice() {
     var midiOut = o.params.readOnly.p_deviceOut;
     var midiIn = o.params.readOnly.p_deviceIn;
     o.device.outOpen(midiOut);
