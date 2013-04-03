@@ -32,9 +32,10 @@ export class FromDevice {
 
   private deviceIn(timeStamp, kind, noteId, velocity) {
     o.sendBackToDevice(kind, noteId, velocity);
-    var isNoteOn = kind > 143 && kind < 160 && velocity > 0;
-    var isNoteOff = (kind > 127 && kind < 144) || (kind > 143 && kind < 160 && velocity == 0);
+    var isNoteOn = kind === 144 && velocity > 0;
+    var isNoteOff = kind === 128 || (kind === 144 && velocity == 0);
     if (isNoteOn && !o.isDoubleNote(timeStamp, isNoteOn, noteId, velocity)) {
+      console.log(timeStamp + " " + kind + " " + noteId + " " + velocity);
       o.scene.setActiveId(noteId);
       o.execNoteOnFuncs(noteId);
     } else if (isNoteOff) {

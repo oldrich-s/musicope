@@ -49,6 +49,10 @@ export class Basic implements IList.IController {
     });
   }
 
+  showGameParamsSetup() {
+    $('gameParamsSetup').css("display", "block");
+  }
+
   private koInitGameParams() {
     o.gameParams = ko.observable(localM.get("gameParams", ""));
     o.gameParams.subscribe((query) => { localM.set("gameParams", query); });

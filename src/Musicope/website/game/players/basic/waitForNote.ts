@@ -31,6 +31,12 @@ export class WaitForNote {
     return freeze;
   }
 
+  reset(idsBelowCurrentTime: number[]) {
+    o.resetNotesPressedTime(idsBelowCurrentTime);
+    idsBelowCurrentTime.forEach(o.setId);
+  }
+
+
   private assignIds() {
     o.ids = o.notes.map(() => { return 0; });
   }
@@ -62,11 +68,6 @@ export class WaitForNote {
     }
   }
 
-  reset(idsBelowCurrentTime: number[]) {
-    o.resetNotesPressedTime(idsBelowCurrentTime);
-    idsBelowCurrentTime.forEach(o.setId);
-  }
-
   private isIdBelowCurrentTimePlusRadius(trackId: number, noteId: number) {
     return o.notes[trackId][noteId] &&
            o.notes[trackId][noteId].time < o.params.readOnly.p_elapsedTime + o.params.readOnly.p_radiuses[trackId];
@@ -75,7 +76,9 @@ export class WaitForNote {
   private resetNotesPressedTime(idsBelowCurrentTime: number[]) {
     for (var i = 0; i < idsBelowCurrentTime.length; i++) {
       for (var j = idsBelowCurrentTime[i] + 1; j < o.notesPressedTime[i].length; j++) {
-        o.notesPressedTime[i][j] = undefined;
+        if (o.notesPressedTime[i][j]) {
+          o.notesPressedTime[i][j] = undefined;
+        }
       }
     }
   }
