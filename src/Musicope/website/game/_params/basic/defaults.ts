@@ -42,6 +42,7 @@ export var params: IGame.IParamsData = {
 
   // scenes
   s_showPiano: true,
+  s_showSustainBg: false,
   s_views: ["full", "full"],
   s_quartersPerHeight: 10,
   s_showBlackRails: true,
@@ -54,6 +55,7 @@ export var params: IGame.IParamsData = {
   s_colPianoWhite: "#2c79b2",
   s_colPianoBlack: "#3faeff",
   s_colSustain: "#00ff90",
+  s_colSustainBg: "#002f1a",
   s_colPaused: "#090714",
   s_colUnPaused: "#0d0c0c",
   s_colUnPlayedNotes: "#808080",

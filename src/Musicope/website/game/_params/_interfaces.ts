@@ -37,6 +37,7 @@ module IGame {
     m_velocity: number;
 
     // scenes
+    s_showSustainBg: bool;
     s_showPiano: bool;
     s_views: string[];
     s_noteCoverRelHeight: number;
@@ -50,6 +51,7 @@ module IGame {
     s_colPianoWhite: string;
     s_colPianoBlack: string;
     s_colSustain: string;
+    s_colSustainBg: string;
     s_colPaused: string;
     s_colUnPaused: string;
     s_colUnPlayedNotes: string;

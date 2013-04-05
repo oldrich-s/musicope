@@ -21,6 +21,7 @@ export class Basic implements IGame.ISong {
     o.setParamsFromParser(new parsers.Midi(midi));
     o.sortPlayerTracksByHands();
     o.normalizeVolumeOfPlayerTracks();
+    o.filterSustainNotes();
     o.computeSceneSustainNotes();
     o.computeSceneTracks();
     o.setMinMaxNoteId();
@@ -60,6 +61,16 @@ export class Basic implements IGame.ISong {
         });
       }
     }
+  }
+
+  private filterSustainNotes() {
+    var o = this;
+    var last = false;
+    o.sustainNotes = o.sustainNotes.filter((note) => {
+      var isok = (note.on && !last) || (!note.on && last);
+      last = note.on;
+      return isok;
+    });
   }
 
   private computeSceneSustainNotes() {

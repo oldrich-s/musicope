@@ -63,7 +63,7 @@ export class Basic implements IGame.IPlayer {
   private getIdBelowCurrentTime(notes: IGame.INote[]) {
     if (notes.length > 0) {
       var id = notes.length - 1;
-      while (id > 0 && notes[id] && notes[id].time > o.params.readOnly.p_elapsedTime) {
+      while (id >= 0 && notes[id] && notes[id].time > o.params.readOnly.p_elapsedTime) {
         id--;
       }
       return id;

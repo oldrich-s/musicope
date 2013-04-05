@@ -26,7 +26,7 @@ export class PlayNotes {
 
   reset(idsBelowCurrentTime: number[]) {
     for (var i = 0; i < idsBelowCurrentTime.length; i++) {
-      o.ids[i] = idsBelowCurrentTime[i];
+      o.ids[i] = Math.max(0, idsBelowCurrentTime[i]);
     }
   }
 

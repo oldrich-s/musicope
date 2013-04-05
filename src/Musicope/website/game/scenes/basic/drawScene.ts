@@ -178,6 +178,20 @@ function drawTrack(loc: Local, trackId: number) {
   });
 }
 
+function drawSustainBackground(loc: Local) {
+  if (loc.input.readOnly.s_showSustainBg) {
+    var color = hexToRgb(loc.input.readOnly.s_colSustain);
+    var color2 = hexToRgb(loc.input.readOnly.s_colSustain, 0.5);
+    loc.input.sustainNotes.forEach((note) => {
+      var y0 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOn + 1;
+      var y1 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOff - 2;
+      var ipos = whiteNoteIds.length;
+      loc.input.drawRect(0, y0, loc.input.sceneWidth + 1, y0 + 2, [200], color, color);
+      loc.input.drawRect(0, y1, loc.input.sceneWidth + 1, y1 + 2, [200], color2, color);
+    });
+  }
+}
+
 function drawBlackRails(loc: Local) {
   if (loc.input.readOnly.s_showBlackRails) {
     blackNoteIds.forEach((id, i) => {
@@ -207,6 +221,7 @@ export function drawScene(input: Input) {
     yEndOfPiano: yEndOfTimeBar - timeBarHeight,
     xRemainder: input.sceneWidth - whiteWidth * whiteNoteIds.length,
   }
+  drawSustainBackground(loc);
   drawBlackRails(loc);
   input.readOnly.s_views.forEach((view, i) => {
     if (view === "full") { drawTrack(loc, i); }
