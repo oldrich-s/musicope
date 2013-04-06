@@ -27,7 +27,7 @@ export class Basic implements IList.IController {
     o.koInitListIndex();
     o.initInputs();
 
-    songsM.getSongs(o.params).done((songs: IList.ISong[]) => {
+    songsM.getSongList(o.params).done((songs: IList.ISong[]) => {
       o.songs = songs;
       o.searchQuery.valueHasMutated();
     });
@@ -45,7 +45,7 @@ export class Basic implements IList.IController {
       var pars: string = o.gameParams();
       if (!pars) { pars = ""; }
       if (pars.charAt(0) !== "&") { pars = "&" + pars; }
-      window.location.href = "../game/index.html?c_songUrl=" + decodeURIComponent(song.url) + pars;
+      window.location.href = "../game/index.html?c_songUrl=" + encodeURIComponent(song.url) + pars;
     });
   }
 

@@ -8,8 +8,6 @@ import songsM = module("../../songs/_load");
 import playersM = module("../../players/_load");
 import scenesM = module("../../scenes/_load");
 
-import base64 = module("../../../_lib/base64/base64");
-
 //import benchmarkM = module("../../../common/benchmark/_main");
 //var benchmark = new benchmarkM.Benchmark();
 
@@ -76,7 +74,7 @@ export class Basic implements IGame.IController {
     var out = $.Deferred();
     var url = "../proxy.php?url=" + encodeURIComponent(o.params.readOnly.c_songUrl);
     $.get(url).done((text: string) => {
-      var arr = base64.decode(text);
+      var arr = atob(text);
       out.resolve(arr);
     });
     return out;

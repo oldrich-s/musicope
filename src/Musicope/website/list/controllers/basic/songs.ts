@@ -73,8 +73,8 @@ function getSongsFromUrls(urls: string[], docs: any[]) {
   return songs;
 }
 
-export function getSongs(params: IList.IParams) {
-  var done = $.Deferred();
+function getSongListLocal(params: IList.IParams) {
+  var out = $.Deferred();
   var xhr = new XMLHttpRequest();
   xhr.open('GET', params.readOnly.l_songsUrl);
   xhr.responseType = 'text';
@@ -82,11 +82,32 @@ export function getSongs(params: IList.IParams) {
     if (this.status == 200) {
       var paths: string[] = JSON.parse(this.responseText);
       getDocsFromDB(paths).done((docs: any[]) => {
-        done.resolve(getSongsFromUrls(paths, docs));
+        out.resolve(getSongsFromUrls(paths, docs));
       });
-      
     }
   }
   xhr.send();
-  return done.promise();
+  return out.promise();
+}
+
+function getSongListRemote(params: IList.IParams) {
+  var out = $.Deferred();
+  var url = "../proxy.php?url=" + encodeURIComponent(params.readOnly.l_songsUrl);
+  $.get(url).done((text: string) => {
+    var paths: string[] = JSON.parse(atob(text));
+    getDocsFromDB(paths).done((docs: any[]) => {
+      out.resolve(getSongsFromUrls(paths, docs));
+    });
+  });
+  return out;
+}
+
+export function getSongList(params: IList.IParams) {
+  var out = $.Deferred();
+  var isLocal = params.readOnly.l_songsUrl.indexOf("../") == 0;
+  if (isLocal) {
+    return getSongListLocal(params);
+  } else {
+    return getSongListRemote(params);
+  }
 }
