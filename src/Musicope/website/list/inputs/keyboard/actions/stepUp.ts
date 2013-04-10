@@ -1,7 +1,6 @@
 /// <reference path="../../../_references.ts" />
 
 import key = module("../../../../common/keyCodes");
-import toolsM = module("./_tools");
 
 export class stepUp implements IList.IKeyboardAction {
 
@@ -21,7 +20,6 @@ export class stepUp implements IList.IKeyboardAction {
     var index = o.contr.listIndex() - 1;
     var trimmedIndex = index < 0 ? 0 : index;
     o.contr.listIndex(trimmedIndex);
-    toolsM.correctPosition();
   }
 
   getCurrentState() {

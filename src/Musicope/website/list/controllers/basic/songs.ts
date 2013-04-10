@@ -66,7 +66,7 @@ function getSongsFromUrls(urls: string[], docs: any[]) {
       name: vals[2],
       extension: vals[3],
       url: path,
-      db: docs[i]
+      db: docs[i],
     };
     return song;
   });

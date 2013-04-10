@@ -12,10 +12,11 @@ export class Basic implements IList.IController {
 
   gameParams: KnockoutObservableString;
   searchQuery: KnockoutObservableString;
-  displayedSongs = ko.observableArray();
+  displayedSongs = ko.observableArray([]);
   listIndex: KnockoutObservableNumber;
 
   songs: IList.ISong[] = [];
+  filteredSongs: IList.ISong[] = [];
 
   private queryManager: IList.IQuery;
   private params = new paramsM.Basic();
@@ -35,6 +36,7 @@ export class Basic implements IList.IController {
     o.scrollToFocusedEl();
     o.initQueryManager();
     o.assignOnQueryUpdate();
+    o.assignCorrectVisibility();
   }
 
   redirect(indexFn: () => number, song: IList.ISong) {
@@ -109,6 +111,36 @@ export class Basic implements IList.IController {
       var query: string = o.searchQuery();
       o.queryManager.onQueryUpdate(query);
     });
+  }
+
+  updateFilteredSongs(songs: IList.ISong[]) {
+    var o = this;
+    o.filteredSongs = songs;
+    var length = Math.min(o.listIndex() + 10, songs.length);
+    o.displayedSongs(songs.slice(0, length));
+  }
+
+  private assignCorrectVisibility() {
+    var o = this;
+    ko.computed(() => {
+      var currentId = o.listIndex() + 10;
+      var songs = o.displayedSongs();
+      if (o.filteredSongs[currentId] && currentId > songs.length - 1) {
+        songs.push(o.filteredSongs[currentId]);
+      }
+    });
+  }
+
+  correctPosition(dom) {
+    var el = $(dom);
+    var rely: number = el.offset()["top"] - $(window).scrollTop() + 0.5 * el.height();
+    if (rely > 0.9 * window.innerHeight) {
+      var dy = window.innerHeight - 1.5 * el.height() - rely;
+      $(window).scrollTop($(window).scrollTop() - dy);
+    } else if (rely < 0.2 * window.innerHeight) {
+      $(window).scrollTop(el.offset()["top"] - 2 * el.height());
+    }
+    return true;
   }
 
 }

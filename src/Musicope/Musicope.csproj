@@ -105,12 +105,10 @@
     <TypeScriptCompile Include="website\list\inputs\keyboard\actions\startGame.ts" />
     <Content Include="website\list\inputs\keyboard\actions\_interfaces.ts" />
     <TypeScriptCompile Include="website\list\inputs\keyboard\actions\_load.ts" />
-    <TypeScriptCompile Include="website\list\inputs\keyboard\actions\_tools.ts" />
     <Content Include="website\list\inputs\_interfaces.ts" />
     <TypeScriptCompile Include="website\list\inputs\_load.ts" />
     <TypeScriptCompile Include="website\list\inputs\_references.ts" />
     <TypeScriptCompile Include="website\list\queries\basic\_main.ts" />
-    <TypeScriptCompile Include="website\list\queries\basic\actions\lastPlayedSongs.ts" />
     <TypeScriptCompile Include="website\list\queries\basic\actions\filterSongs.ts" />
     <Content Include="website\list\queries\basic\actions\_interfaces.ts" />
     <TypeScriptCompile Include="website\list\queries\basic\actions\_load.ts" />

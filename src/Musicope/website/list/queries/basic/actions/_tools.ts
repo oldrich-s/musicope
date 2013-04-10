@@ -18,7 +18,7 @@ function colorSongByQueries(song: IList.ISong, queries: string[]) {
     path: coloredPath,
     url: song.url,
     db: song.db,
-    extension: song.extension
+    extension: song.extension,
   };
   return coloredSong;
 }

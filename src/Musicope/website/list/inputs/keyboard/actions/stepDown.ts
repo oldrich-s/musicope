@@ -1,7 +1,6 @@
 /// <reference path="../../../_references.ts" />
 
 import key = module("../../../../common/keyCodes");
-import toolsM = module("./_tools");
 
 export class stepDown implements IList.IKeyboardAction {
 
@@ -22,7 +21,6 @@ export class stepDown implements IList.IKeyboardAction {
     var length = o.contr.displayedSongs().length;
     var trimmedIndex = index >= length ? length - 1 : index;
     o.contr.listIndex(trimmedIndex);
-    toolsM.correctPosition();
   }
 
   getCurrentState() {

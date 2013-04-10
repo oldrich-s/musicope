@@ -19,7 +19,7 @@ export class filterSongs implements IList.IQueryBasicAction {
   onQueryUpdate(query: string) {
     var o = this;
     var filteredSongs = o.getFilteredAndColoredSongs(query);
-    o.contr.displayedSongs(filteredSongs);
+    o.contr.updateFilteredSongs(filteredSongs);
   }
 
   private getFilteredAndColoredSongs(query: string) {
@@ -27,8 +27,7 @@ export class filterSongs implements IList.IQueryBasicAction {
     var queries = toolsM.splitQuery(query);
     var filteredSongs = toolsM.filterSongsByQueries(o.contr.songs, queries);
     var sortedSongs = o.sortSongs(filteredSongs);
-    var slicedSongs = sortedSongs.slice(0, 100);
-    var coloredSongs = toolsM.colorSongsByQueries(slicedSongs, queries);
+    var coloredSongs = toolsM.colorSongsByQueries(sortedSongs, queries);
     return coloredSongs;
   }
 

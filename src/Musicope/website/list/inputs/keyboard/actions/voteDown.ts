@@ -1,7 +1,6 @@
 /// <reference path="../../../_references.ts" />
 
 import key = module("../../../../common/keyCodes");
-import toolsM = module("./_tools");
 
 export class voteDown implements IList.IKeyboardAction {
 

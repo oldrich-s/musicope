@@ -14,7 +14,7 @@
   </div>
 
   <div class="midContainer" data-bind="foreach: displayedSongs" align="center">
-    <div class="el" data-bind="css: { elFocus: $parent.listIndex() == $index(), elFocusFirst: $index() == 0 }">
+    <div class="el" data-bind="css: {elFocus: $parent.listIndex() == $index() && $parent.correctPosition($element), elFocusFirst: $index() == 0 }">
       <div class="vote">
         <a class="vote-up" href="#" data-bind="click: function(data, event) { data.db.votes(data.db.votes() + 1); }"></a>
         <span class="vote-count" data-bind="text: db.votes"></span>
