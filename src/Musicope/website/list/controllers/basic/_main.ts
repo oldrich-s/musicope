@@ -107,8 +107,7 @@ export class Basic implements IList.IController {
 
   private assignOnQueryUpdate() {
     var o = this;
-    ko.computed(() => {
-      var query: string = o.searchQuery();
+    o.searchQuery.subscribe((query) => {
       o.queryManager.onQueryUpdate(query);
     });
   }
@@ -122,11 +121,18 @@ export class Basic implements IList.IController {
 
   private assignCorrectVisibility() {
     var o = this;
-    ko.computed(() => {
-      var currentId = o.listIndex() + 10;
-      var songs = o.displayedSongs();
-      if (o.filteredSongs[currentId] && currentId > songs.length - 1) {
-        songs.push(o.filteredSongs[currentId]);
+    $(window).scroll((e) => {
+      var scrollEnd = $(document).height() - $(window).scrollTop() - $(window).height();
+      if (scrollEnd < 100) {
+        console.log("assignCorrectVisibility");
+        var songs = o.displayedSongs();
+        var length = songs.length;
+        for (var i = length; i < length + 10; i++) {
+          if (o.filteredSongs[i]) {
+            songs.push(o.filteredSongs[i]);
+          }
+        }
+        o.displayedSongs.valueHasMutated();
       }
     });
   }
