@@ -55,6 +55,25 @@ export class Basic implements IList.IController {
     $('gameParamsSetup').css("display", "block");
   }
 
+  correctPosition(dom) {
+    var el = $(dom);
+    var rely: number = el.offset()["top"] - $(window).scrollTop() + 0.5 * el.height();
+    if (rely > 0.9 * window.innerHeight) {
+      var dy = window.innerHeight - 1.5 * el.height() - rely;
+      $(window).scrollTop($(window).scrollTop() - dy);
+    } else if (rely < 0.2 * window.innerHeight) {
+      $(window).scrollTop(el.offset()["top"] - 2 * el.height());
+    }
+    return true;
+  }
+
+  updateFilteredSongs(songs: IList.ISong[]) {
+    var o = this;
+    o.filteredSongs = songs;
+    var length = Math.min(o.listIndex() + 10, songs.length);
+    o.displayedSongs(songs.slice(0, length));
+  }
+
   private koInitGameParams() {
     o.gameParams = ko.observable(localM.get("gameParams", ""));
     o.gameParams.subscribe((query) => { localM.set("gameParams", query); });
@@ -112,19 +131,11 @@ export class Basic implements IList.IController {
     });
   }
 
-  updateFilteredSongs(songs: IList.ISong[]) {
-    var o = this;
-    o.filteredSongs = songs;
-    var length = Math.min(o.listIndex() + 10, songs.length);
-    o.displayedSongs(songs.slice(0, length));
-  }
-
   private assignCorrectVisibility() {
     var o = this;
     $(window).scroll((e) => {
       var scrollEnd = $(document).height() - $(window).scrollTop() - $(window).height();
       if (scrollEnd < 100) {
-        console.log("assignCorrectVisibility");
         var songs = o.displayedSongs();
         var length = songs.length;
         for (var i = length; i < length + 10; i++) {
@@ -135,18 +146,6 @@ export class Basic implements IList.IController {
         o.displayedSongs.valueHasMutated();
       }
     });
-  }
-
-  correctPosition(dom) {
-    var el = $(dom);
-    var rely: number = el.offset()["top"] - $(window).scrollTop() + 0.5 * el.height();
-    if (rely > 0.9 * window.innerHeight) {
-      var dy = window.innerHeight - 1.5 * el.height() - rely;
-      $(window).scrollTop($(window).scrollTop() - dy);
-    } else if (rely < 0.2 * window.innerHeight) {
-      $(window).scrollTop(el.offset()["top"] - 2 * el.height());
-    }
-    return true;
   }
 
 }
