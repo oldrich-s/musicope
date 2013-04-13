@@ -1,238 +1,172 @@
-/// <reference path="../../_references.ts" />
+///// <reference path="../../_references.ts" />
 
-export class Midi implements IGame.IParser {
+//import metaM = module("./meta");
 
-  timePerBeat: number;
-  timePerBar: number;
-  noteValuePerBeat: number; // denominator in time signature: 2, 4, 8, 16 ...
-  tracks: IGame.INote[][] = [];
-  sustainNotes: IGame.ISustainNote[] = [];
+//interface ITrackEvent {
+//  name: string;
+//  value: any;
+//}
 
-  private ticksPerQuarter: number;
-  private timePerQuarter: number;
-  private timePerTick: number;
-  private beatsPerBar: number;
-  
-  constructor(private midi: Uint8Array) {
-    var o = this;
-    o.parseHeaderChunk();
-    o.parseTrackChunks();
-  }
+//interface ITrackEvent2 extends ITrackEvent {
+//  newi: number;
+//}
 
-  private parseHeaderChunk() {
-    var o = this;
-    if (o.isCorrectHeaderChunk()) {
-      if (o.ticksPerQuarter & 0x8000) {
-        throw "frames per second not implemented";
-      } else {
-        o.ticksPerQuarter = o.midi[12] * 256 + o.midi[13];
-      }
-    } else {
-      throw "incorrect midi file";
-    }
-  }
+//function readVariableLength(arr: Uint8Array, i: number) {
+//  var value = arr[i++];
+//  if (value & 0x80) {
+//    value = value & 0x7F;
+//    do {
+//      var c = arr[i++];
+//      value = (value << 7) + (c & 0x7F);
+//    } while (c & 0x80);
+//  }
+//  return { value: value, newi: i };
+//}
 
-  private isCorrectHeaderChunk() {
-    var o = this;
-    return
-      o.midi[0] == 77 && o.midi[1] == 84 && o.midi[2] == 104 && o.midi[3] == 100 &&
-      o.midi[4] == 0 && o.midi[5] == 0 && o.midi[6] == 0 && o.midi[7] == 6 &&
-      o.midi[8] == 0 && (o.midi[9] == 0 || o.midi[9] == 1);
-  }
+//function parsearrEvent(arr: Uint8Array, i: number) {
+//  return {
+//  };
+//}
 
-  private parseTrackChunks() {
-    var o = this;
-    var i = 14;
-    while (i < o.midi.length) {
-      i = o.parseTrackChunk(i);
-    }
-  }
+//function parseMetaEvent(arr: Uint8Array, i: number) {
 
-  private parseTrackChunk(i) {
-    var o = this;
-    if (!o.isCorrectTrackChunk(i)) {
-      throw ("incorrect track chunk at i = " + i);
-    } else {
-      var chunkSize = o.getChunkSize(i + 4);
-      o.parseTrackEventData(i + 8, chunkSize);
-      return i + chunkSize;
-    }
-  }
+//  var metaType = arr[i];
+//  var ob = readVariableLength(arr, i + 1);
+//  var subarray = arr.subarray(ob.newi, ob.newi + ob.value)
+//  var event = metaM.parseMetaEvent(metaType, subarray);
+//  return {
+//    newi: ob.newi,
+//    name: "meta",
+//    value: event
+//  };
+//}
 
-  private isCorrectTrackChunk(i: number) {
-    var o = this;
-    return o.midi[i] == 77 && o.midi[i + 1] == 84 &&
-           o.midi[i + 2] == 114 && o.midi[i + 3] == 107;
-  }
+//function parseSysExEvent(arr: Uint8Array, i: number) {
 
-  private getChunkSize(i: number) {
-    var o = this;
-    return  256 * 256 * 256 * o.midi[i] +
-            256 * 256 * o.midi[i + 1] +
-            256 * o.midi[i + 2] +
-            o.midi[i + 3];
-  }
+//  var ob = readVariableLength(arr, i);
+//  return {
+//    newi: ob.newi,
+//    name: "sysEx",
+//    value: arr.subarray(i)
+//  }
+//}
 
-  private parseTrackEventData(i: number, chunkSize: number) {
+//function parseTrackEvent(arr: Uint8Array, i: number): ITrackEvent2 {
 
-  }
+//  var dTimeAndNewIndex = readVariableLength(arr, i);
+//  var dTime = dTimeAndNewIndex.value;
+//  var newi = dTimeAndNewIndex.newi;
+//  var eventType = arr[newi];
+//  switch (eventType) {
+//    case 240:
+//    case 247: return parseSysExEvent(arr, newi + 1);
+//    case 255: return parseMetaEvent(arr, newi + 1);
+//    default: return parsearrEvent(arr, newi + 1);
+//  }
+//}
 
-  private parsePlayerTracks() {
-    var o = this;
-    var trackIndexes = Midi.indexesOf(o.midi, [77, 84, 114, 107]);
-    trackIndexes.forEach((index, i) => {
-      o.parsePlayerTrack(i, index + 4);
-    });
-    if (o.tracks[0].length == 0) {
-      o.tracks.shift();
-    }
-  }
+//function parseTrackEvents(arr: Uint8Array) {
 
-  private parsePlayerTrack(trackId: number, index: number) {
-    var o = this, ticks = 0;
-    o.tracks.push([]);
-    var trackLength = o.midi[index++] * 256 * 256 * 256 + o.midi[index++] * 256 * 256 + o.midi[index++] * 256 + o.midi[index++];
-    var end = index + trackLength;
-    while (index < end) {
-      var ob = o.readVarLength(index);
-      index = ob.newIndex, ticks = ticks + ob.value;
-      var typeChannel = o.midi[index++];
+//  var events: ITrackEvent[] = [];
+//  var i = 0;
+//  while (i < arr.length) {
+//    var res = parseTrackEvent(arr, i);
+//    events.push({ name: res.name, value: res.value });
+//    i = res.newi;
+//  }
+//  return events;
+//}
 
-      if (typeChannel === 240) { // System Exclusive Events
-        var ob1 = o.readVarLength(index);
-        index = ob1.newIndex + ob1.value;
-      } else if (typeChannel === 255) { // Meta
-        index = o.processMeta(index, trackId == 0 && ticks == 0);
-      } else {
-        var time = ticks * o.timePerTick;
-        index = o.processMessage(trackId, index, typeChannel, time);
-      }
-    }
-    if (trackId == 0) {
-      o.timePerBeat = o.timePerQuarter * 4 / o.noteValuePerBeat;
-      o.timePerTick = o.timePerQuarter / o.ticksPerQuarter;
-      o.timePerBar = o.timePerBeat * o.beatsPerBar;
-    }
-  }
+//function getChunkSize(arr: Uint8Array) {
+//  return 256 * 256 * 256 * arr[0] +
+//          256 * 256 * arr[1] +
+//          256 * arr[2] +
+//          arr[3];
+//}
 
-  private processMeta(index: number, isBegining: bool) {
-    var o = this;
-    var type = o.midi[index++];
-    var ob = o.readVarLength(index);
-    index = ob.newIndex;
-    switch (type) {
-      case 81: // set tempo, length = 3
-        if (isBegining) {
-          o.timePerQuarter = (256 * 256 * o.midi[index] + 256 * o.midi[index + 1] + o.midi[index + 2]) / 1000;
-        }
-        break;
-      case 88: // time signature, length = 4
-        if (isBegining) {
-          o.beatsPerBar = o.midi[index];
-          o.noteValuePerBeat = Math.pow(2, o.midi[index + 1]);
-          var midiClocksPerMetronomeClick = o.midi[index + 2];
-          var thirtySecondsPer24Clocks = o.midi[index + 3];
-        }
-        break;
-      case 0: // sequence number
-      case 1: // text event
-      case 2: // copyright notice
-      case 3: // track name
-      case 4: // instrument name
-      case 5: // lyrics
-      case 6: // marker
-      case 7: // cue point
-      case 32: // channel prefix
-      case 33: // channel prefix or port
-      case 47: // end of track
-      case 84: // smpte offset
-      case 89: // key signature
-      case 127: // sequencer specific
-      default:
-        break;
-    }
-    return index + ob.value;
-  }
+//function parseChunk(arr: Uint8Array) {
+//}
 
-  private lastVals = [undefined, undefined, undefined, undefined];
-  private processMessage(trackId: number, index: number, typeChannel: number, time: number) {
-    var o = this;
+//function isCorrectHeaderChunk(arr: Uint8Array) {
+//  return
+//  arr[0] == 77 && arr[1] == 84 && arr[2] == 104 && arr[3] == 100 &&
+//  arr[4] == 0 && arr[5] == 0 && arr[6] == 0 && arr[7] == 6 &&
+//  arr[8] == 0 && (arr[9] == 0 || arr[9] == 1);
+//}
 
-    if (typeChannel >> 4 > 7 && typeChannel >> 4 < 15) {
-      o.lastVals[trackId] = typeChannel;
-    } else if (o.lastVals[trackId]) {
-      typeChannel = o.lastVals[trackId];
-      index--;
-    }
+//function getChunkFn(arr: Uint8Array) {
+//  if (isCorrectHeaderChunk(arr)) {
+//    return parseHeaderChunk;
+//  } else if (isCorrectTrackChunk(arr)) {
+//    return parseTrackChunk;
+//  }
+//}
 
-    var type = typeChannel >> 4;
-    var channel = typeChannel - type * 16;
+//function parseChunks(arr: Uint8Array) {
+//  var chunks: any[] = [];
+//  var name = getChunkFn(arr.subarray(0,3));
+//  while (i < arr.length) {
+//    var ob = parseTrackChunk(i);
+//    i = ob.newi;
+//    trackChunks.push(ob.events);
+//  }
+//  return trackChunks;
+//}
 
-    switch (type) {
-      case 8: // note off
-      case 9: // note on
-        var noteId = o.midi[index++];
-        var velocity = o.midi[index++];
-        var on = type == 9 && velocity > 0;
-        o.tracks[trackId].push({ on: on, time: time, id: noteId, velocity: velocity });
-        break;
-      case 10: // note aftertouch
-        index = index + 2;
-        break;
-      case 11: // controller
-        var id = o.midi[index++];
-        var value = o.midi[index++];
-        if (id == 64) { // sustain
-          o.sustainNotes.push({ on: value > 63, time: time });
-        }
-        break;
-      case 12: // program change
-        index = index + 1;
-        break;
-      case 13: // channel aftertouch
-        index = index + 1;
-        break;
-      case 14: // pitch bend
-        index = index + 2;
-        break;
-      default:
-        alert("Event not implemented");
-        break;
-    }
-    return index;
-  }
+//function isCorrectTrackChunk(i: number) {
+//  return arr[i] == 77 && arr[i + 1] == 84 &&
+//         arr[i + 2] == 114 && arr[i + 3] == 107;
+//}
 
-  private readVarLength(index: number) {
-    var value = this.midi[index++];
-    if (value & 0x80) {
-      value = value & 0x7F;
-      do {
-        var c = this.midi[index++];
-        value = (value << 7) + (c & 0x7F);
-      } while (c & 0x80);
-    }
-    return { value: value, newIndex: index };
-  }
+//function parseTrackChunk(arr: Uint8Array, i: number) {
 
-  static private indexOf(where: Uint8Array, what: number[]) {
-    for (var i = 0; i < where.length; i++) {
-      var found = what.every((whati, j) => {
-        return whati == where[i + j];
-      });
-      if (found) { return i; }
-    }
-    return -1;
-  }
+//  if (!isCorrectTrackChunk(i)) {
+//    throw ("incorrect track chunk at i = " + i);
+//  } else {
+//    var chunkSize = getChunkSize(i + 4);
+//    var subarray = arr.subarray(i + 8, i + 8 + chunkSize);
+//    var events = parseTrackEvents(subarray);
+//    return {
+//      newi: endi,
+//      events: events
+//    };
+//  }
+//}
 
-  static private indexesOf(where: Uint8Array, what: number[]) {
-    var result: number[] = [];
-    for (var i = 0; i < where.length; i++) {
-      var found = what.every((whati, j) => {
-        return whati == where[i + j];
-      });
-      if (found) { result.push(i); }
-    }
-    return result;
-  }
+//function parseTrackChunks() {
+//  var i = 14;
+//  var trackChunks: ITrackEvent[][] = [];
+//  while (i < arr.length) {
+//    var ob = parseTrackChunk(i);
+//    i = ob.newi;
+//    trackChunks.push(ob.events);
+//  }
+//  return trackChunks;
+//}
 
-}
+//function isCorrectHeaderChunk(arr: Uint8Array) {
+//  return
+//    arr[0] == 77 && arr[1] == 84 && arr[2] == 104 && arr[3] == 100 &&
+//    arr[4] == 0 && arr[5] == 0 && arr[6] == 0 && arr[7] == 6 &&
+//    arr[8] == 0 && (arr[9] == 0 || arr[9] == 1);
+//}
+
+//function parseHeaderChunk(arr: Uint8Array) {
+//  if (isCorrectHeaderChunk(arr)) {
+//    if (ticksPerQuarter & 0x8000) {
+//      throw "frames per second not implemented";
+//    } else {
+//      ticksPerQuarter = arr[12] * 256 + arr[13];
+//    }
+//  } else {
+//    throw "incorrect arr file";
+//  }
+//}
+
+//export function arrToJson(arr: Uint8Array) {
+//  return {
+//    ticksPerQuarter: parseHeaderChunk(arr)
+//  };
+//  ;
+//  return parseTrackChunks(arr);
+//}

@@ -72,6 +72,7 @@
     <TypeScriptCompile Include="website\game\players\basic\playSustains.ts" />
     <TypeScriptCompile Include="website\game\players\basic\waitForNote.ts" />
     <TypeScriptCompile Include="website\game\parsers\midi\_main2.ts" />
+    <TypeScriptCompile Include="website\game\parsers\midi\meta.ts" />
     <Content Include="website\_lib\webgl\webglhelper.js" />
     <TypeScriptCompile Include="website\list\controllers\basic\songs.ts" />
     <TypeScriptCompile Include="website\list\inputs\keyboard\actions\voteUp.ts" />
