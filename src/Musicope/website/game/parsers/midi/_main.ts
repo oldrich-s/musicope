@@ -1,6 +1,6 @@
 /// <reference path="../../_references.ts" />
 
-import midiToJsonM = module("./midiToJson");
+import mm = module("./_main2");
 
 export class Midi implements IGame.IParser {
 
@@ -17,9 +17,7 @@ export class Midi implements IGame.IParser {
   
   constructor(private midi: Uint8Array) {
     var o = this;
-    var test = midiToJsonM.parse(midi);
-    $("body").css("color", "white");
-    $("<pre/>").appendTo("body").text(JSON.stringify(test, null, '\t'));
+    var t = new mm.Midi2(midi);
     //o.parseHeader();
     //o.parsePlayerTracks();
   }

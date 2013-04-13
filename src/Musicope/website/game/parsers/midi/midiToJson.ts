@@ -4,7 +4,7 @@ import metaEventM = module("./metaEvent");
 import midiEventM = module("./midiEvent");
 
 interface ITrackEvent {
-  name: string;
+  type: string;
   value: any;
   dTime: number;
 }
@@ -42,7 +42,7 @@ function parseTrackEvent(arr: Uint8Array, i: number): ITrackEvent2 {
     case 247:
       var ob = readVariableLength(arr, i + 1);
       return {
-        name: "sysEx",
+        type: "sysEx",
         dTime: dTime,
         value: arr.subarray(ob.newi, ob.newi + ob.value),
         newi: ob.newi + ob.value
@@ -53,18 +53,13 @@ function parseTrackEvent(arr: Uint8Array, i: number): ITrackEvent2 {
       var subarray = arr.subarray(ob.newi, ob.newi + ob.value)
       var event = metaEventM.parse(metaType, subarray);
       return {
-        name: "meta",
+        type: "meta",
         dTime: dTime,
         value: event,
         newi: ob.newi + ob.value
       };
     default:
-      return {
-        name: "midi",
-        dTime: dTime,
-        value: midiEventM.parse(arr[i], arr[i+1], arr[i+2]),
-        newi: i + 3
-      };
+      return midiEventM.parse(dTime, arr, i);
   }
 }
 
@@ -73,11 +68,11 @@ function parseTrackChunk(arr: Uint8Array) {
   var i = 0;
   while (i < arr.length) {
     var res = parseTrackEvent(arr, i);
-    events.push({ name: res.name, dTime: res.dTime, value: res.value });
+    events.push({ type: res.type, dTime: res.dTime, value: res.value });
     i = res.newi;
   }
   return {
-    name: "track",
+    type: "track",
     value: events
   };
 }
@@ -92,7 +87,7 @@ function parseHeaderChunk(arr: Uint8Array) {
     throw "frames per second not implemented";
   } else {
     return {
-      name: "header",
+      type: "header",
       value: {
         format: 256 * arr[0] + arr[1],
         numberOfTracks: 256 * arr[2] + arr[3],
