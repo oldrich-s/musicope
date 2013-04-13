@@ -23,7 +23,7 @@ function midiChannelPrefix(arr: Uint8Array) {
 }
 
 function toText(arr: Uint8Array) {
-  var text: string;
+  var text = "";
   for (var i = 0; i < arr.byteLength; i++) {
     text += String.fromCharCode(arr[i]);
   }
@@ -55,7 +55,7 @@ var metaTypes = {
   127: { name: "sequencerSpecific", fn: sequencerSpecific }
 };
 
-export function parseMetaEvent(metaType: number, arr: Uint8Array) {
+export function parse(metaType: number, arr: Uint8Array) {
   var event = metaTypes[metaType];
   return {
     name: <string> event["name"],

@@ -54,6 +54,14 @@ export class Basic implements IGame.IPlayer {
     var idsBelowCurrentTime = o.getIdsBelowCurrentTime();
     o.waitForNote.reset(idsBelowCurrentTime);
     o.playNotes.reset(idsBelowCurrentTime);
+    o.deviceOnNotesToOff();
+  }
+
+  private deviceOnNotesToOff() {
+    var o = this;
+    for (var i = 0; i < 128; i++) {
+      o.device.out(144, i, 0);
+    }
   }
 
   private getIdsBelowCurrentTime(): number[] {
