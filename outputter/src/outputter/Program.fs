@@ -3,8 +3,9 @@
 let copyFiles(sourcePath, destinationPath) =
   let files = Directory.GetFiles(sourcePath, "*.*", SearchOption.AllDirectories)
   for fromFile in files do
-    if  (fromFile.Contains @"\_assets\" ||
+    if (fromFile.Contains @"\_assets\" ||
         fromFile.Contains "index." ||
+        fromFile.Contains ".ico" ||
         fromFile.Contains @"\_lib\" ||
         fromFile.EndsWith @".php") &&
         fromFile.EndsWith ".js.map" = false &&

@@ -17,9 +17,9 @@ export class Midi implements IGame.IParser {
   
   constructor(private midi: Uint8Array) {
     var o = this;
-    var t = new mm.Midi2(midi);
-    //o.parseHeader();
-    //o.parsePlayerTracks();
+    //var t = new mm.Midi2(midi);
+    o.parseHeader();
+    o.parsePlayerTracks();
   }
 
   private parseHeader() {
