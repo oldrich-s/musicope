@@ -1,4 +1,4 @@
-module IGame {
+module Musicope.Game.Params {
 
   export interface IParamsData {
 
@@ -15,34 +15,34 @@ module IGame {
     p_deviceOut: string;
     p_elapsedTime: number;
     p_initTime: number;
-    p_isPaused: bool;
+    p_isPaused: boolean;
     p_minNote: number;
     p_maxNote: number;
-    p_playOutOfReachNotes: bool;
-    p_waitForOutOfReachNotes: bool;
+    p_playOutOfReachNotes: boolean;
+    p_waitForOutOfReachNotes: boolean;
     p_radiuses: number[];
     p_speed: number;
-    p_sustain: bool;
-    p_userHands: bool[];
+    p_sustain: boolean;
+    p_userHands: boolean[];
     p_volumes: number[];
-    p_waits: bool[];
+    p_waits: boolean[];
     p_maxVelocity: number[];
 
     // metronomes
     m_channel: number;
     m_id1: number;
     m_id2: number;
-    m_isOn: bool;
+    m_isOn: boolean;
     m_ticksPerBeat: number;
     m_velocity: number;
 
     // scenes
-    s_showSustainBg: bool;
-    s_showPiano: bool;
+    s_showSustainBg: boolean;
+    s_showPiano: boolean;
     s_views: string[];
     s_noteCoverRelHeight: number;
     s_quartersPerHeight: number;
-    s_showBlackRails: bool;
+    s_showBlackRails: boolean;
     s_colorBlackRails2: string;
     s_colorBlackRails3: string;
     s_colWhites: string[];
@@ -67,8 +67,8 @@ module IGame {
     readOnly: IParamsData;
     subscribe(id:string, regex: string, callback: (name: string, value: any) => void): void;
     unsubscribe(id: string): void;
-    setParam(name: string, value: any, dontNotifyOthers?: bool): void;
-    areEqual(param1: any, param2: any): bool;
+    setParam(name: string, value: any, dontNotifyOthers?: boolean): void;
+    areEqual(param1: any, param2: any): boolean;
   }
 
   export interface IParamsNew {

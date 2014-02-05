@@ -1,23 +1,23 @@
-/// <reference path="../../../_references.ts" />
+module Musicope.Game.Inputs.KeyboardFns.Actions {
 
-import key = module("../../../../common/keyCodes");
+  export class SlowDown implements IKeyboardAction {
 
-export class slowDown implements IGame.IKeyboardAction {
+    id = "slow down";
+    description = "slow down the song by 10%";
+    key = KeyCodes.downArrow;
 
-  id = "slow down";
-  description = "slow down the song by 10%";
-  key = key.downArrow;
+    constructor(private p: IKeyboardParams) { }
 
-  constructor(private p: IGame.IKeyboardParams) { }
+    triggerAction() {
+      var o = this;
+      o.p.params.setParam("p_speed", o.p.params.readOnly.p_speed - 0.1);
+    }
 
-  triggerAction() {
-    var o = this;
-    o.p.params.setParam("p_speed", o.p.params.readOnly.p_speed - 0.1);
-  }
+    getCurrentState() {
+      var o = this;
+      return o.p.params.readOnly.p_speed * 100;
+    }
 
-  getCurrentState() {
-    var o = this;
-    return o.p.params.readOnly.p_speed * 100;
   }
 
 }

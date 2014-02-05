@@ -1,11 +1,9 @@
-/// <reference path="../_references.ts" />
-
-module IGame {
+module Musicope.Game {
 
   export interface IInput {}
 
   export interface IInputNew {
-    new (params: IParams, song: ISong): IInput;
+    new (params: Params.IParams, song: ISong): IInput;
   }
 
 }

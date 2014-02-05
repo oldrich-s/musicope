@@ -128,7 +128,6 @@
     <TypeScriptCompile Include="website\common\services.local.ts" />
     <TypeScriptCompile Include="website\game\controllers\basic\_main.ts" />
     <Content Include="website\game\controllers\_interfaces.ts" />
-    <TypeScriptCompile Include="website\game\controllers\_load.ts" />
     <Content Include="website\game\index.css" />
     <Content Include="website\game\index.html" />
     <TypeScriptCompile Include="website\game\inputs\keyboard\_main.ts" />
@@ -138,16 +137,12 @@
     <TypeScriptCompile Include="website\game\inputs\keyboard\actions\pauseOn.ts" />
     <TypeScriptCompile Include="website\game\inputs\keyboard\actions\userHands.ts" />
     <Content Include="website\game\inputs\keyboard\actions\_interfaces.ts" />
-    <TypeScriptCompile Include="website\game\inputs\keyboard\actions\_load.ts" />
     <Content Include="website\game\inputs\_interfaces.ts" />
-    <TypeScriptCompile Include="website\game\inputs\_load.ts" />
     <TypeScriptCompile Include="website\game\metronomes\basic\_main.ts" />
-    <TypeScriptCompile Include="website\game\inputs\_references.ts" />
     <Content Include="website\game\metronomes\_interfaces.ts" />
     <TypeScriptCompile Include="website\game\metronomes\_load.ts" />
     <TypeScriptCompile Include="website\game\songs\basic\_main.ts" />
-    <TypeScriptCompile Include="website\game\inputs\keyboard\overlays\basic.ts" />
-    <TypeScriptCompile Include="website\game\inputs\keyboard\overlays\_load.ts" />
+    <TypeScriptCompile Include="website\game\inputs\keyboard\overlay.ts" />
     <Content Include="website\game\songs\_interfaces.ts" />
     <TypeScriptCompile Include="website\game\songs\_load.ts" />
     <TypeScriptCompile Include="website\game\players\basic\_main.ts" />

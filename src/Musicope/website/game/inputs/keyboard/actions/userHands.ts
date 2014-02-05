@@ -1,28 +1,27 @@
-/// <reference path="../../../_references.ts" />
+module Musicope.Game.Inputs.KeyboardFns.Actions {
 
-import key = module("../../../../common/keyCodes");
-import toolsM = module("./_tools");
+  export class UserHands implements IKeyboardAction {
 
-export class userHands implements IGame.IKeyboardAction {
+    id = "user hands";
+    description = "toggle which hands the user plays.";
+    key = KeyCodes.h;
 
-  id = "user hands";
-  description = "toggle which hands the user plays.";
-  key = key.h;
+    private options = [[false, false], [false, true], [true, false], [true, true]];
+    private names = ["none", "right", "left", "both"];
 
-  private options = [[false, false], [false, true], [true, false], [true, true]];
-  private names = ["none", "right", "left", "both"];
+    constructor(private p: IKeyboardParams) { }
 
-  constructor(private p: IGame.IKeyboardParams) { }
+    triggerAction() {
+      var o = this;
+      o.p.params.setParam("p_userHands", Tools.toggle(o.p.params.readOnly.p_userHands, o.options));
+    }
 
-  triggerAction() {
-    var o = this;
-    o.p.params.setParam("p_userHands", toolsM.toggle(o.p.params.readOnly.p_userHands, o.options));
-  }
+    getCurrentState() {
+      var o = this;
+      var i = o.options.indexOf(o.p.params.readOnly.p_userHands);
+      return o.names[i];
+    }
 
-  getCurrentState() {
-    var o = this;
-    var i = o.options.indexOf(o.p.params.readOnly.p_userHands);
-    return o.names[i];
   }
 
 }

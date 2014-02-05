@@ -1,4 +1,4 @@
-module Musicope.Params.Basic {
+module Musicope.Game.Params.Basic {
 
   export var defParams: IGame.IParamsData = {
 

@@ -1,6 +1,4 @@
-/// <reference path="../../../_references.ts" />
-
-module IGame {
+module Musicope.Game.Inputs.KeyboardFns.Actions {
 
   export interface IKeyboardAction {
     id: string;
@@ -11,10 +9,9 @@ module IGame {
   }
 
   export interface IKeyboardParams {
-    params: IParams;
+    params: Params.IParams;
     song: ISong;
-    /// IGame.IKeyboardAction[];
-    actions: IJQuery.JQueryPromise;
+    actions: JQueryPromise<IGame.IKeyboardAction[]>;
   }
 
   export interface IKeyboardActionsNew {

@@ -1,23 +1,23 @@
-/// <reference path="../../../_references.ts" />
+module Musicope.Game.Inputs.KeyboardFns.Actions {
 
-import key = module("../../../../common/keyCodes");
+  export class PauseOn implements IKeyboardAction {
 
-export class pauseOn implements IGame.IKeyboardAction {
+    id = "pause";
+    description = "pause and unpause the game";
+    key = KeyCodes.space;
 
-  id = "pause";
-  description = "pause and unpause the game";
-  key = key.space;
+    constructor(private p: IKeyboardParams) { }
 
-  constructor(private p: IGame.IKeyboardParams) { }
+    triggerAction() {
+      var o = this;
+      o.p.params.setParam("p_isPaused", !o.p.params.readOnly.p_isPaused);
+    }
 
-  triggerAction() {
-    var o = this;
-    o.p.params.setParam("p_isPaused", !o.p.params.readOnly.p_isPaused);
-  }
+    getCurrentState() {
+      var o = this;
+      return o.p.params.readOnly.p_isPaused ? "on" : "off";
+    }
 
-  getCurrentState() {
-    var o = this;
-    return o.p.params.readOnly.p_isPaused ? "on" : "off";
   }
 
 }
