@@ -1,16 +1,15 @@
-/// <reference path="../_references.ts" />
 // time units = miliseconds
-module IGame {
+module Musicope.Game.Parsers {
 
   export interface INote {
-    on: bool;
+    on: boolean;
     time: number;
     id: number;
     velocity: number;
   }
 
   export interface ISustainNote {
-    on: bool;
+    on: boolean;
     time: number;
   }
 

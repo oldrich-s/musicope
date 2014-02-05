@@ -87,7 +87,6 @@
     <TypeScriptCompile Include="website\common\devices\empty.ts" />
     <Content Include="website\game\inputs\keyboard\actions\displayHelp\_assets\overlay.html" />
     <Content Include="website\game\parsers\_interfaces.ts" />
-    <TypeScriptCompile Include="website\game\parsers\_load.ts" />
     <Content Include="website\list\build.r" />
     <TypeScriptCompile Include="website\common\devices\jazz.ts" />
     <TypeScriptCompile Include="website\game\inputs\keyboard\actions\moveHome.ts" />
@@ -138,9 +137,8 @@
     <TypeScriptCompile Include="website\game\inputs\keyboard\actions\userHands.ts" />
     <Content Include="website\game\inputs\keyboard\actions\_interfaces.ts" />
     <Content Include="website\game\inputs\_interfaces.ts" />
-    <TypeScriptCompile Include="website\game\metronomes\basic\_main.ts" />
+    <TypeScriptCompile Include="website\game\metronomes\basic.ts" />
     <Content Include="website\game\metronomes\_interfaces.ts" />
-    <TypeScriptCompile Include="website\game\metronomes\_load.ts" />
     <TypeScriptCompile Include="website\game\songs\basic\_main.ts" />
     <TypeScriptCompile Include="website\game\inputs\keyboard\overlay.ts" />
     <Content Include="website\game\songs\_interfaces.ts" />
