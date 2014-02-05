@@ -1,5 +1,5 @@
-/// <reference path="_references.ts" />
+module Musicope.Game {
 
-import controllers = module("./controllers/_load");
+  var c = new Controllers.Basic();
 
-var c = new controllers.Basic();
+}

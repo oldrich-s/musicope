@@ -107,10 +107,7 @@
     <TypeScriptCompile Include="website\list\inputs\keyboard\actions\stepUp.ts" />
     <TypeScriptCompile Include="website\list\inputs\keyboard\actions\startGame.ts" />
     <Content Include="website\list\inputs\keyboard\actions\_interfaces.ts" />
-    <TypeScriptCompile Include="website\list\inputs\keyboard\actions\_load.ts" />
     <Content Include="website\list\inputs\_interfaces.ts" />
-    <TypeScriptCompile Include="website\list\inputs\_load.ts" />
-    <TypeScriptCompile Include="website\list\inputs\_references.ts" />
     <TypeScriptCompile Include="website\list\queries\basic\_main.ts" />
     <TypeScriptCompile Include="website\list\queries\basic\actions\filterSongs.ts" />
     <Content Include="website\list\queries\basic\actions\_interfaces.ts" />
@@ -120,12 +117,11 @@
     <TypeScriptCompile Include="website\list\queries\_load.ts" />
     <TypeScriptCompile Include="website\list\queries\_references.ts" />
     <Content Include="website\list\_params\_interfaces.ts" />
-    <TypeScriptCompile Include="website\list\_params\_load.ts" />
     <Content Include="website\common\devices\_interfaces.ts" />
     <TypeScriptCompile Include="website\common\services.params.ts" />
     <TypeScriptCompile Include="website\game\_index.ts" />
     <TypeScriptCompile Include="website\common\services.local.ts" />
-    <TypeScriptCompile Include="website\game\controllers\basic\_main.ts" />
+    <TypeScriptCompile Include="website\game\controllers\basic.ts" />
     <Content Include="website\game\controllers\_interfaces.ts" />
     <Content Include="website\game\index.css" />
     <Content Include="website\game\index.html" />

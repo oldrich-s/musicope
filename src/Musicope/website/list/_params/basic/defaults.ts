@@ -1,5 +1,7 @@
-/// <reference path="../../_references.ts" />
+module Musicope.List.Params.BasicFns {
 
-export var params: IList.IParamsData = {
-  l_songsUrl: "../songs/songs.json?" + Math.random()
-};
+  export var defParams: Params.IParamsData = {
+    l_songsUrl: "../songs/songs.json?" + Math.random()
+  };
+
+}

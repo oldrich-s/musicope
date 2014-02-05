@@ -1,9 +1,7 @@
-/// <reference path="../_references.ts" />
-
-module IList {
+module Musicope.List.Inputs {
 
   export interface IInputParams {
-    controller: IList.IController;
+    controller: Controllers.IController;
   }
 
   export interface IInput {}
