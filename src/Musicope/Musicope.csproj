@@ -162,7 +162,6 @@
     <TypeScriptCompile Include="website\game\_params\basic\defaults.ts" />
     <TypeScriptCompile Include="website\game\_params\basic\_main.ts" />
     <Content Include="website\game\_params\_interfaces.ts" />
-    <TypeScriptCompile Include="website\game\_params\_load.ts" />
     <Content Include="website\game\_references.ts" />
     <TypeScriptCompile Include="website\list\_index.ts" />
     <Content Include="website\list\index.css" />

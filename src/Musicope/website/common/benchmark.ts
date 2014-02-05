@@ -47,7 +47,7 @@ module Musicope {
 
     private getHeapSize() {
       var o = this;
-      var heapSize = window.performance.memory.usedJSHeapSize;
+      var heapSize = (<any>window.performance).memory.usedJSHeapSize;
       var out = heapSize - o.lastHeapSize;
       o.lastHeapSize = heapSize;
       return out;
