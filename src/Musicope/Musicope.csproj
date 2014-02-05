@@ -84,12 +84,12 @@
     </Content>
     <TypeScriptCompile Include="website\game\parsers\midi\_main.ts" />
     <TypeScriptCompile Include="website\game\inputs\keyboard\actions\displayHelp\_main.ts" />
-    <TypeScriptCompile Include="website\common\devices\empty\_main.ts" />
+    <TypeScriptCompile Include="website\common\devices\empty.ts" />
     <Content Include="website\game\inputs\keyboard\actions\displayHelp\_assets\overlay.html" />
     <Content Include="website\game\parsers\_interfaces.ts" />
     <TypeScriptCompile Include="website\game\parsers\_load.ts" />
     <Content Include="website\list\build.r" />
-    <TypeScriptCompile Include="website\common\devices\jazz\_main.ts" />
+    <TypeScriptCompile Include="website\common\devices\jazz.ts" />
     <TypeScriptCompile Include="website\game\inputs\keyboard\actions\moveHome.ts" />
     <TypeScriptCompile Include="website\game\inputs\keyboard\actions\moveBack.ts" />
     <TypeScriptCompile Include="website\game\inputs\keyboard\actions\speedUp.ts" />
@@ -123,7 +123,6 @@
     <Content Include="website\list\_params\_interfaces.ts" />
     <TypeScriptCompile Include="website\list\_params\_load.ts" />
     <Content Include="website\common\devices\_interfaces.ts" />
-    <TypeScriptCompile Include="website\common\devices\_load.ts" />
     <TypeScriptCompile Include="website\common\services.params.ts" />
     <TypeScriptCompile Include="website\game\_index.ts" />
     <TypeScriptCompile Include="website\common\services.local.ts" />
@@ -152,7 +151,7 @@
     <Content Include="website\game\songs\_interfaces.ts" />
     <TypeScriptCompile Include="website\game\songs\_load.ts" />
     <TypeScriptCompile Include="website\game\players\basic\_main.ts" />
-    <TypeScriptCompile Include="website\common\benchmark\_main.ts" />
+    <TypeScriptCompile Include="website\common\benchmark.ts" />
     <Content Include="website\game\players\_interfaces.ts" />
     <TypeScriptCompile Include="website\game\players\_load.ts" />
     <TypeScriptCompile Include="website\game\scenes\basic\drawScene.ts" />
