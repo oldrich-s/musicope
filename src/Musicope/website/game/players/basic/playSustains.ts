@@ -1,36 +1,38 @@
-/// <reference path="../../_references.ts" />
+module Musicope.Game.Players.BasicFns {
 
-var o: PlaySustains;
+  var o: PlaySustains;
 
-export class PlaySustains {
+  export class PlaySustains {
 
-  private id = 0;
+    private id = 0;
 
-  constructor(private device: IDevice,
-              private params: IGame.IParams,
-              private sustainNotes: IGame.ISustainNote[]) {
-    o = this;
-  }
-
-  play() {
-    while (o.isIdBelowCurrentTime()) {
-      o.playSustainNote(o.sustainNotes[o.id]);
-      o.id++;
+    constructor(private device: IDevice,
+      private params: Params.IParams,
+      private sustainNotes: ISustainNote[]) {
+      o = this;
     }
-  }
 
-  private isIdBelowCurrentTime() {
-    return o.sustainNotes[o.id] &&
-           o.sustainNotes[o.id].time < o.params.readOnly.p_elapsedTime;
-  }
+    play() {
+      while (o.isIdBelowCurrentTime()) {
+        o.playSustainNote(o.sustainNotes[o.id]);
+        o.id++;
+      }
+    }
 
-  private playSustainNote(note: IGame.ISustainNote) {
-    if (o.params.readOnly.p_sustain) {
-      if (note.on) {
-        o.device.out(176, 64, 127);
-      } else {
-        o.device.out(176, 64, 0);
+    private isIdBelowCurrentTime() {
+      return o.sustainNotes[o.id] &&
+        o.sustainNotes[o.id].time < o.params.readOnly.p_elapsedTime;
+    }
+
+    private playSustainNote(note: IGame.ISustainNote) {
+      if (o.params.readOnly.p_sustain) {
+        if (note.on) {
+          o.device.out(176, 64, 127);
+        } else {
+          o.device.out(176, 64, 0);
+        }
       }
     }
   }
+
 }

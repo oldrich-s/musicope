@@ -1,9 +1,7 @@
-/// <reference path="../_references.ts" />
-
-module IGame {
+module Musicope.Game.Players {
 
   export interface IPlayer {
-    step(): bool; // isEnd
+    step(): boolean; // isEnd
   }
 
   export interface IPlayerNew {
