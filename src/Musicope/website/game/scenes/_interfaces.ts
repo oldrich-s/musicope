@@ -1,16 +1,14 @@
-/// <reference path="../_references.ts" />
-
-module IGame {
+module Musicope.Game.Scenes {
 
   export interface IScene {
-    redraw(time: number, isPaused: bool): void;
+    redraw(time: number, isPaused: boolean): void;
     setActiveId(id: number): void;
     unsetActiveId(id: number): void;
     unsetAllActiveIds(): void;
   }
 
   export interface ISceneNew {
-    new (song: ISong, params: IParams): IScene;
+    new (song: ISong, params: Params.IParams): IScene;
   }
 
 }

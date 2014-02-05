@@ -1,6 +1,5 @@
-/// <reference path="../_references.ts" />
 // time units = miliseconds
-module IGame {
+module Musicope.Game.Songs {
 
   export interface ISustainNoteScene {
     timeOn: number;
@@ -23,12 +22,12 @@ module IGame {
     playerTracks: INote[][];
     sceneTracks: INoteScene[][];
     sustainNotes: ISustainNote[];
-    sceneSustainNotes: IGame.ISustainNoteScene[];
+    sceneSustainNotes: ISustainNoteScene[];
     minPlayedNoteId: number;
     maxPlayedNoteId: number;
   }
 
   export interface ISongNew {
-    new (midi: Uint8Array, params: IParams): ISong;
+    new (midi: Uint8Array, params: Params.IParams): ISong;
   }
 }
