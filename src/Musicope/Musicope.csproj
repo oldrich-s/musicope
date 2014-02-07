@@ -58,6 +58,8 @@
     <TypeScriptSourceMap>true</TypeScriptSourceMap>
     <PublishDatabases>false</PublishDatabases>
     <PackageAsSingleFile>false</PackageAsSingleFile>
+    <TypeScriptCompileOnSaveEnabled>True</TypeScriptCompileOnSaveEnabled>
+    <TypeScriptOutFile>Scripts/app.js</TypeScriptOutFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <TypeScriptTarget>ES3</TypeScriptTarget>
@@ -66,108 +68,83 @@
     <TypeScriptSourceMap>false</TypeScriptSourceMap>
   </PropertyGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="website\game\inputs\keyboard\actions\coverNotes.ts" />
-    <TypeScriptCompile Include="website\game\players\basic\fromDevice.ts" />
-    <TypeScriptCompile Include="website\game\players\basic\playNotes.ts" />
-    <TypeScriptCompile Include="website\game\players\basic\playSustains.ts" />
-    <TypeScriptCompile Include="website\game\players\basic\waitForNote.ts" />
-    <TypeScriptCompile Include="website\game\parsers\midi\midiToJson.ts" />
-    <TypeScriptCompile Include="website\game\parsers\midi\metaEvent.ts" />
-    <TypeScriptCompile Include="website\game\parsers\midi\midiEvent.ts" />
-    <TypeScriptCompile Include="website\game\parsers\midi\_main2.ts" />
-    <Content Include="website\_lib\webgl\webglhelper.js" />
-    <TypeScriptCompile Include="website\list\controllers\basic\songs.ts" />
-    <TypeScriptCompile Include="website\list\inputs\keyboard\actions\voteUp.ts" />
-    <TypeScriptCompile Include="website\list\inputs\keyboard\actions\voteDown.ts" />
-    <Content Include="website\proxy.php">
+    <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\knockout\knockout.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\pouchDB\pouch.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\webgl\webgl.d.ts" />
+    <TypeScriptCompile Include="Typescripts\game\inputs\keyboard\actions\coverNotes.ts" />
+    <TypeScriptCompile Include="Typescripts\game\players\basic\fromDevice.ts" />
+    <TypeScriptCompile Include="Typescripts\game\players\basic\playNotes.ts" />
+    <TypeScriptCompile Include="Typescripts\game\players\basic\playSustains.ts" />
+    <TypeScriptCompile Include="Typescripts\game\players\basic\waitForNote.ts" />
+    <TypeScriptCompile Include="Typescripts\game\parsers\midi\midiToJson.ts" />
+    <TypeScriptCompile Include="Typescripts\game\parsers\midi\metaEvent.ts" />
+    <TypeScriptCompile Include="Typescripts\game\parsers\midi\midiEvent.ts" />
+    <TypeScriptCompile Include="Typescripts\game\parsers\midi\_main2.ts" />
+    <None Include="Scripts\jquery-2.1.0.intellisense.js" />
+    <Content Include="Scripts\jquery-2.1.0.js" />
+    <Content Include="Scripts\jquery-2.1.0.min.js" />
+    <Content Include="Scripts\knockout-3.0.0.debug.js" />
+    <Content Include="Scripts\knockout-3.0.0.js" />
+    <Content Include="Scripts\pouch.js" />
+    <Content Include="Scripts\webglhelper.js" />
+    <Content Include="proxy.php">
       <SubType>Designer</SubType>
     </Content>
-    <TypeScriptCompile Include="website\game\parsers\midi\_main.ts" />
-    <TypeScriptCompile Include="website\game\inputs\keyboard\actions\displayHelp\_main.ts" />
-    <TypeScriptCompile Include="website\common\devices\empty.ts" />
-    <Content Include="website\game\inputs\keyboard\actions\displayHelp\_assets\overlay.html" />
-    <Content Include="website\game\parsers\_interfaces.ts" />
-    <Content Include="website\list\build.r" />
-    <TypeScriptCompile Include="website\common\devices\jazz.ts" />
-    <TypeScriptCompile Include="website\game\inputs\keyboard\actions\moveHome.ts" />
-    <TypeScriptCompile Include="website\game\inputs\keyboard\actions\moveBack.ts" />
-    <TypeScriptCompile Include="website\game\inputs\keyboard\actions\speedUp.ts" />
-    <TypeScriptCompile Include="website\game\inputs\keyboard\actions\slowDown.ts" />
-    <TypeScriptCompile Include="website\game\inputs\keyboard\actions\waitOn.ts" />
-    <TypeScriptCompile Include="website\game\inputs\keyboard\actions\_tools.ts" />
-    <None Include="website\game\build.r" />
-    <Content Include="website\index.html" />
-    <TypeScriptCompile Include="website\list\_params\basic\_main.ts" />
-    <TypeScriptCompile Include="website\list\_params\basic\defaults.ts" />
-    <TypeScriptCompile Include="website\list\controllers\basic\_main.ts" />
-    <Content Include="website\list\controllers\_interfaces.ts" />
-    <TypeScriptCompile Include="website\list\controllers\_load.ts" />
-    <TypeScriptCompile Include="website\list\inputs\keyboard\_main.ts" />
-    <TypeScriptCompile Include="website\list\inputs\keyboard\actions\stepDown.ts" />
-    <TypeScriptCompile Include="website\list\inputs\keyboard\actions\stepUp.ts" />
-    <TypeScriptCompile Include="website\list\inputs\keyboard\actions\startGame.ts" />
-    <Content Include="website\list\inputs\keyboard\actions\_interfaces.ts" />
-    <Content Include="website\list\inputs\_interfaces.ts" />
-    <TypeScriptCompile Include="website\list\queries\basic\_main.ts" />
-    <TypeScriptCompile Include="website\list\queries\basic\actions\filterSongs.ts" />
-    <Content Include="website\list\queries\basic\actions\_interfaces.ts" />
-    <TypeScriptCompile Include="website\list\queries\basic\actions\_load.ts" />
-    <TypeScriptCompile Include="website\list\queries\basic\actions\_tools.ts" />
-    <Content Include="website\list\queries\_interfaces.ts" />
-    <TypeScriptCompile Include="website\list\queries\_load.ts" />
-    <TypeScriptCompile Include="website\list\queries\_references.ts" />
-    <Content Include="website\list\_params\_interfaces.ts" />
-    <Content Include="website\common\devices\_interfaces.ts" />
-    <TypeScriptCompile Include="website\common\services.params.ts" />
-    <TypeScriptCompile Include="website\game\_index.ts" />
-    <TypeScriptCompile Include="website\common\services.local.ts" />
-    <TypeScriptCompile Include="website\game\controllers\basic.ts" />
-    <Content Include="website\game\controllers\_interfaces.ts" />
-    <Content Include="website\game\index.css" />
-    <Content Include="website\game\index.html" />
-    <TypeScriptCompile Include="website\game\inputs\keyboard\_main.ts" />
-    <TypeScriptCompile Include="website\common\keyCodes.ts" />
-    <TypeScriptCompile Include="website\game\inputs\keyboard\actions\moveForward.ts" />
-    <TypeScriptCompile Include="website\game\inputs\keyboard\actions\metronomeOn.ts" />
-    <TypeScriptCompile Include="website\game\inputs\keyboard\actions\pauseOn.ts" />
-    <TypeScriptCompile Include="website\game\inputs\keyboard\actions\userHands.ts" />
-    <Content Include="website\game\inputs\keyboard\actions\_interfaces.ts" />
-    <Content Include="website\game\inputs\_interfaces.ts" />
-    <TypeScriptCompile Include="website\game\metronomes\basic.ts" />
-    <Content Include="website\game\metronomes\_interfaces.ts" />
-    <TypeScriptCompile Include="website\game\songs\basic.ts" />
-    <TypeScriptCompile Include="website\game\inputs\keyboard\overlay.ts" />
-    <Content Include="website\game\songs\_interfaces.ts" />
-    <TypeScriptCompile Include="website\game\players\basic\_main.ts" />
-    <TypeScriptCompile Include="website\common\benchmark.ts" />
-    <Content Include="website\game\players\_interfaces.ts" />
-    <TypeScriptCompile Include="website\game\scenes\basic\drawScene.ts" />
-    <TypeScriptCompile Include="website\game\scenes\basic\webgl.ts" />
-    <TypeScriptCompile Include="website\game\scenes\basic\_main.ts" />
-    <Content Include="website\game\scenes\_interfaces.ts" />
-    <TypeScriptCompile Include="website\game\_params\basic\defaults.ts" />
-    <TypeScriptCompile Include="website\game\_params\basic\_main.ts" />
-    <Content Include="website\game\_params\_interfaces.ts" />
-    <TypeScriptCompile Include="website\list\_index.ts" />
-    <Content Include="website\list\index.css" />
-    <Content Include="website\list\index.html" />
-    <Content Include="website\list\_references.ts" />
-    <TypeScriptCompile Include="website\_lib\base64\base64.ts" />
-    <Content Include="website\_lib\jquery\jquery.d.ts" />
-    <Content Include="website\_lib\jquery\jquery.js" />
-    <Content Include="website\_lib\knockout\knockout.d.ts" />
-    <Content Include="website\_lib\knockout\knockout.js" />
-    <Content Include="website\_lib\pouch\pouch.d.ts" />
-    <Content Include="website\_lib\pouch\pouch.js" />
-    <Content Include="website\_lib\purl\purl.d.ts" />
-    <Content Include="website\_lib\purl\purl.js" />
-    <Content Include="website\_lib\requirejs\require.d.ts" />
-    <Content Include="website\_lib\requirejs\require.js" />
-    <Content Include="website\_lib\webgl\webgl.d.ts" />
+    <TypeScriptCompile Include="Typescripts\game\parsers\midi\_main.ts" />
+    <TypeScriptCompile Include="Typescripts\game\inputs\keyboard\actions\displayHelp\_main.ts" />
+    <TypeScriptCompile Include="Typescripts\devices\empty.ts" />
+    <Content Include="Typescripts\game\inputs\keyboard\actions\displayHelp\_assets\overlay.html" />
+    <TypeScriptCompile Include="Typescripts\game\parsers\_interfaces.ts" />
+    <TypeScriptCompile Include="Typescripts\devices\jazz.ts" />
+    <TypeScriptCompile Include="Typescripts\game\inputs\keyboard\actions\moveHome.ts" />
+    <TypeScriptCompile Include="Typescripts\game\inputs\keyboard\actions\moveBack.ts" />
+    <TypeScriptCompile Include="Typescripts\game\inputs\keyboard\actions\speedUp.ts" />
+    <TypeScriptCompile Include="Typescripts\game\inputs\keyboard\actions\slowDown.ts" />
+    <TypeScriptCompile Include="Typescripts\game\inputs\keyboard\actions\waitOn.ts" />
+    <TypeScriptCompile Include="Typescripts\game\inputs\keyboard\actions\_tools.ts" />
+    <Content Include="packages.config" />
+    <Content Include="Scripts\jquery-2.1.0.min.map" />
+    <None Include="Typescripts\game\build.r" />
+    <Content Include="index.html" />
+    <TypeScriptCompile Include="Typescripts\devices\_interfaces.ts" />
+    <TypeScriptCompile Include="Typescripts\services.params.ts" />
+    <TypeScriptCompile Include="Typescripts\game\_index.ts" />
+    <TypeScriptCompile Include="Typescripts\services.local.ts" />
+    <TypeScriptCompile Include="Typescripts\game\controllers\basic.ts" />
+    <TypeScriptCompile Include="Typescripts\game\controllers\_interfaces.ts" />
+    <Content Include="Typescripts\game\index.css" />
+    <Content Include="Typescripts\game\index.html" />
+    <TypeScriptCompile Include="Typescripts\game\inputs\keyboard\_main.ts" />
+    <TypeScriptCompile Include="Typescripts\keyCodes.ts" />
+    <TypeScriptCompile Include="Typescripts\game\inputs\keyboard\actions\moveForward.ts" />
+    <TypeScriptCompile Include="Typescripts\game\inputs\keyboard\actions\metronomeOn.ts" />
+    <TypeScriptCompile Include="Typescripts\game\inputs\keyboard\actions\pauseOn.ts" />
+    <TypeScriptCompile Include="Typescripts\game\inputs\keyboard\actions\userHands.ts" />
+    <TypeScriptCompile Include="Typescripts\game\inputs\keyboard\actions\_interfaces.ts" />
+    <TypeScriptCompile Include="Typescripts\game\inputs\_interfaces.ts" />
+    <TypeScriptCompile Include="Typescripts\game\metronomes\basic.ts" />
+    <TypeScriptCompile Include="Typescripts\game\metronomes\_interfaces.ts" />
+    <TypeScriptCompile Include="Typescripts\game\songs\basic.ts" />
+    <TypeScriptCompile Include="Typescripts\game\inputs\keyboard\overlay.ts" />
+    <TypeScriptCompile Include="Typescripts\game\songs\_interfaces.ts" />
+    <TypeScriptCompile Include="Typescripts\game\players\basic\_main.ts" />
+    <TypeScriptCompile Include="Typescripts\benchmark.ts" />
+    <TypeScriptCompile Include="Typescripts\game\players\_interfaces.ts" />
+    <TypeScriptCompile Include="Typescripts\game\scenes\basic\drawScene.ts" />
+    <TypeScriptCompile Include="Typescripts\game\scenes\basic\webgl.ts" />
+    <TypeScriptCompile Include="Typescripts\game\scenes\basic\_main.ts" />
+    <TypeScriptCompile Include="Typescripts\game\scenes\_interfaces.ts" />
+    <TypeScriptCompile Include="Typescripts\game\_params\basic\defaults.ts" />
+    <TypeScriptCompile Include="Typescripts\game\_params\basic\_main.ts" />
+    <TypeScriptCompile Include="Typescripts\game\_params\_interfaces.ts" />
+    <TypeScriptCompile Include="Typescripts\base64.ts" />
+    <TypeScriptCompile Include="Scripts\typings\purl\purl.d.ts" />
+    <Content Include="Scripts\purl.js" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="website\game\scenes\basic\_assets\fragment.glsl" />
-    <Content Include="website\game\scenes\basic\_assets\vertex.glsl" />
+    <Content Include="Typescripts\game\scenes\basic\_assets\fragment.glsl" />
+    <Content Include="Typescripts\game\scenes\basic\_assets\vertex.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -178,8 +155,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" />
   <PropertyGroup>
-    <PostBuildEvent>node "$(ProjectDir)website\r.js" -o "$(ProjectDir)website\game\build.r"
-node "$(ProjectDir)website\r.js" -o "$(ProjectDir)website\list\build.r"
-$(SolutionDir)..\outputter\exec\Outputter.exe "$(SolutionDir)..\.."</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>
