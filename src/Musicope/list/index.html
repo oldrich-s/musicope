@@ -32,8 +32,11 @@
   <script src="../Scripts/knockout-3.0.0.js"></script>
   <script src="../Scripts/purl.js"></script>
   <script src="../Scripts/pouch.js"></script>
+  <script src="../Scripts/app.js"></script>
   <script>
-    ko.applyBindings(new Musicope.List.Controllers.Basic());
+    $(document).ready(function () {
+      ko.applyBindings(new Musicope.List.Controllers.Basic());
+    });
   </script>
 </body>
 </html>

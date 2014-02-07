@@ -14,7 +14,7 @@ module Musicope.Game.Controllers {
     constructor() {
       var o = this;
 
-      o.params = new Params.Basic.Basic();
+      o.params = new Params.Basic();
 
       if (!o.params.readOnly.c_songUrl) { throw "c_songUrl does not exist!"; }
       else {

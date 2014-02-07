@@ -1,4 +1,4 @@
-module Musicope.Game.Players.Basic {
+module Musicope.Game.Players {
 
   var o: Basic;
 

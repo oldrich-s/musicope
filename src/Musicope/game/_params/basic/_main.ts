@@ -1,4 +1,4 @@
-module Musicope.Game.Params.Basic {
+module Musicope.Game.Params {
 
   export class Basic implements IParams {
 
@@ -7,7 +7,7 @@ module Musicope.Game.Params.Basic {
 
     constructor() {
       var o = this;
-      o.readOnly = Musicope.Params.getUrlParams(defParams);
+      o.readOnly = Musicope.Params.getUrlParams(basicDefParams);
     }
 
     subscribe(id: string, regex: string, callback: (param: string, value: any) => void) {

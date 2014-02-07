@@ -1,4 +1,4 @@
-module Musicope.Game.Scenes.Basic {
+module Musicope.Game.Scenes.BasicFns {
 
   export interface Input {
     drawRect(x0: number, y0: number, x1: number, y1: number, ids: number[], color: number[], activeColor: number[]): void;

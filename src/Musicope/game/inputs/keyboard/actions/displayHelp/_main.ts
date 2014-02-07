@@ -1,4 +1,4 @@
-module Musicope.Game.Inputs.KeyboardFns.Actions {
+module Musicope.Game.Inputs.KeyboardFns.Actions.List {
 
   export class displayHelp implements IKeyboardAction {
 

@@ -1,4 +1,4 @@
-module Musicope.Game.Scenes.Basic {
+module Musicope.Game.Scenes {
 
   export class Basic implements IScene {
 
@@ -53,8 +53,8 @@ module Musicope.Game.Scenes.Basic {
 
     private setBackgrColors() {
       var o = this;
-      o.pausedColor = new Int32Array(hexToRgb(o.params.readOnly.s_colPaused));
-      o.unpausedColor = new Int32Array(hexToRgb(o.params.readOnly.s_colUnPaused));
+      o.pausedColor = new Int32Array(BasicFns.hexToRgb(o.params.readOnly.s_colPaused));
+      o.unpausedColor = new Int32Array(BasicFns.hexToRgb(o.params.readOnly.s_colUnPaused));
     }
 
     private setPausedState(isPaused: boolean) {
@@ -98,7 +98,7 @@ module Musicope.Game.Scenes.Basic {
       var o = this;
       var bag: Float32Array[] = [];
 
-      var input: Input = {
+      var input: BasicFns.Input = {
         drawRect: (x0, y0, x1, y1, ids, color, activeColor) => {
           bag.push(o.rect(x0, y0, x1, y1, ids, [color], [activeColor]));
         },
@@ -113,7 +113,7 @@ module Musicope.Game.Scenes.Basic {
         minPlayedNoteId: o.song.minPlayedNoteId,
         maxPlayedNoteId: o.song.maxPlayedNoteId
       };
-      drawScene(input);
+      BasicFns.drawScene(input);
       var bufferData = Basic.concat(bag);
       o.webgl.setBuffer(bufferData);
     }

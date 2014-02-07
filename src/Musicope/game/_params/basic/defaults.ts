@@ -1,6 +1,6 @@
-module Musicope.Game.Params.Basic {
+module Musicope.Game.Params {
 
-  export var defParams: IParamsData = {
+  export var basicDefParams: IParamsData = {
 
     // controllers
     c_songUrl: undefined,
