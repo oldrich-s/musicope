@@ -1,14 +1,12 @@
-/// <reference path="../_references.ts" />
-
-module IList {
+module Musicope.List.Queries {
 
   export interface IQueryParams {
-    controller: IList.IController;
+    controller: Controllers.IController;
   }
 
   export interface IQuery {
     onQueryUpdate(query: string): void;
-    onRedirect(displayedSongsIndex: number): IJQuery.JQueryPromise;
+    onRedirect(displayedSongsIndex: number): JQueryPromise<any>;
   }
 
   export interface IQueryNew {

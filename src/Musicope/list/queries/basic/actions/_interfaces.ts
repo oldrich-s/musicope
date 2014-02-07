@@ -1,6 +1,4 @@
-/// <reference path="../../../_references.ts" />
-
-module IList {
+module Musicope.List.Queries.BasicFns.Actions {
 
   export interface IQueryBasicActionParams {
     inputParams: IQueryParams;
@@ -12,7 +10,7 @@ module IList {
     regexp: RegExp;
     priority: number;
     onQueryUpdate(query: string): void;
-    onRedirect?: (displayedSongsIndex: number) => IJQuery.JQueryPromise;
+    onRedirect?: (displayedSongsIndex: number) => JQueryPromise<any>;
   }
 
   export interface IQueryBasicActionNew {

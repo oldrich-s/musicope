@@ -1,4 +1,4 @@
-module Musicope.List.Inputs.Keyboard.Actions {
+module Musicope.List.Inputs.KeyboardFns.Actions {
 
   export interface IKeyboardAction {
     id: string;

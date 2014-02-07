@@ -10,7 +10,7 @@ module Musicope.List.Controllers {
 
   export interface IController {
     listIndex: KnockoutObservable<number>;
-    displayedSongs: KnockoutObservableArray;
+    displayedSongs: KnockoutObservable<any[]>;
     searchQuery: KnockoutObservable<string>;
     gameParams: KnockoutObservable<string>;
     songs: ISong[];

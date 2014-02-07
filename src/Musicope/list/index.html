@@ -28,15 +28,12 @@
     </div>
   </div>
 
-  <script src="../_lib/jquery/jquery.js"></script>
-  <script src="../_lib/knockout/knockout.js"></script>
-  <script src="../_lib/purl/purl.js"></script>
-  <script src="../_lib/pouch/pouch.js"></script>
-  <script data-main="_index" src="../_lib/requirejs/require.js"></script>
+  <script src="../Scripts/jquery-2.1.0.min.js"></script>
+  <script src="../Scripts/knockout-3.0.0.js"></script>
+  <script src="../Scripts/purl.js"></script>
+  <script src="../Scripts/pouch.js"></script>
   <script>
-      require.config({
-        urlArgs: "bust=v14"
-      });
+    ko.applyBindings(new Musicope.List.Controllers.Basic());
   </script>
 </body>
 </html>

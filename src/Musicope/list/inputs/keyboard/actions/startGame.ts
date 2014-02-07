@@ -1,14 +1,14 @@
-module Musicope.List.Inputs.Keyboard.Actions {
+module Musicope.List.Inputs.KeyboardFns.Actions.List {
 
-  export class startGame implements IList.IKeyboardAction {
+  export class StartGame implements IKeyboardAction {
 
     id = "start game";
     description = "";
-    key = key.enter;
+    key = KeyCodes.enter;
 
-    private contr: IList.IController;
+    private contr: Controllers.IController;
 
-    constructor(p: IList.IKeyboardParams) {
+    constructor(p: IKeyboardParams) {
       var o = this;
       o.contr = p.inputParams.controller;
     }
