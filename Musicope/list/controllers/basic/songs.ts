@@ -1,59 +1,30 @@
 module Musicope.List.Controllers.BasicFns {
 
-  function saveToDB(doc: any) {
-    new PouchDB("idb://musicope", (err, db) => {
-      db.put(ko.toJS(doc), (error, response) => {
-        if (error) {
-          throw "cannot save to DB";
-        } else {
-          doc["_rev"] = response["rev"];
-        }
-      });
-    });
-  }
-
-  var defaults = [{ prop: "votes", value: 0 }];
-
-  function createIfNotExist(doc: any, id: string) {
-    if (!doc) {
-      var doc2 = { _id: id };
-      defaults.forEach((v) => {
-        doc2[v.prop] = v.value;
-      });
-      return doc2;
-    } else {
-      return doc;
-    }
-  }
-
-  function toKnockout(doc: any) {
+  declare var Firebase;
+  var fb = new Firebase("https://musicope.firebaseio.com");
+  
+  function toKnockout(name: string, doc: any) {
     var koDoc = {};
     for (var prop in doc) {
-      if (prop !== "_id" && prop !== "_rev") {
-        koDoc[prop] = ko.observable(doc[prop]);
-        koDoc[prop].subscribe((v) => {
-          saveToDB(koDoc);
-        });
-      } else {
-        koDoc[prop] = doc[prop];
-      }
+      koDoc[prop] = ko.observable(doc[prop]);
+      koDoc[prop].subscribe((v) => {
+        var js = ko.toJS(koDoc);
+        var en = btoa(name);
+        fb.child(en).set(js);
+      });
     }
     return koDoc;
   }
 
   function getDocsFromDB(ids: string[]) {
     var done = $.Deferred();
-    new PouchDB("idb://musicope", (err, db) => {
-      var keys: string[] = ids.map((id) => {
-        return btoa(id);
+    fb.once("value", function (data) {
+      var v = data.val() || {};
+      var res = ids.map((id) => {
+        var js = v[btoa(id)] || { votes: 0 };
+        return toKnockout(id, js);
       });
-      db.allDocs({ keys: keys, include_docs: true }, (err, response: PouchAllDocsResponse) => {
-        var koDocs = response.rows.map((row, i) => {
-          var doc = createIfNotExist(row.doc, keys[i]);
-          return toKnockout(doc);
-        });
-        done.resolve(koDocs);
-      });
+      done.resolve((res));
     });
     return done.promise();
   }
@@ -86,7 +57,7 @@ module Musicope.List.Controllers.BasicFns {
         });
       }
     }
-  xhr.send();
+    xhr.send();
     return out.promise();
   }
 

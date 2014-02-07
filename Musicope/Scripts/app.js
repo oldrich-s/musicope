@@ -1342,60 +1342,30 @@ var Musicope;
     (function (List) {
         (function (Controllers) {
             (function (BasicFns) {
-                function saveToDB(doc) {
-                    new PouchDB("idb://musicope", function (err, db) {
-                        db.put(ko.toJS(doc), function (error, response) {
-                            if (error) {
-                                throw "cannot save to DB";
-                            } else {
-                                doc["_rev"] = response["rev"];
-                            }
-                        });
-                    });
-                }
+                var fb = new Firebase("https://musicope.firebaseio.com");
 
-                var defaults = [{ prop: "votes", value: 0 }];
-
-                function createIfNotExist(doc, id) {
-                    if (!doc) {
-                        var doc2 = { _id: id };
-                        defaults.forEach(function (v) {
-                            doc2[v.prop] = v.value;
-                        });
-                        return doc2;
-                    } else {
-                        return doc;
-                    }
-                }
-
-                function toKnockout(doc) {
+                function toKnockout(name, doc) {
                     var koDoc = {};
                     for (var prop in doc) {
-                        if (prop !== "_id" && prop !== "_rev") {
-                            koDoc[prop] = ko.observable(doc[prop]);
-                            koDoc[prop].subscribe(function (v) {
-                                saveToDB(koDoc);
-                            });
-                        } else {
-                            koDoc[prop] = doc[prop];
-                        }
+                        koDoc[prop] = ko.observable(doc[prop]);
+                        koDoc[prop].subscribe(function (v) {
+                            var js = ko.toJS(koDoc);
+                            var en = btoa(name);
+                            fb.child(en).set(js);
+                        });
                     }
                     return koDoc;
                 }
 
                 function getDocsFromDB(ids) {
                     var done = $.Deferred();
-                    new PouchDB("idb://musicope", function (err, db) {
-                        var keys = ids.map(function (id) {
-                            return btoa(id);
+                    fb.once("value", function (data) {
+                        var v = data.val() || {};
+                        var res = ids.map(function (id) {
+                            var js = v[btoa(id)] || { votes: 0 };
+                            return toKnockout(id, js);
                         });
-                        db.allDocs({ keys: keys, include_docs: true }, function (err, response) {
-                            var koDocs = response.rows.map(function (row, i) {
-                                var doc = createIfNotExist(row.doc, keys[i]);
-                                return toKnockout(doc);
-                            });
-                            done.resolve(koDocs);
-                        });
+                        done.resolve((res));
                     });
                     return done.promise();
                 }
