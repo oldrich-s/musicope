@@ -2184,9 +2184,31 @@ var Musicope;
                     });
                 }
 
+                function getColorByVelocity(color, velocity, minMaxVel) {
+                    var out = [];
+                    if (Math.abs(minMaxVel[1] - minMaxVel[0]) > 10) {
+                        var scale = 0.5 + 0.5 * (velocity - minMaxVel[0]) / (minMaxVel[1] - minMaxVel[0]);
+                        out.push(scale * color[0]);
+                        out.push(scale * color[1]);
+                        out.push(scale * color[2]);
+                        out.push(color[3]);
+                    }
+                    return color;
+                }
+
+                function getMaxVelocity(notes) {
+                    var max = 0, min = 200;
+                    notes.forEach(function (note) {
+                        max = Math.max(max, note.velocityOn);
+                        min = Math.min(min, note.velocityOn);
+                    });
+                    return [min, max];
+                }
+
                 function drawTrack(loc, trackId) {
                     var whiteNoteColor = hexToRgb(loc.input.readOnly.s_colWhites[trackId]);
                     var blackNoteColor = hexToRgb(loc.input.readOnly.s_colBlacks[trackId]);
+                    var minMaxVel = getMaxVelocity(loc.input.tracks[trackId]);
                     loc.input.tracks[trackId].forEach(function (note) {
                         var y0 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOn + 1;
                         var y1 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOff - 2;
@@ -2194,13 +2216,15 @@ var Musicope;
                         if (ipos >= 0) {
                             var x0 = ipos * loc.whiteWidth + 3;
                             var x1 = x0 + loc.whiteWidth - 5;
-                            loc.input.drawRect(x0, y0, x1, y1, [trackId + 200], whiteNoteColor, whiteNoteColor);
+                            var color = getColorByVelocity(whiteNoteColor, note.velocityOn, minMaxVel);
+                            loc.input.drawRect(x0, y0, x1, y1, [trackId + 200], color, color);
                         } else {
                             var pos = blackNoteIds.indexOf(note.id);
                             if (pos >= 0) {
                                 var x0 = blackNoteSpots[pos] * loc.whiteWidth - loc.blackWidth + 2;
                                 var x1 = x0 + 2 * loc.blackWidth - 3;
-                                loc.input.drawRect(x0, y0, x1, y1, [trackId + 202], blackNoteColor, blackNoteColor);
+                                var color = getColorByVelocity(blackNoteColor, note.velocityOn, minMaxVel);
+                                loc.input.drawRect(x0, y0, x1, y1, [trackId + 202], color, color);
                             }
                         }
                     });

@@ -14,4 +14,4 @@ let rec fn (dir: DirectoryInfo) =
 
 let str = fn root
 
-File.WriteAllText (root.FullName + "\\songs.json", "[" + str + "]")
+File.WriteAllText (root.FullName + "\\private.json", "[" + str + "]")
