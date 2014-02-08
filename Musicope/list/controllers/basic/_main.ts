@@ -22,7 +22,9 @@ module Musicope.List.Controllers {
       o.koInitListIndex();
       o.initInputs();
 
-      BasicFns.getSongList(o.params).done((songs: ISong[]) => {
+      var songs = new BasicFns.Songs();
+
+      songs.getSongList(o.params).done((songs: ISong[]) => {
         o.songs = songs;
         o.searchQuery.valueHasMutated();
       });

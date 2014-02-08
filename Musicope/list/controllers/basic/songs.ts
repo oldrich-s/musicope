@@ -1,9 +1,8 @@
 module Musicope.List.Controllers.BasicFns {
 
   declare var Firebase;
-  var fb = new Firebase("https://musicope.firebaseio.com");
-  
-  function toKnockout(name: string, doc: any) {
+
+  function toKnockout(name: string, doc: any, fb: any) {
     var koDoc = {};
     for (var prop in doc) {
       koDoc[prop] = ko.observable(doc[prop]);
@@ -16,13 +15,13 @@ module Musicope.List.Controllers.BasicFns {
     return koDoc;
   }
 
-  function getDocsFromDB(ids: string[]) {
+  function getDocsFromDB(ids: string[], fb: any) {
     var done = $.Deferred();
     fb.once("value", function (data) {
       var v = data.val() || {};
       var res = ids.map((id) => {
         var js = v[btoa(id)] || { votes: 0 };
-        return toKnockout(id, js);
+        return toKnockout(id, js, fb);
       });
       done.resolve((res));
     });
@@ -44,7 +43,7 @@ module Musicope.List.Controllers.BasicFns {
     return songs;
   }
 
-  function getSongListLocal(params: Params.IParams) {
+  function getSongListLocal(params: Params.IParams, fb: any) {
     var out = $.Deferred();
     var xhr = new XMLHttpRequest();
     xhr.open('GET', params.readOnly.l_songsUrl);
@@ -52,7 +51,7 @@ module Musicope.List.Controllers.BasicFns {
     xhr.onload = function (e) {
       if (this.status == 200) {
         var paths: string[] = JSON.parse(this.responseText);
-        getDocsFromDB(paths).done((docs: any[]) => {
+        getDocsFromDB(paths, fb).done((docs: any[]) => {
           out.resolve(getSongsFromUrls(paths, docs));
         });
       }
@@ -61,26 +60,39 @@ module Musicope.List.Controllers.BasicFns {
     return out.promise();
   }
 
-  function getSongListRemote(params: Params.IParams) {
+  function getSongListRemote(params: Params.IParams, fb: any) {
     var out = $.Deferred();
     var url = "../proxy.php?url=" + encodeURIComponent(params.readOnly.l_songsUrl);
     $.get(url).done((text: string) => {
       var paths: string[] = JSON.parse(atob(text));
-      getDocsFromDB(paths).done((docs: any[]) => {
+      getDocsFromDB(paths, fb).done((docs: any[]) => {
         out.resolve(getSongsFromUrls(paths, docs));
       });
     });
     return out;
   }
 
-  export function getSongList(params: Params.IParams) {
-    var out = $.Deferred();
-    var isLocal = params.readOnly.l_songsUrl.indexOf("../") == 0;
-    if (isLocal) {
-      return getSongListLocal(params);
-    } else {
-      return getSongListRemote(params);
+  export class Songs {
+
+    fb: any;
+
+    constructor() {
+      this.fb = new Firebase("https://musicope.firebaseio.com");
     }
+
+    public getSongList = (params: Params.IParams) => {
+      var o = this;
+      var out = $.Deferred();
+      var isLocal = params.readOnly.l_songsUrl.indexOf("../") == 0;
+      if (isLocal) {
+        return getSongListLocal(params, o.fb);
+      } else {
+        return getSongListRemote(params, o.fb);
+      }
+    }
+
   }
+
+  
 
 }

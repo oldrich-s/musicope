@@ -2640,7 +2640,9 @@ var Musicope;
                     o.koInitListIndex();
                     o.initInputs();
 
-                    Musicope.List.Controllers.BasicFns.getSongList(o.params).done(function (songs) {
+                    var songs = new Musicope.List.Controllers.BasicFns.Songs();
+
+                    songs.getSongList(o.params).done(function (songs) {
                         o.songs = songs;
                         o.searchQuery.valueHasMutated();
                     });
@@ -2779,9 +2781,7 @@ var Musicope;
     (function (List) {
         (function (Controllers) {
             (function (BasicFns) {
-                var fb = new Firebase("https://musicope.firebaseio.com");
-
-                function toKnockout(name, doc) {
+                function toKnockout(name, doc, fb) {
                     var koDoc = {};
                     for (var prop in doc) {
                         koDoc[prop] = ko.observable(doc[prop]);
@@ -2794,13 +2794,13 @@ var Musicope;
                     return koDoc;
                 }
 
-                function getDocsFromDB(ids) {
+                function getDocsFromDB(ids, fb) {
                     var done = $.Deferred();
                     fb.once("value", function (data) {
                         var v = data.val() || {};
                         var res = ids.map(function (id) {
                             var js = v[btoa(id)] || { votes: 0 };
-                            return toKnockout(id, js);
+                            return toKnockout(id, js, fb);
                         });
                         done.resolve((res));
                     });
@@ -2822,7 +2822,7 @@ var Musicope;
                     return songs;
                 }
 
-                function getSongListLocal(params) {
+                function getSongListLocal(params, fb) {
                     var out = $.Deferred();
                     var xhr = new XMLHttpRequest();
                     xhr.open('GET', params.readOnly.l_songsUrl);
@@ -2830,7 +2830,7 @@ var Musicope;
                     xhr.onload = function (e) {
                         if (this.status == 200) {
                             var paths = JSON.parse(this.responseText);
-                            getDocsFromDB(paths).done(function (docs) {
+                            getDocsFromDB(paths, fb).done(function (docs) {
                                 out.resolve(getSongsFromUrls(paths, docs));
                             });
                         }
@@ -2839,28 +2839,36 @@ var Musicope;
                     return out.promise();
                 }
 
-                function getSongListRemote(params) {
+                function getSongListRemote(params, fb) {
                     var out = $.Deferred();
                     var url = "../proxy.php?url=" + encodeURIComponent(params.readOnly.l_songsUrl);
                     $.get(url).done(function (text) {
                         var paths = JSON.parse(atob(text));
-                        getDocsFromDB(paths).done(function (docs) {
+                        getDocsFromDB(paths, fb).done(function (docs) {
                             out.resolve(getSongsFromUrls(paths, docs));
                         });
                     });
                     return out;
                 }
 
-                function getSongList(params) {
-                    var out = $.Deferred();
-                    var isLocal = params.readOnly.l_songsUrl.indexOf("../") == 0;
-                    if (isLocal) {
-                        return getSongListLocal(params);
-                    } else {
-                        return getSongListRemote(params);
+                var Songs = (function () {
+                    function Songs() {
+                        var _this = this;
+                        this.getSongList = function (params) {
+                            var o = _this;
+                            var out = $.Deferred();
+                            var isLocal = params.readOnly.l_songsUrl.indexOf("../") == 0;
+                            if (isLocal) {
+                                return getSongListLocal(params, o.fb);
+                            } else {
+                                return getSongListRemote(params, o.fb);
+                            }
+                        };
+                        this.fb = new Firebase("https://musicope.firebaseio.com");
                     }
-                }
-                BasicFns.getSongList = getSongList;
+                    return Songs;
+                })();
+                BasicFns.Songs = Songs;
             })(Controllers.BasicFns || (Controllers.BasicFns = {}));
             var BasicFns = Controllers.BasicFns;
         })(List.Controllers || (List.Controllers = {}));
