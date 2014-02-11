@@ -157,16 +157,18 @@ module Musicope.Game.Scenes.BasicFns {
   }
 
   function getColorByVelocity(color: number[], velocity: number, minMaxVel: number[]) {
-    var out = [];
     if (Math.abs(minMaxVel[1] - minMaxVel[0]) > 10) {
-      var scale = 0.3 + 0.7 * (velocity - minMaxVel[0]) / (minMaxVel[1] - minMaxVel[0]);
+      var out = [];
+      var scale = 0.6 + 0.4 * (velocity - minMaxVel[0]) / (minMaxVel[1] - minMaxVel[0]);
       out.push(scale * color[0]);
       out.push(scale * color[1]);
       out.push(scale * color[2]);
-      out.push(scale * color[3]);
-
+      out.push(color[3]);
+      return out;
+    } else {
+      return color;
     }
-    return color;
+    
   }
 
   function getMinMaxVelocity(notes: Songs.INoteScene[]) {

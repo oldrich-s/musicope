@@ -4,14 +4,14 @@ module Musicope.Game.Parsers.Midi {
 
     timePerBeat: number;
     timePerBar: number;
-    noteValuePerBeat: number; // denominator in time signature: 2, 4, 8, 16 ...
+    noteValuePerBeat: number = 4; // denominator in time signature: 2, 4, 8, 16 ...
     tracks: INote[][] = [];
     sustainNotes: ISustainNote[] = [];
 
     private ticksPerQuarter: number;
     private timePerQuarter: number;
     private timePerTick: number;
-    private beatsPerBar: number;
+    private beatsPerBar: number = 4;
 
     constructor(private midi: Uint8Array) {
       var o = this;
