@@ -4,7 +4,7 @@ module Musicope.Game.Inputs {
 
     private actions: KeyboardFns.Actions.IKeyboardAction[] = [];
 
-    constructor(private params: Params.IParams, private song: Songs.ISong) {
+    constructor(private params: Params, private song: Song) {
       var o = this;
       o.initActions();
       o.checkActionsDuplicates();

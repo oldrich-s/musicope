@@ -6,7 +6,7 @@ module Musicope.List.Inputs.KeyboardFns.Actions.List {
     description = "";
     key = "ctrl+up";
 
-    private contr: Controllers.IController;
+    private contr: Controller;
 
     constructor(p: IKeyboardParams) {
       var o = this;
@@ -15,7 +15,7 @@ module Musicope.List.Inputs.KeyboardFns.Actions.List {
 
     triggerAction() {
       var o = this;
-      var song: Controllers.ISong = o.contr.displayedSongs()[o.contr.listIndex()];
+      var song: ISong = o.contr.displayedSongs()[o.contr.listIndex()];
       song.db["votes"](song.db["votes"]() + 1);
     }
 

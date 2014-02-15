@@ -40,36 +40,32 @@
 var Musicope;
 (function (Musicope) {
     (function (Game) {
-        (function (Players) {
-            (function (BasicFns) {
-                var o;
-
-                var FromDevice = (function () {
-                    function FromDevice(device, scene, params, notes) {
-                        this.device = device;
-                        this.scene = scene;
-                        this.params = params;
-                        this.notes = notes;
-                        this.noteOnFuncs = [];
-                        this.oldTimeStamp = -1;
-                        this.oldVelocity = -1;
-                        this.oldId = -1;
-                        o = this;
-                        o.initDevice();
-                    }
-                    FromDevice.prototype.initDevice = function () {
+        (function (PlayerFns) {
+            var FromDevice = (function () {
+                function FromDevice(device, scene, params, notes) {
+                    var _this = this;
+                    this.device = device;
+                    this.scene = scene;
+                    this.params = params;
+                    this.notes = notes;
+                    this.noteOnFuncs = [];
+                    this.oldTimeStamp = -1;
+                    this.oldVelocity = -1;
+                    this.oldId = -1;
+                    this.initDevice = function () {
+                        var o = _this;
                         var midiOut = o.params.readOnly.p_deviceOut;
                         var midiIn = o.params.readOnly.p_deviceIn;
                         o.device.outOpen(midiOut);
                         o.device.out(0x80, 0, 0);
                         o.device.inOpen(midiIn, o.deviceIn);
                     };
-
-                    FromDevice.prototype.onNoteOn = function (func) {
+                    this.onNoteOn = function (func) {
+                        var o = _this;
                         o.noteOnFuncs.push(func);
                     };
-
-                    FromDevice.prototype.deviceIn = function (timeStamp, kind, noteId, velocity) {
+                    this.deviceIn = function (timeStamp, kind, noteId, velocity) {
+                        var o = _this;
                         o.sendBackToDevice(kind, noteId, velocity);
                         var isNoteOn = kind === 144 && velocity > 0;
                         var isNoteOff = kind === 128 || (kind === 144 && velocity == 0);
@@ -81,14 +77,14 @@ var Musicope;
                             o.scene.unsetActiveId(noteId);
                         }
                     };
-
-                    FromDevice.prototype.sendBackToDevice = function (kind, noteId, velocity) {
+                    this.sendBackToDevice = function (kind, noteId, velocity) {
+                        var o = _this;
                         if (kind < 242 && (kind < 127 || kind > 160)) {
                             o.device.out(kind, noteId, velocity);
                         }
                     };
-
-                    FromDevice.prototype.isDoubleNote = function (timeStamp, isNoteOn, noteId, velocity) {
+                    this.isDoubleNote = function (timeStamp, isNoteOn, noteId, velocity) {
+                        var o = _this;
                         var isSimilarTime = Math.abs(timeStamp - o.oldTimeStamp) < 3;
                         var idMaches = Math.abs(noteId - o.oldId) == 12 || Math.abs(noteId - o.oldId) == 24;
                         var isDoubleNote = isSimilarTime && idMaches && velocity == o.oldVelocity;
@@ -97,39 +93,36 @@ var Musicope;
                         o.oldId = noteId;
                         return isDoubleNote;
                     };
-
-                    FromDevice.prototype.execNoteOnFuncs = function (noteId) {
+                    this.execNoteOnFuncs = function (noteId) {
+                        var o = _this;
                         for (var i = 0; i < o.noteOnFuncs.length; i++) {
                             o.noteOnFuncs[i](noteId);
                         }
                     };
-                    return FromDevice;
-                })();
-                BasicFns.FromDevice = FromDevice;
-            })(Players.BasicFns || (Players.BasicFns = {}));
-            var BasicFns = Players.BasicFns;
-        })(Game.Players || (Game.Players = {}));
-        var Players = Game.Players;
+                    var o = this;
+                    o.initDevice();
+                }
+                return FromDevice;
+            })();
+            PlayerFns.FromDevice = FromDevice;
+        })(Game.PlayerFns || (Game.PlayerFns = {}));
+        var PlayerFns = Game.PlayerFns;
     })(Musicope.Game || (Musicope.Game = {}));
     var Game = Musicope.Game;
 })(Musicope || (Musicope = {}));
 var Musicope;
 (function (Musicope) {
     (function (Game) {
-        (function (Players) {
-            (function (BasicFns) {
-                var o;
-
-                var PlayNotes = (function () {
-                    function PlayNotes(device, scene, params, notes) {
-                        this.device = device;
-                        this.scene = scene;
-                        this.params = params;
-                        this.notes = notes;
-                        o = this;
-                        o.assignIds();
-                    }
-                    PlayNotes.prototype.play = function () {
+        (function (PlayerFns) {
+            var PlayNotes = (function () {
+                function PlayNotes(device, scene, params, notes) {
+                    var _this = this;
+                    this.device = device;
+                    this.scene = scene;
+                    this.params = params;
+                    this.notes = notes;
+                    this.play = function () {
+                        var o = _this;
                         for (var trackId = 0; trackId < o.notes.length; trackId++) {
                             while (o.isIdBelowCurrentTime(trackId)) {
                                 var note = o.notes[trackId][o.ids[trackId]];
@@ -138,24 +131,24 @@ var Musicope;
                             }
                         }
                     };
-
-                    PlayNotes.prototype.reset = function (idsBelowCurrentTime) {
+                    this.reset = function (idsBelowCurrentTime) {
+                        var o = _this;
                         for (var i = 0; i < idsBelowCurrentTime.length; i++) {
                             o.ids[i] = Math.max(0, idsBelowCurrentTime[i]);
                         }
                     };
-
-                    PlayNotes.prototype.assignIds = function () {
+                    this.assignIds = function () {
+                        var o = _this;
                         o.ids = o.notes.map(function () {
                             return 0;
                         });
                     };
-
-                    PlayNotes.prototype.isIdBelowCurrentTime = function (trackId) {
+                    this.isIdBelowCurrentTime = function (trackId) {
+                        var o = _this;
                         return o.notes[trackId][o.ids[trackId]] && o.notes[trackId][o.ids[trackId]].time < o.params.readOnly.p_elapsedTime;
                     };
-
-                    PlayNotes.prototype.playNote = function (note, trackId) {
+                    this.playNote = function (note, trackId) {
+                        var o = _this;
                         var playsUser = o.params.readOnly.p_userHands[trackId];
                         if (!playsUser || o.playOutOfReach(note)) {
                             if (note.on) {
@@ -167,14 +160,14 @@ var Musicope;
                             }
                         }
                     };
-
-                    PlayNotes.prototype.playOutOfReach = function (note) {
+                    this.playOutOfReach = function (note) {
+                        var o = _this;
                         var isBelowMin = note.id < o.params.readOnly.p_minNote;
                         var isAboveMax = note.id > o.params.readOnly.p_maxNote;
                         o.params.readOnly.p_playOutOfReachNotes && (isBelowMin || isAboveMax);
                     };
-
-                    PlayNotes.prototype.getVelocity = function (trackId, note) {
+                    this.getVelocity = function (trackId, note) {
+                        var o = _this;
                         var velocity = o.params.readOnly.p_volumes[trackId] * note.velocity;
                         var maxVelocity = o.params.readOnly.p_maxVelocity[trackId];
                         if (maxVelocity && velocity > maxVelocity) {
@@ -182,43 +175,42 @@ var Musicope;
                         }
                         return velocity;
                     };
-                    return PlayNotes;
-                })();
-                BasicFns.PlayNotes = PlayNotes;
-            })(Players.BasicFns || (Players.BasicFns = {}));
-            var BasicFns = Players.BasicFns;
-        })(Game.Players || (Game.Players = {}));
-        var Players = Game.Players;
+                    var o = this;
+                    o = this;
+                    o.assignIds();
+                }
+                return PlayNotes;
+            })();
+            PlayerFns.PlayNotes = PlayNotes;
+        })(Game.PlayerFns || (Game.PlayerFns = {}));
+        var PlayerFns = Game.PlayerFns;
     })(Musicope.Game || (Musicope.Game = {}));
     var Game = Musicope.Game;
 })(Musicope || (Musicope = {}));
 var Musicope;
 (function (Musicope) {
     (function (Game) {
-        (function (Players) {
-            (function (BasicFns) {
-                var o;
-
-                var PlaySustains = (function () {
-                    function PlaySustains(device, params, sustainNotes) {
-                        this.device = device;
-                        this.params = params;
-                        this.sustainNotes = sustainNotes;
-                        this.id = 0;
-                        o = this;
-                    }
-                    PlaySustains.prototype.play = function () {
+        (function (PlayerFns) {
+            var PlaySustains = (function () {
+                function PlaySustains(device, params, sustainNotes) {
+                    var _this = this;
+                    this.device = device;
+                    this.params = params;
+                    this.sustainNotes = sustainNotes;
+                    this.id = 0;
+                    this.play = function () {
+                        var o = _this;
                         while (o.isIdBelowCurrentTime()) {
                             o.playSustainNote(o.sustainNotes[o.id]);
                             o.id++;
                         }
                     };
-
-                    PlaySustains.prototype.isIdBelowCurrentTime = function () {
+                    this.isIdBelowCurrentTime = function () {
+                        var o = _this;
                         return o.sustainNotes[o.id] && o.sustainNotes[o.id].time < o.params.readOnly.p_elapsedTime;
                     };
-
-                    PlaySustains.prototype.playSustainNote = function (note) {
+                    this.playSustainNote = function (note) {
+                        var o = _this;
                         if (o.params.readOnly.p_sustain) {
                             if (note.on) {
                                 o.device.out(176, 64, 127);
@@ -227,35 +219,29 @@ var Musicope;
                             }
                         }
                     };
-                    return PlaySustains;
-                })();
-                BasicFns.PlaySustains = PlaySustains;
-            })(Players.BasicFns || (Players.BasicFns = {}));
-            var BasicFns = Players.BasicFns;
-        })(Game.Players || (Game.Players = {}));
-        var Players = Game.Players;
+                    var o = this;
+                }
+                return PlaySustains;
+            })();
+            PlayerFns.PlaySustains = PlaySustains;
+        })(Game.PlayerFns || (Game.PlayerFns = {}));
+        var PlayerFns = Game.PlayerFns;
     })(Musicope.Game || (Musicope.Game = {}));
     var Game = Musicope.Game;
 })(Musicope || (Musicope = {}));
 var Musicope;
 (function (Musicope) {
     (function (Game) {
-        (function (Players) {
-            (function (BasicFns) {
-                var o;
-
-                var WaitForNote = (function () {
-                    function WaitForNote(device, params, notes, onNoteOn) {
-                        this.device = device;
-                        this.params = params;
-                        this.notes = notes;
-                        this.onNoteOn = onNoteOn;
-                        o = this;
-                        o.assignIds();
-                        o.assignNotesPressedTime();
-                        onNoteOn(o.addNoteOnToKnownNotes);
-                    }
-                    WaitForNote.prototype.isFreeze = function () {
+        (function (PlayerFns) {
+            var WaitForNote = (function () {
+                function WaitForNote(device, params, notes, onNoteOn) {
+                    var _this = this;
+                    this.device = device;
+                    this.params = params;
+                    this.notes = notes;
+                    this.onNoteOn = onNoteOn;
+                    this.isFreeze = function () {
+                        var o = _this;
                         var freeze = false;
                         for (var trackId = 0; trackId < o.notes.length; trackId++) {
                             var isWait = o.params.readOnly.p_userHands[trackId] && o.params.readOnly.p_waits[trackId];
@@ -271,27 +257,27 @@ var Musicope;
                         }
                         return freeze;
                     };
-
-                    WaitForNote.prototype.reset = function (idsBelowCurrentTime) {
+                    this.reset = function (idsBelowCurrentTime) {
+                        var o = _this;
                         o.resetNotesPressedTime(idsBelowCurrentTime);
                         idsBelowCurrentTime.forEach(o.setId);
                     };
-
-                    WaitForNote.prototype.assignIds = function () {
+                    this.assignIds = function () {
+                        var o = _this;
                         o.ids = o.notes.map(function () {
                             return 0;
                         });
                     };
-
-                    WaitForNote.prototype.assignNotesPressedTime = function () {
+                    this.assignNotesPressedTime = function () {
+                        var o = _this;
                         o.notesPressedTime = o.notes.map(function (notesi) {
                             var arr = [];
                             arr[notesi.length - 1] = undefined;
                             return arr;
                         });
                     };
-
-                    WaitForNote.prototype.addNoteOnToKnownNotes = function (noteId) {
+                    this.addNoteOnToKnownNotes = function (noteId) {
+                        var o = _this;
                         for (var i = 0; i < o.params.readOnly.p_userHands.length; i++) {
                             if (o.params.readOnly.p_userHands[i]) {
                                 var id = o.ids[i];
@@ -309,12 +295,12 @@ var Musicope;
                             }
                         }
                     };
-
-                    WaitForNote.prototype.isIdBelowCurrentTimePlusRadius = function (trackId, noteId) {
+                    this.isIdBelowCurrentTimePlusRadius = function (trackId, noteId) {
+                        var o = _this;
                         return o.notes[trackId][noteId] && o.notes[trackId][noteId].time < o.params.readOnly.p_elapsedTime + o.params.readOnly.p_radiuses[trackId];
                     };
-
-                    WaitForNote.prototype.resetNotesPressedTime = function (idsBelowCurrentTime) {
+                    this.resetNotesPressedTime = function (idsBelowCurrentTime) {
+                        var o = _this;
                         for (var i = 0; i < idsBelowCurrentTime.length; i++) {
                             for (var j = idsBelowCurrentTime[i] + 1; j < o.notesPressedTime[i].length; j++) {
                                 if (o.notesPressedTime[i][j]) {
@@ -323,16 +309,16 @@ var Musicope;
                             }
                         }
                     };
-
-                    WaitForNote.prototype.setId = function (id, i) {
+                    this.setId = function (id, i) {
+                        var o = _this;
                         o.ids[i] = id + 1;
                     };
-
-                    WaitForNote.prototype.isIdBelowCurrentTimeMinusRadius = function (trackId, noteId) {
+                    this.isIdBelowCurrentTimeMinusRadius = function (trackId, noteId) {
+                        var o = _this;
                         return o.notes[trackId][noteId] && o.notes[trackId][noteId].time < o.params.readOnly.p_elapsedTime - o.params.readOnly.p_radiuses[trackId];
                     };
-
-                    WaitForNote.prototype.isNoteUnpressed = function (trackId, noteId) {
+                    this.isNoteUnpressed = function (trackId, noteId) {
+                        var o = _this;
                         var note = o.notes[trackId][noteId];
                         var wasPlayedByUser = o.notesPressedTime[trackId][noteId];
                         var waitForOutOfReach = true;
@@ -343,13 +329,16 @@ var Musicope;
                         }
                         return note.on && !wasPlayedByUser && waitForOutOfReach;
                     };
-                    return WaitForNote;
-                })();
-                BasicFns.WaitForNote = WaitForNote;
-            })(Players.BasicFns || (Players.BasicFns = {}));
-            var BasicFns = Players.BasicFns;
-        })(Game.Players || (Game.Players = {}));
-        var Players = Game.Players;
+                    var o = this;
+                    o.assignIds();
+                    o.assignNotesPressedTime();
+                    onNoteOn(o.addNoteOnToKnownNotes);
+                }
+                return WaitForNote;
+            })();
+            PlayerFns.WaitForNote = WaitForNote;
+        })(Game.PlayerFns || (Game.PlayerFns = {}));
+        var PlayerFns = Game.PlayerFns;
     })(Musicope.Game || (Musicope.Game = {}));
     var Game = Musicope.Game;
 })(Musicope || (Musicope = {}));
@@ -1334,180 +1323,119 @@ var Musicope;
 var Musicope;
 (function (Musicope) {
     (function (List) {
-        (function (Controllers) {
-            (function (BasicFns) {
-                function toKnockout(name, doc, fb) {
-                    var koDoc = {};
-                    for (var prop in doc) {
-                        koDoc[prop] = ko.observable(doc[prop]);
-                        koDoc[prop].subscribe(function (v) {
-                            var js = ko.toJS(koDoc);
-                            var en = btoa(name);
-                            fb.child(en).set(js);
-                        });
-                    }
-                    return koDoc;
-                }
-
-                function getDocsFromDB(ids, fb) {
-                    var done = $.Deferred();
-                    fb.once("value", function (data) {
-                        var v = data.val() || {};
-                        var res = ids.map(function (id) {
-                            var js = v[btoa(id)] || { votes: 0 };
-                            return toKnockout(id, js, fb);
-                        });
-                        done.resolve((res));
+        (function (ControllersFns) {
+            function toKnockout(name, doc, fb) {
+                var koDoc = {};
+                for (var prop in doc) {
+                    koDoc[prop] = ko.observable(doc[prop]);
+                    koDoc[prop].subscribe(function (v) {
+                        var js = ko.toJS(koDoc);
+                        var en = btoa(name);
+                        fb.child(en).set(js);
                     });
-                    return done.promise();
                 }
+                return koDoc;
+            }
 
-                function getSongsFromUrls(urls, docs) {
-                    var songs = urls.map(function (path, i) {
-                        var vals = path.match(/^(.*\/)([^\/]+)\.([^.]+)$/);
-                        var song = {
-                            path: vals[1],
-                            name: vals[2],
-                            extension: vals[3],
-                            url: path,
-                            db: docs[i]
-                        };
-                        return song;
+            function getDocsFromDB(ids, fb) {
+                var done = $.Deferred();
+                fb.once("value", function (data) {
+                    var v = data.val() || {};
+                    var res = ids.map(function (id) {
+                        var js = v[btoa(id)] || { votes: 0 };
+                        return toKnockout(id, js, fb);
                     });
-                    return songs;
-                }
+                    done.resolve((res));
+                });
+                return done.promise();
+            }
 
-                function getSongListLocal(params, fb) {
-                    var out = $.Deferred();
-                    var xhr = new XMLHttpRequest();
-                    xhr.open('GET', params.readOnly.l_songsUrl);
-                    xhr.responseType = 'text';
-                    xhr.onload = function (e) {
-                        if (this.status == 200) {
-                            var paths = JSON.parse(this.responseText);
-                            getDocsFromDB(paths, fb).done(function (docs) {
-                                out.resolve(getSongsFromUrls(paths, docs));
-                            });
-                        }
+            function getSongsFromUrls(urls, docs) {
+                var songs = urls.map(function (path, i) {
+                    var vals = path.match(/^(.*\/)([^\/]+)\.([^.]+)$/);
+                    var song = {
+                        path: vals[1],
+                        name: vals[2],
+                        extension: vals[3],
+                        url: path,
+                        db: docs[i]
                     };
-                    xhr.send();
-                    return out.promise();
-                }
+                    return song;
+                });
+                return songs;
+            }
 
-                function getSongListRemote(params, fb) {
-                    var out = $.Deferred();
-                    var url = "../proxy.php?url=" + encodeURIComponent(params.readOnly.l_songsUrl);
-                    $.get(url).done(function (text) {
-                        var paths = JSON.parse(atob(text));
+            function getSongListLocal(params, fb) {
+                var out = $.Deferred();
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', params.readOnly.l_songsUrl);
+                xhr.responseType = 'text';
+                xhr.onload = function (e) {
+                    if (this.status == 200) {
+                        var paths = JSON.parse(this.responseText);
                         getDocsFromDB(paths, fb).done(function (docs) {
                             out.resolve(getSongsFromUrls(paths, docs));
                         });
-                    });
-                    return out;
-                }
-
-                var Songs = (function () {
-                    function Songs() {
-                        var _this = this;
-                        this.getSongList = function (params) {
-                            var o = _this;
-                            var out = $.Deferred();
-                            var isLocal = params.readOnly.l_songsUrl.indexOf("../") == 0;
-                            if (isLocal) {
-                                return getSongListLocal(params, o.fb);
-                            } else {
-                                return getSongListRemote(params, o.fb);
-                            }
-                        };
-                        this.fb = new Firebase("https://musicope.firebaseio.com");
                     }
-                    return Songs;
-                })();
-                BasicFns.Songs = Songs;
-            })(Controllers.BasicFns || (Controllers.BasicFns = {}));
-            var BasicFns = Controllers.BasicFns;
-        })(List.Controllers || (List.Controllers = {}));
-        var Controllers = List.Controllers;
+                };
+                xhr.send();
+                return out.promise();
+            }
+
+            function getSongListRemote(params, fb) {
+                var out = $.Deferred();
+                var url = "../proxy.php?url=" + encodeURIComponent(params.readOnly.l_songsUrl);
+                $.get(url).done(function (text) {
+                    var paths = JSON.parse(atob(text));
+                    getDocsFromDB(paths, fb).done(function (docs) {
+                        out.resolve(getSongsFromUrls(paths, docs));
+                    });
+                });
+                return out;
+            }
+
+            var Songs = (function () {
+                function Songs() {
+                    var _this = this;
+                    this.getSongList = function (params) {
+                        var o = _this;
+                        var out = $.Deferred();
+                        var isLocal = params.readOnly.l_songsUrl.indexOf("../") == 0;
+                        if (isLocal) {
+                            return getSongListLocal(params, o.fb);
+                        } else {
+                            return getSongListRemote(params, o.fb);
+                        }
+                    };
+                    this.fb = new Firebase("https://musicope.firebaseio.com");
+                }
+                return Songs;
+            })();
+            ControllersFns.Songs = Songs;
+        })(List.ControllersFns || (List.ControllersFns = {}));
+        var ControllersFns = List.ControllersFns;
     })(Musicope.List || (Musicope.List = {}));
     var List = Musicope.List;
 })(Musicope || (Musicope = {}));
 var Musicope;
 (function (Musicope) {
     (function (List) {
-        (function (Controllers) {
-            var o;
-
-            var Basic = (function () {
-                function Basic() {
-                    this.displayedSongs = ko.observableArray([]);
-                    this.songs = [];
-                    this.filteredSongs = [];
-                    this.params = new Musicope.List.Params.Basic();
-                    o = this;
-                    o.koInitGameParams();
-                    o.koInitSearchQuery();
-                    o.koInitListIndex();
-                    o.initInputs();
-
-                    var songs = new Musicope.List.Controllers.BasicFns.Songs();
-
-                    songs.getSongList(o.params).done(function (songs) {
-                        o.songs = songs;
-                        o.searchQuery.valueHasMutated();
-                    });
-
-                    o.scrollToFocusedEl();
-                    o.initQueryManager();
-                    o.assignOnQueryUpdate();
-                    o.assignCorrectVisibility();
-                }
-                Basic.prototype.redirect = function (indexFn, song) {
-                    var o = this;
-                    var index = indexFn();
-                    Musicope.LocStorage.set("listIndex", index);
-                    o.queryManager.onRedirect(index).done(function () {
-                        var pars = o.gameParams();
-                        if (!pars) {
-                            pars = "";
-                        }
-                        if (pars.charAt(0) !== "&") {
-                            pars = "&" + pars;
-                        }
-                        window.location.href = "../game/index.html?c_songUrl=" + encodeURIComponent(song.url) + pars;
-                    });
-                };
-
-                Basic.prototype.showGameParamsSetup = function () {
-                    $('gameParamsSetup').css("display", "block");
-                };
-
-                Basic.prototype.correctPosition = function (dom) {
-                    var el = $(dom);
-                    var rely = el.offset()["top"] - $(window).scrollTop() + 0.5 * el.height();
-                    if (rely > 0.9 * window.innerHeight) {
-                        var dy = window.innerHeight - 1.5 * el.height() - rely;
-                        $(window).scrollTop($(window).scrollTop() - dy);
-                    } else if (rely < 0.2 * window.innerHeight) {
-                        $(window).scrollTop(el.offset()["top"] - 2 * el.height());
-                    }
-                    return true;
-                };
-
-                Basic.prototype.updateFilteredSongs = function (songs) {
-                    var o = this;
-                    o.filteredSongs = songs;
-                    var length = Math.min(o.listIndex() + 10, songs.length);
-                    o.displayedSongs(songs.slice(0, length));
-                };
-
-                Basic.prototype.koInitGameParams = function () {
+        var Controller = (function () {
+            function Controller() {
+                var _this = this;
+                this.displayedSongs = ko.observableArray([]);
+                this.songs = [];
+                this.filteredSongs = [];
+                this.params = new Musicope.List.Params();
+                this.koInitGameParams = function () {
+                    var o = _this;
                     o.gameParams = ko.observable(Musicope.LocStorage.get("gameParams", ""));
                     o.gameParams.subscribe(function (query) {
                         Musicope.LocStorage.set("gameParams", query);
                     });
                 };
-
-                Basic.prototype.koInitSearchQuery = function () {
+                this.koInitSearchQuery = function () {
+                    var o = _this;
                     var initQuery = Musicope.LocStorage.get("query", "");
                     o.searchQuery = ko.observable(initQuery);
                     o.searchQuery.subscribe(function (query) {
@@ -1517,16 +1445,15 @@ var Musicope;
                         Musicope.LocStorage.set("query", query);
                     });
                 };
-
-                Basic.prototype.koInitListIndex = function () {
+                this.koInitListIndex = function () {
+                    var o = _this;
                     o.listIndex = ko.observable(Musicope.LocStorage.get("listIndex", 0));
                     o.listIndex.subscribe(function (i) {
                         Musicope.LocStorage.set("listIndex", i);
                     });
                 };
-
-                Basic.prototype.initInputs = function () {
-                    var o = this;
+                this.initInputs = function () {
+                    var o = _this;
                     var params = {
                         controller: o
                     };
@@ -1534,8 +1461,8 @@ var Musicope;
                         new Musicope.List.Inputs.List[prop](params);
                     }
                 };
-
-                Basic.prototype.scrollToFocusedEl = function () {
+                this.scrollToFocusedEl = function () {
+                    var o = _this;
                     var el = $(".elFocus");
                     if (el && el.length > 0) {
                         var index = o.listIndex();
@@ -1546,23 +1473,21 @@ var Musicope;
                         setTimeout(o.scrollToFocusedEl, 100);
                     }
                 };
-
-                Basic.prototype.initQueryManager = function () {
+                this.initQueryManager = function () {
+                    var o = _this;
                     var params = {
                         controller: o
                     };
-                    o.queryManager = new Musicope.List.Queries.Basic(params);
+                    o.queryManager = new Musicope.List.Query(params);
                 };
-
-                Basic.prototype.assignOnQueryUpdate = function () {
-                    var o = this;
+                this.assignOnQueryUpdate = function () {
+                    var o = _this;
                     o.searchQuery.subscribe(function (query) {
                         o.queryManager.onQueryUpdate(query);
                     });
                 };
-
-                Basic.prototype.assignCorrectVisibility = function () {
-                    var o = this;
+                this.assignCorrectVisibility = function () {
+                    var o = _this;
                     $(window).scroll(function (e) {
                         var scrollEnd = $(document).height() - $(window).scrollTop() - $(window).height();
                         if (scrollEnd < 100) {
@@ -1577,11 +1502,66 @@ var Musicope;
                         }
                     });
                 };
-                return Basic;
-            })();
-            Controllers.Basic = Basic;
-        })(List.Controllers || (List.Controllers = {}));
-        var Controllers = List.Controllers;
+                var o = this;
+                o = this;
+                o.koInitGameParams();
+                o.koInitSearchQuery();
+                o.koInitListIndex();
+                o.initInputs();
+
+                var songs = new Musicope.List.ControllersFns.Songs();
+
+                songs.getSongList(o.params).done(function (songs) {
+                    o.songs = songs;
+                    o.searchQuery.valueHasMutated();
+                });
+
+                o.scrollToFocusedEl();
+                o.initQueryManager();
+                o.assignOnQueryUpdate();
+                o.assignCorrectVisibility();
+            }
+            Controller.prototype.redirect = function (indexFn, song) {
+                var o = this;
+                var index = indexFn();
+                Musicope.LocStorage.set("listIndex", index);
+                o.queryManager.onRedirect(index).done(function () {
+                    var pars = o.gameParams();
+                    if (!pars) {
+                        pars = "";
+                    }
+                    if (pars.charAt(0) !== "&") {
+                        pars = "&" + pars;
+                    }
+                    window.location.href = "../game/index.html?c_songUrl=" + encodeURIComponent(song.url) + pars;
+                });
+            };
+
+            Controller.prototype.showGameParamsSetup = function () {
+                $('gameParamsSetup').css("display", "block");
+            };
+
+            Controller.prototype.correctPosition = function (dom) {
+                var el = $(dom);
+                var rely = el.offset()["top"] - $(window).scrollTop() + 0.5 * el.height();
+                if (rely > 0.9 * window.innerHeight) {
+                    var dy = window.innerHeight - 1.5 * el.height() - rely;
+                    $(window).scrollTop($(window).scrollTop() - dy);
+                } else if (rely < 0.2 * window.innerHeight) {
+                    $(window).scrollTop(el.offset()["top"] - 2 * el.height());
+                }
+                return true;
+            };
+
+            Controller.prototype.updateFilteredSongs = function (songs) {
+                var o = this;
+                o.filteredSongs = songs;
+                var length = Math.min(o.listIndex() + 10, songs.length);
+                o.displayedSongs(songs.slice(0, length));
+            };
+            return Controller;
+        })();
+        List.Controller = Controller;
     })(Musicope.List || (Musicope.List = {}));
     var List = Musicope.List;
 })(Musicope || (Musicope = {}));
@@ -1829,257 +1809,239 @@ var Musicope;
 var Musicope;
 (function (Musicope) {
     (function (List) {
-        (function (Queries) {
-            (function (BasicFns) {
-                (function (Actions) {
-                    (function (List) {
-                        var filterSongs = (function () {
-                            function filterSongs(p) {
-                                this.id = "filter songs";
-                                this.description = "";
-                                this.regexp = /^.*$/;
-                                this.priority = 100;
-                                var o = this;
-                                o.contr = p.inputParams.controller;
-                            }
-                            filterSongs.prototype.onQueryUpdate = function (query) {
-                                var o = this;
-                                var filteredSongs = o.getFilteredAndColoredSongs(query);
-                                o.contr.updateFilteredSongs(filteredSongs);
-                            };
-
-                            filterSongs.prototype.getFilteredAndColoredSongs = function (query) {
-                                var o = this;
-                                var queries = Musicope.List.Queries.BasicFns.Actions.Tools.splitQuery(query);
-                                var filteredSongs = Musicope.List.Queries.BasicFns.Actions.Tools.filterSongsByQueries(o.contr.songs, queries);
-                                var sortedSongs = o.sortSongs(filteredSongs);
-                                var coloredSongs = Musicope.List.Queries.BasicFns.Actions.Tools.colorSongsByQueries(sortedSongs, queries);
-                                return coloredSongs;
-                            };
-
-                            filterSongs.prototype.sortSongs = function (songs) {
-                                return songs.sort(function (a, b) {
-                                    var votesa = a.db["votes"]();
-                                    var votesb = b.db["votes"]();
-                                    if (votesa !== votesb) {
-                                        return votesb - votesa;
-                                    } else {
-                                        return a.name > b.name ? 1 : (a.name === b.name ? 0 : -1);
-                                    }
-                                });
-                            };
-                            return filterSongs;
-                        })();
-                        List.filterSongs = filterSongs;
-                    })(Actions.List || (Actions.List = {}));
-                    var List = Actions.List;
-                })(BasicFns.Actions || (BasicFns.Actions = {}));
-                var Actions = BasicFns.Actions;
-            })(Queries.BasicFns || (Queries.BasicFns = {}));
-            var BasicFns = Queries.BasicFns;
-        })(List.Queries || (List.Queries = {}));
-        var Queries = List.Queries;
-    })(Musicope.List || (Musicope.List = {}));
-    var List = Musicope.List;
-})(Musicope || (Musicope = {}));
-var Musicope;
-(function (Musicope) {
-    (function (List) {
-        (function (Queries) {
-            (function (BasicFns) {
-                (function (Actions) {
-                    (function (Tools) {
-                        function colorStringByQueries(str, queries) {
-                            queries.forEach(function (query) {
-                                str = str.replace(new RegExp(query, 'gi'), '{$&}');
-                            });
-                            for (var i = 0; i < queries.length; i++) {
-                                str = str.replace(/\{([^{]+?)\}/g, '<span class="search-match">$1</span>');
-                            }
-                            return str;
+        (function (QueryFns) {
+            (function (Actions) {
+                (function (List) {
+                    var filterSongs = (function () {
+                        function filterSongs(p) {
+                            this.id = "filter songs";
+                            this.description = "";
+                            this.regexp = /^.*$/;
+                            this.priority = 100;
+                            var o = this;
+                            o.contr = p.inputParams.controller;
                         }
+                        filterSongs.prototype.onQueryUpdate = function (query) {
+                            var o = this;
+                            var filteredSongs = o.getFilteredAndColoredSongs(query);
+                            o.contr.updateFilteredSongs(filteredSongs);
+                        };
 
-                        function colorSongByQueries(song, queries) {
-                            var coloredName = colorStringByQueries(song.name, queries);
-                            var coloredPath = colorStringByQueries(song.path, queries);
-                            var coloredSong = {
-                                name: coloredName,
-                                path: coloredPath,
-                                url: song.url,
-                                db: song.db,
-                                extension: song.extension
-                            };
-                            return coloredSong;
-                        }
+                        filterSongs.prototype.getFilteredAndColoredSongs = function (query) {
+                            var o = this;
+                            var queries = Musicope.List.QueryFns.Actions.Tools.splitQuery(query);
+                            var filteredSongs = Musicope.List.QueryFns.Actions.Tools.filterSongsByQueries(o.contr.songs, queries);
+                            var sortedSongs = o.sortSongs(filteredSongs);
+                            var coloredSongs = Musicope.List.QueryFns.Actions.Tools.colorSongsByQueries(sortedSongs, queries);
+                            return coloredSongs;
+                        };
 
-                        function colorSongsByQueries(songs, queries) {
-                            var coloredSongs = songs.map(function (song) {
-                                if (queries.length > 0 && queries[0].length > 0) {
-                                    return colorSongByQueries(song, queries);
+                        filterSongs.prototype.sortSongs = function (songs) {
+                            return songs.sort(function (a, b) {
+                                var votesa = a.db["votes"]();
+                                var votesb = b.db["votes"]();
+                                if (votesa !== votesb) {
+                                    return votesb - votesa;
                                 } else {
-                                    return song;
+                                    return a.name > b.name ? 1 : (a.name === b.name ? 0 : -1);
                                 }
                             });
-                            return coloredSongs;
-                        }
-                        Tools.colorSongsByQueries = colorSongsByQueries;
-
-                        function filterSongsByQueries(songs, queries) {
-                            return songs.filter(function (song, i) {
-                                var url = song.url.toLowerCase();
-                                return queries.every(function (query) {
-                                    return url.indexOf(query) > -1;
-                                });
-                            });
-                        }
-                        Tools.filterSongsByQueries = filterSongsByQueries;
-
-                        function splitQuery(query) {
-                            var queries = query.toLowerCase().split(" ");
-                            var trimmedQueries = queries.map(function (query) {
-                                return query.trim();
-                            });
-                            var nonEmptyQueries = trimmedQueries.filter(function (query) {
-                                return query != "";
-                            });
-                            return nonEmptyQueries;
-                        }
-                        Tools.splitQuery = splitQuery;
-                    })(Actions.Tools || (Actions.Tools = {}));
-                    var Tools = Actions.Tools;
-                })(BasicFns.Actions || (BasicFns.Actions = {}));
-                var Actions = BasicFns.Actions;
-            })(Queries.BasicFns || (Queries.BasicFns = {}));
-            var BasicFns = Queries.BasicFns;
-        })(List.Queries || (List.Queries = {}));
-        var Queries = List.Queries;
+                        };
+                        return filterSongs;
+                    })();
+                    List.filterSongs = filterSongs;
+                })(Actions.List || (Actions.List = {}));
+                var List = Actions.List;
+            })(QueryFns.Actions || (QueryFns.Actions = {}));
+            var Actions = QueryFns.Actions;
+        })(List.QueryFns || (List.QueryFns = {}));
+        var QueryFns = List.QueryFns;
     })(Musicope.List || (Musicope.List = {}));
     var List = Musicope.List;
 })(Musicope || (Musicope = {}));
 var Musicope;
 (function (Musicope) {
     (function (List) {
-        (function (Queries) {
-            var Basic = (function () {
-                function Basic(params) {
-                    this.params = params;
-                    this.actions = [];
-                    var o = this;
-                    o.contr = params.controller;
-                    o.pushActions();
-                    o.sortActions();
-                }
-                Basic.prototype.pushActions = function () {
-                    var o = this;
-                    var params = {
-                        inputParams: o.params
-                    };
-                    for (var prop in Musicope.List.Queries.BasicFns.Actions.List) {
-                        var constr = Musicope.List.Queries.BasicFns.Actions.List[prop];
-                        o.actions.push(new constr(params));
-                    }
-                };
-
-                Basic.prototype.sortActions = function () {
-                    var o = this;
-                    o.actions.sort(function (a, b) {
-                        return (a.priority > b.priority);
-                    });
-                };
-
-                Basic.prototype.onQueryUpdate = function (query) {
-                    var o = this;
-                    o.actions.forEach(function (action) {
-                        var pos = query.search(action.regexp);
-                        if (pos !== -1) {
-                            action.onQueryUpdate(query);
-                        }
-                    });
-                };
-
-                Basic.prototype.onRedirect = function (displayedSongsIndex) {
-                    var o = this;
-                    var promises = [];
-                    o.actions.forEach(function (action) {
-                        if (action.onRedirect) {
-                            promises.push(action.onRedirect(displayedSongsIndex));
-                        }
-                    });
-                    return $.when.apply(null, promises);
-                };
-                return Basic;
-            })();
-            Queries.Basic = Basic;
-        })(List.Queries || (List.Queries = {}));
-        var Queries = List.Queries;
-    })(Musicope.List || (Musicope.List = {}));
-    var List = Musicope.List;
-})(Musicope || (Musicope = {}));
-var Musicope;
-(function (Musicope) {
-    (function (List) {
-        (function (Params) {
-            (function (BasicFns) {
-                BasicFns.defParams = {
-                    l_songsUrl: "../songs/songs.json?" + Math.random()
-                };
-            })(Params.BasicFns || (Params.BasicFns = {}));
-            var BasicFns = Params.BasicFns;
-        })(List.Params || (List.Params = {}));
-        var Params = List.Params;
-    })(Musicope.List || (Musicope.List = {}));
-    var List = Musicope.List;
-})(Musicope || (Musicope = {}));
-var Musicope;
-(function (Musicope) {
-    (function (List) {
-        (function (Params) {
-            var Basic = (function () {
-                function Basic() {
-                    this.subscribtions = [];
-                    var o = this;
-                    o.readOnly = Musicope.Params.getUrlParams(Musicope.List.Params.BasicFns.defParams);
-                }
-                Basic.prototype.subscribe = function (regex, callback) {
-                    var o = this;
-                    o.subscribtions.push({
-                        regex: new RegExp(regex),
-                        callback: callback
-                    });
-                };
-
-                Basic.prototype.setParam = function (name, value, dontNotifyOthers) {
-                    var o = this;
-                    o.readOnly[name] = value;
-                    if (!dontNotifyOthers) {
-                        o.call(name, value);
-                    }
-                };
-
-                Basic.prototype.areEqual = function (param1, param2) {
-                    if ("every" in param1 && "every" in param2) {
-                        var areEqual = param1.every(function (param1i, i) {
-                            return param1i == param2[i];
+        (function (QueryFns) {
+            (function (Actions) {
+                (function (Tools) {
+                    function colorStringByQueries(str, queries) {
+                        queries.forEach(function (query) {
+                            str = str.replace(new RegExp(query, 'gi'), '{$&}');
                         });
-                        return areEqual;
-                    } else {
-                        return param1 == param2;
-                    }
-                };
-
-                Basic.prototype.call = function (param, value) {
-                    var o = this;
-                    o.subscribtions.forEach(function (s) {
-                        if (param.search(s.regex) > -1) {
-                            s.callback(param, value);
+                        for (var i = 0; i < queries.length; i++) {
+                            str = str.replace(/\{([^{]+?)\}/g, '<span class="search-match">$1</span>');
                         }
-                    });
+                        return str;
+                    }
+
+                    function colorSongByQueries(song, queries) {
+                        var coloredName = colorStringByQueries(song.name, queries);
+                        var coloredPath = colorStringByQueries(song.path, queries);
+                        var coloredSong = {
+                            name: coloredName,
+                            path: coloredPath,
+                            url: song.url,
+                            db: song.db,
+                            extension: song.extension
+                        };
+                        return coloredSong;
+                    }
+
+                    function colorSongsByQueries(songs, queries) {
+                        var coloredSongs = songs.map(function (song) {
+                            if (queries.length > 0 && queries[0].length > 0) {
+                                return colorSongByQueries(song, queries);
+                            } else {
+                                return song;
+                            }
+                        });
+                        return coloredSongs;
+                    }
+                    Tools.colorSongsByQueries = colorSongsByQueries;
+
+                    function filterSongsByQueries(songs, queries) {
+                        return songs.filter(function (song, i) {
+                            var url = song.url.toLowerCase();
+                            return queries.every(function (query) {
+                                return url.indexOf(query) > -1;
+                            });
+                        });
+                    }
+                    Tools.filterSongsByQueries = filterSongsByQueries;
+
+                    function splitQuery(query) {
+                        var queries = query.toLowerCase().split(" ");
+                        var trimmedQueries = queries.map(function (query) {
+                            return query.trim();
+                        });
+                        var nonEmptyQueries = trimmedQueries.filter(function (query) {
+                            return query != "";
+                        });
+                        return nonEmptyQueries;
+                    }
+                    Tools.splitQuery = splitQuery;
+                })(Actions.Tools || (Actions.Tools = {}));
+                var Tools = Actions.Tools;
+            })(QueryFns.Actions || (QueryFns.Actions = {}));
+            var Actions = QueryFns.Actions;
+        })(List.QueryFns || (List.QueryFns = {}));
+        var QueryFns = List.QueryFns;
+    })(Musicope.List || (Musicope.List = {}));
+    var List = Musicope.List;
+})(Musicope || (Musicope = {}));
+var Musicope;
+(function (Musicope) {
+    (function (List) {
+        var Query = (function () {
+            function Query(params) {
+                this.params = params;
+                this.actions = [];
+                var o = this;
+                o.contr = params.controller;
+                o.pushActions();
+                o.sortActions();
+            }
+            Query.prototype.pushActions = function () {
+                var o = this;
+                var params = {
+                    inputParams: o.params
                 };
-                return Basic;
-            })();
-            Params.Basic = Basic;
-        })(List.Params || (List.Params = {}));
-        var Params = List.Params;
+                for (var prop in Musicope.List.QueryFns.Actions.List) {
+                    var constr = Musicope.List.QueryFns.Actions.List[prop];
+                    o.actions.push(new constr(params));
+                }
+            };
+
+            Query.prototype.sortActions = function () {
+                var o = this;
+                o.actions.sort(function (a, b) {
+                    return (a.priority > b.priority);
+                });
+            };
+
+            Query.prototype.onQueryUpdate = function (query) {
+                var o = this;
+                o.actions.forEach(function (action) {
+                    var pos = query.search(action.regexp);
+                    if (pos !== -1) {
+                        action.onQueryUpdate(query);
+                    }
+                });
+            };
+
+            Query.prototype.onRedirect = function (displayedSongsIndex) {
+                var o = this;
+                var promises = [];
+                o.actions.forEach(function (action) {
+                    if (action.onRedirect) {
+                        promises.push(action.onRedirect(displayedSongsIndex));
+                    }
+                });
+                return $.when.apply(null, promises);
+            };
+            return Query;
+        })();
+        List.Query = Query;
+    })(Musicope.List || (Musicope.List = {}));
+    var List = Musicope.List;
+})(Musicope || (Musicope = {}));
+var Musicope;
+(function (Musicope) {
+    (function (List) {
+        List.defParams = {
+            l_songsUrl: "../songs/songs.json?" + Math.random()
+        };
+    })(Musicope.List || (Musicope.List = {}));
+    var List = Musicope.List;
+})(Musicope || (Musicope = {}));
+var Musicope;
+(function (Musicope) {
+    (function (List) {
+        var Params = (function () {
+            function Params() {
+                this.subscribtions = [];
+                var o = this;
+                o.readOnly = Musicope.Params.getUrlParams(Musicope.List.defParams);
+            }
+            Params.prototype.subscribe = function (regex, callback) {
+                var o = this;
+                o.subscribtions.push({
+                    regex: new RegExp(regex),
+                    callback: callback
+                });
+            };
+
+            Params.prototype.setParam = function (name, value, dontNotifyOthers) {
+                var o = this;
+                o.readOnly[name] = value;
+                if (!dontNotifyOthers) {
+                    o.call(name, value);
+                }
+            };
+
+            Params.prototype.areEqual = function (param1, param2) {
+                if ("every" in param1 && "every" in param2) {
+                    var areEqual = param1.every(function (param1i, i) {
+                        return param1i == param2[i];
+                    });
+                    return areEqual;
+                } else {
+                    return param1 == param2;
+                }
+            };
+
+            Params.prototype.call = function (param, value) {
+                var o = this;
+                o.subscribtions.forEach(function (s) {
+                    if (param.search(s.regex) > -1) {
+                        s.callback(param, value);
+                    }
+                });
+            };
+            return Params;
+        })();
+        List.Params = Params;
     })(Musicope.List || (Musicope.List = {}));
     var List = Musicope.List;
 })(Musicope || (Musicope = {}));
@@ -2134,105 +2096,102 @@ var Musicope;
 var Musicope;
 (function (Musicope) {
     (function (Game) {
-        (function (Controllers) {
-            var Basic = (function () {
-                function Basic() {
-                    this.requestAnimationFrame = window["requestAnimationFrame"] || window["webkitRequestAnimationFrame"] || window["mozRequestAnimationFrame"] || window["oRequestAnimationFrame"] || window["msRequestAnimationFrame"] || function (callback) {
-                        window.setTimeout(callback, 1000 / 60);
-                    };
-                    var o = this;
+        var Controller = (function () {
+            function Controller() {
+                this.requestAnimationFrame = window["requestAnimationFrame"] || window["webkitRequestAnimationFrame"] || window["mozRequestAnimationFrame"] || window["oRequestAnimationFrame"] || window["msRequestAnimationFrame"] || function (callback) {
+                    window.setTimeout(callback, 1000 / 60);
+                };
+                var o = this;
 
-                    o.params = new Musicope.Game.Params.Basic();
+                o.params = new Musicope.Game.Params();
 
-                    if (!o.params.readOnly.c_songUrl) {
-                        throw "c_songUrl does not exist!";
+                if (!o.params.readOnly.c_songUrl) {
+                    throw "c_songUrl does not exist!";
+                } else {
+                    o.device = new Musicope.Devices[o.params.readOnly.c_idevice]();
+                    if (!o.device.exists()) {
+                        throw "Device does not exist!";
                     } else {
-                        o.device = new Musicope.Devices[o.params.readOnly.c_idevice]();
-                        if (!o.device.exists()) {
-                            throw "Device does not exist!";
-                        } else {
-                            o.getSong().done(function (arr) {
-                                o.init(arr);
-                            });
-                        }
+                        o.getSong().done(function (arr) {
+                            o.init(arr);
+                        });
                     }
                 }
-                Basic.prototype.getSong = function () {
-                    var o = this;
-                    var out = $.Deferred();
-                    var isLocal = o.params.readOnly.c_songUrl.indexOf("../") == 0;
-                    if (isLocal) {
-                        return o.getSongLocal();
-                    } else {
-                        return o.getSongRemote();
-                    }
-                };
+            }
+            Controller.prototype.getSong = function () {
+                var o = this;
+                var out = $.Deferred();
+                var isLocal = o.params.readOnly.c_songUrl.indexOf("../") == 0;
+                if (isLocal) {
+                    return o.getSongLocal();
+                } else {
+                    return o.getSongRemote();
+                }
+            };
 
-                Basic.prototype.getSongLocal = function () {
-                    var o = this;
-                    var out = $.Deferred();
-                    var xhr = new XMLHttpRequest();
-                    xhr.open('GET', o.params.readOnly.c_songUrl);
-                    xhr.responseType = 'arraybuffer';
+            Controller.prototype.getSongLocal = function () {
+                var o = this;
+                var out = $.Deferred();
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', o.params.readOnly.c_songUrl);
+                xhr.responseType = 'arraybuffer';
 
-                    xhr.onload = function (e) {
-                        if (this.status == 200) {
-                            var arr = new Uint8Array(xhr.response);
-                            out.resolve(arr);
-                        }
-                    };
-                    xhr.send();
-                    return out.promise();
-                };
-
-                Basic.prototype.getSongRemote = function () {
-                    var o = this;
-                    var out = $.Deferred();
-                    var url = "../proxy.php?url=" + encodeURIComponent(o.params.readOnly.c_songUrl);
-                    $.get(url).done(function (text) {
-                        var arr = atob(text);
+                xhr.onload = function (e) {
+                    if (this.status == 200) {
+                        var arr = new Uint8Array(xhr.response);
                         out.resolve(arr);
-                    });
-                    return out;
-                };
-
-                Basic.prototype.init = function (arr) {
-                    var o = this;
-                    o.song = new Musicope.Game.Songs[o.params.readOnly.c_iparser](arr, o.params);
-                    o.scene = new Musicope.Game.Scenes[o.params.readOnly.c_iscene](o.song, o.params);
-                    o.metronome = new Musicope.Game.Metronomes.Basic(o.song.timePerBeat, o.song.timePerBar / o.song.timePerBeat, o.device, o.params);
-                    o.player = new Musicope.Game.Players[o.params.readOnly.c_iplayer](o.device, o.song, o.metronome, o.scene, o.params);
-                    for (var prop in Musicope.Game.Inputs) {
-                        if (prop.indexOf("Fns") < 0) {
-                            new Musicope.Game.Inputs[prop](o.params, o.song);
-                        }
                     }
-                    o.step();
                 };
+                xhr.send();
+                return out.promise();
+            };
 
-                Basic.prototype.step = function () {
-                    var o = this;
-                    var isEnd = false;
-                    function _step() {
-                        if (o.params.readOnly.c_callbackUrl && isEnd) {
-                            o.redirect();
-                        } else {
-                            o.requestAnimationFrame.call(window, _step);
-                            isEnd = o.player.step();
-                        }
+            Controller.prototype.getSongRemote = function () {
+                var o = this;
+                var out = $.Deferred();
+                var url = "../proxy.php?url=" + encodeURIComponent(o.params.readOnly.c_songUrl);
+                $.get(url).done(function (text) {
+                    var arr = atob(text);
+                    out.resolve(arr);
+                });
+                return out;
+            };
+
+            Controller.prototype.init = function (arr) {
+                var o = this;
+                o.song = new Musicope.Game.Song(arr, o.params);
+                o.scene = new Musicope.Game.Scene(o.song, o.params);
+                o.metronome = new Musicope.Game.Metronome(o.song.timePerBeat, o.song.timePerBar / o.song.timePerBeat, o.device, o.params);
+                o.player = new Musicope.Game.Player(o.device, o.song, o.metronome, o.scene, o.params);
+                for (var prop in Musicope.Game.Inputs) {
+                    if (prop.indexOf("Fns") < 0) {
+                        new Musicope.Game.Inputs[prop](o.params, o.song);
                     }
-                    _step();
-                };
+                }
+                o.step();
+            };
 
-                Basic.prototype.redirect = function () {
-                    var o = this;
-                    window.location.href = o.params.readOnly.c_callbackUrl;
-                };
-                return Basic;
-            })();
-            Controllers.Basic = Basic;
-        })(Game.Controllers || (Game.Controllers = {}));
-        var Controllers = Game.Controllers;
+            Controller.prototype.step = function () {
+                var o = this;
+                var isEnd = false;
+                function _step() {
+                    if (o.params.readOnly.c_callbackUrl && isEnd) {
+                        o.redirect();
+                    } else {
+                        o.requestAnimationFrame.call(window, _step);
+                        isEnd = o.player.step();
+                    }
+                }
+                _step();
+            };
+
+            Controller.prototype.redirect = function () {
+                var o = this;
+                window.location.href = o.params.readOnly.c_callbackUrl;
+            };
+            return Controller;
+        })();
+        Game.Controller = Controller;
     })(Musicope.Game || (Musicope.Game = {}));
     var Game = Musicope.Game;
 })(Musicope || (Musicope = {}));
@@ -2450,213 +2409,207 @@ var Musicope;
 var Musicope;
 (function (Musicope) {
     (function (Game) {
-        (function (Metronomes) {
-            var Basic = (function () {
-                function Basic(timePerBeat, beatsPerBar, device, params) {
-                    this.timePerBeat = timePerBeat;
-                    this.beatsPerBar = beatsPerBar;
-                    this.device = device;
-                    this.params = params;
-                    this.lastPlayedId = -10000;
-                    var o = this;
-                    o.subscribe();
-                }
-                Basic.prototype.play = function (time) {
-                    var o = this;
-                    if (o.params.readOnly.m_isOn) {
-                        var id = Math.floor(o.params.readOnly.m_ticksPerBeat * time / o.timePerBeat);
-                        if (id > o.lastPlayedId) {
-                            var noteId = id % o.beatsPerBar == 0 ? o.params.readOnly.m_id1 : o.params.readOnly.m_id2;
-                            var velocity = Math.min(127, o.params.readOnly.m_velocity);
-                            o.device.out(o.params.readOnly.m_channel, noteId, velocity);
-                            o.lastPlayedId = id;
-                        }
+        var Metronome = (function () {
+            function Metronome(timePerBeat, beatsPerBar, device, params) {
+                this.timePerBeat = timePerBeat;
+                this.beatsPerBar = beatsPerBar;
+                this.device = device;
+                this.params = params;
+                this.lastPlayedId = -10000;
+                var o = this;
+                o.subscribe();
+            }
+            Metronome.prototype.play = function (time) {
+                var o = this;
+                if (o.params.readOnly.m_isOn) {
+                    var id = Math.floor(o.params.readOnly.m_ticksPerBeat * time / o.timePerBeat);
+                    if (id > o.lastPlayedId) {
+                        var noteId = id % o.beatsPerBar == 0 ? o.params.readOnly.m_id1 : o.params.readOnly.m_id2;
+                        var velocity = Math.min(127, o.params.readOnly.m_velocity);
+                        o.device.out(o.params.readOnly.m_channel, noteId, velocity);
+                        o.lastPlayedId = id;
                     }
-                };
+                }
+            };
 
-                Basic.prototype.reset = function () {
-                    this.lastPlayedId = -10000;
-                };
+            Metronome.prototype.reset = function () {
+                this.lastPlayedId = -10000;
+            };
 
-                Basic.prototype.subscribe = function () {
-                    var o = this;
-                    o.params.subscribe("metronomes.Basic", "^m_.+$", function (name, value) {
-                        o.reset();
-                    });
-                };
-                return Basic;
-            })();
-            Metronomes.Basic = Basic;
-        })(Game.Metronomes || (Game.Metronomes = {}));
-        var Metronomes = Game.Metronomes;
+            Metronome.prototype.subscribe = function () {
+                var o = this;
+                o.params.subscribe("metronomes.Basic", "^m_.+$", function (name, value) {
+                    o.reset();
+                });
+            };
+            return Metronome;
+        })();
+        Game.Metronome = Metronome;
     })(Musicope.Game || (Musicope.Game = {}));
     var Game = Musicope.Game;
 })(Musicope || (Musicope = {}));
 var Musicope;
 (function (Musicope) {
     (function (Game) {
-        (function (Songs) {
-            var Basic = (function () {
-                function Basic(midi, params) {
-                    this.params = params;
-                    this.minPlayedNoteId = 200;
-                    this.maxPlayedNoteId = 0;
-                    var o = this;
-                    o.setParamsFromParser(new Musicope.Game.Parsers.Midi.Midi(midi));
-                    o.sortPlayerTracksByHands();
-                    o.normalizeVolumeOfPlayerTracks();
-                    o.filterSustainNotes();
-                    o.computeSceneSustainNotes();
-                    o.computeSceneTracks();
-                    o.setMinMaxNoteId();
-                    o.computeCleanedPlayerTracks();
-                    o.computeTimePerSong();
-                }
-                Basic.prototype.setParamsFromParser = function (parser) {
-                    var o = this;
-                    o.noteValuePerBeat = parser.noteValuePerBeat;
-                    o.timePerBar = parser.timePerBar;
-                    o.timePerBeat = parser.timePerBeat;
-                    o.playerTracks = parser.tracks;
-                    o.sustainNotes = parser.sustainNotes;
-                };
+        var Song = (function () {
+            function Song(midi, params) {
+                this.params = params;
+                this.minPlayedNoteId = 200;
+                this.maxPlayedNoteId = 0;
+                var o = this;
+                o.setParamsFromParser(new Musicope.Game.Parsers.Midi.Midi(midi));
+                o.sortPlayerTracksByHands();
+                o.normalizeVolumeOfPlayerTracks();
+                o.filterSustainNotes();
+                o.computeSceneSustainNotes();
+                o.computeSceneTracks();
+                o.setMinMaxNoteId();
+                o.computeCleanedPlayerTracks();
+                o.computeTimePerSong();
+            }
+            Song.prototype.setParamsFromParser = function (parser) {
+                var o = this;
+                o.noteValuePerBeat = parser.noteValuePerBeat;
+                o.timePerBar = parser.timePerBar;
+                o.timePerBeat = parser.timePerBeat;
+                o.playerTracks = parser.tracks;
+                o.sustainNotes = parser.sustainNotes;
+            };
 
-                Basic.prototype.sortPlayerTracksByHands = function () {
-                    var o = this;
-                    o.playerTracks = o.params.readOnly.f_trackIds.map(function (trackId) {
-                        return o.playerTracks[trackId] || [];
-                    });
-                };
+            Song.prototype.sortPlayerTracksByHands = function () {
+                var o = this;
+                o.playerTracks = o.params.readOnly.f_trackIds.map(function (trackId) {
+                    return o.playerTracks[trackId] || [];
+                });
+            };
 
-                Basic.prototype.normalizeVolumeOfPlayerTracks = function () {
-                    var o = this;
-                    if (o.params.readOnly.f_normalize) {
-                        var sumVelocity = 0, n = 0;
-                        o.playerTracks.forEach(function (notes) {
-                            notes.forEach(function (note) {
-                                if (note.on) {
-                                    n++;
-                                    sumVelocity += note.velocity;
-                                }
-                            });
-                        });
-                        var scaleVel = o.params.readOnly.f_normalize / (sumVelocity / n);
-                        if (scaleVel < 1.0) {
-                            o.playerTracks.forEach(function (notes) {
-                                notes.forEach(function (note) {
-                                    note.velocity = Math.max(0, Math.min(127, scaleVel * note.velocity));
-                                });
-                            });
-                        }
-                    }
-                };
-
-                Basic.prototype.filterSustainNotes = function () {
-                    var o = this;
-                    var last = false;
-                    o.sustainNotes = o.sustainNotes.filter(function (note) {
-                        var isok = (note.on && !last) || (!note.on && last);
-                        last = note.on;
-                        return isok;
-                    });
-                };
-
-                Basic.prototype.computeSceneSustainNotes = function () {
-                    var o = this;
-                    o.sceneSustainNotes = [];
-                    var tempNote;
-                    o.sustainNotes.forEach(function (note) {
-                        if (note.on) {
-                            if (tempNote) {
-                                o.sceneSustainNotes.push({ timeOn: tempNote.time, timeOff: note.time });
-                            }
-                            tempNote = note;
-                        } else if (tempNote) {
-                            o.sceneSustainNotes.push({ timeOn: tempNote.time, timeOff: note.time });
-                            tempNote = undefined;
-                        }
-                    });
-                };
-
-                Basic.prototype.computeSceneTracks = function () {
-                    var o = this;
-                    o.sceneTracks = o.playerTracks.map(function (playerNotes) {
-                        var sceneNotes = [], tempNotes = {};
-                        playerNotes.forEach(function (note, i) {
-                            if (note.on) {
-                                if (tempNotes[note.id]) {
-                                    var noteScene = o.getSceneNote(tempNotes[note.id], note);
-                                    sceneNotes.push(noteScene);
-                                }
-                                tempNotes[note.id] = note;
-                            } else {
-                                var tn = tempNotes[note.id];
-                                if (tn) {
-                                    var noteScene = o.getSceneNote(tempNotes[note.id], note);
-                                    sceneNotes.push(noteScene);
-                                    tempNotes[note.id] = undefined;
-                                }
-                            }
-                        });
-                        return sceneNotes;
-                    });
-                };
-
-                Basic.prototype.getSceneNote = function (noteOn, noteOff) {
-                    return {
-                        timeOn: noteOn.time,
-                        timeOff: noteOff.time,
-                        id: noteOn.id,
-                        velocityOn: noteOn.velocity,
-                        velocityOff: noteOff.velocity
-                    };
-                };
-
-                Basic.prototype.setMinMaxNoteId = function () {
-                    var o = this;
-                    o.sceneTracks.forEach(function (notes) {
-                        notes.forEach(function (note) {
-                            o.maxPlayedNoteId = Math.max(note.id, o.maxPlayedNoteId);
-                            o.minPlayedNoteId = Math.min(note.id, o.minPlayedNoteId);
-                        });
-                    });
-                };
-
-                Basic.prototype.computeCleanedPlayerTracks = function () {
-                    var o = this;
-                    o.playerTracks = o.sceneTracks.map(function (sceneNotes) {
-                        var notesPlayer = [];
-                        sceneNotes.forEach(function (note) {
-                            notesPlayer.push({ on: true, time: note.timeOn, id: note.id, velocity: note.velocityOn });
-                            notesPlayer.push({ on: false, time: note.timeOff, id: note.id, velocity: note.velocityOff });
-                        });
-                        return notesPlayer.sort(function (a, b) {
-                            var dt = a.time - b.time;
-                            if (dt !== 0) {
-                                return dt;
-                            } else {
-                                return a.on ? 1 : -1;
-                            }
-                        });
-                    });
-                };
-
-                Basic.prototype.computeTimePerSong = function () {
-                    var o = this;
-                    o.timePerSong = 0;
+            Song.prototype.normalizeVolumeOfPlayerTracks = function () {
+                var o = this;
+                if (o.params.readOnly.f_normalize) {
+                    var sumVelocity = 0, n = 0;
                     o.playerTracks.forEach(function (notes) {
                         notes.forEach(function (note) {
-                            if (note.time > o.timePerSong) {
-                                o.timePerSong = note.time;
+                            if (note.on) {
+                                n++;
+                                sumVelocity += note.velocity;
                             }
                         });
                     });
+                    var scaleVel = o.params.readOnly.f_normalize / (sumVelocity / n);
+                    if (scaleVel < 1.0) {
+                        o.playerTracks.forEach(function (notes) {
+                            notes.forEach(function (note) {
+                                note.velocity = Math.max(0, Math.min(127, scaleVel * note.velocity));
+                            });
+                        });
+                    }
+                }
+            };
+
+            Song.prototype.filterSustainNotes = function () {
+                var o = this;
+                var last = false;
+                o.sustainNotes = o.sustainNotes.filter(function (note) {
+                    var isok = (note.on && !last) || (!note.on && last);
+                    last = note.on;
+                    return isok;
+                });
+            };
+
+            Song.prototype.computeSceneSustainNotes = function () {
+                var o = this;
+                o.sceneSustainNotes = [];
+                var tempNote;
+                o.sustainNotes.forEach(function (note) {
+                    if (note.on) {
+                        if (tempNote) {
+                            o.sceneSustainNotes.push({ timeOn: tempNote.time, timeOff: note.time });
+                        }
+                        tempNote = note;
+                    } else if (tempNote) {
+                        o.sceneSustainNotes.push({ timeOn: tempNote.time, timeOff: note.time });
+                        tempNote = undefined;
+                    }
+                });
+            };
+
+            Song.prototype.computeSceneTracks = function () {
+                var o = this;
+                o.sceneTracks = o.playerTracks.map(function (playerNotes) {
+                    var sceneNotes = [], tempNotes = {};
+                    playerNotes.forEach(function (note, i) {
+                        if (note.on) {
+                            if (tempNotes[note.id]) {
+                                var noteScene = o.getSceneNote(tempNotes[note.id], note);
+                                sceneNotes.push(noteScene);
+                            }
+                            tempNotes[note.id] = note;
+                        } else {
+                            var tn = tempNotes[note.id];
+                            if (tn) {
+                                var noteScene = o.getSceneNote(tempNotes[note.id], note);
+                                sceneNotes.push(noteScene);
+                                tempNotes[note.id] = undefined;
+                            }
+                        }
+                    });
+                    return sceneNotes;
+                });
+            };
+
+            Song.prototype.getSceneNote = function (noteOn, noteOff) {
+                return {
+                    timeOn: noteOn.time,
+                    timeOff: noteOff.time,
+                    id: noteOn.id,
+                    velocityOn: noteOn.velocity,
+                    velocityOff: noteOff.velocity
                 };
-                return Basic;
-            })();
-            Songs.Basic = Basic;
-        })(Game.Songs || (Game.Songs = {}));
-        var Songs = Game.Songs;
+            };
+
+            Song.prototype.setMinMaxNoteId = function () {
+                var o = this;
+                o.sceneTracks.forEach(function (notes) {
+                    notes.forEach(function (note) {
+                        o.maxPlayedNoteId = Math.max(note.id, o.maxPlayedNoteId);
+                        o.minPlayedNoteId = Math.min(note.id, o.minPlayedNoteId);
+                    });
+                });
+            };
+
+            Song.prototype.computeCleanedPlayerTracks = function () {
+                var o = this;
+                o.playerTracks = o.sceneTracks.map(function (sceneNotes) {
+                    var notesPlayer = [];
+                    sceneNotes.forEach(function (note) {
+                        notesPlayer.push({ on: true, time: note.timeOn, id: note.id, velocity: note.velocityOn });
+                        notesPlayer.push({ on: false, time: note.timeOff, id: note.id, velocity: note.velocityOff });
+                    });
+                    return notesPlayer.sort(function (a, b) {
+                        var dt = a.time - b.time;
+                        if (dt !== 0) {
+                            return dt;
+                        } else {
+                            return a.on ? 1 : -1;
+                        }
+                    });
+                });
+            };
+
+            Song.prototype.computeTimePerSong = function () {
+                var o = this;
+                o.timePerSong = 0;
+                o.playerTracks.forEach(function (notes) {
+                    notes.forEach(function (note) {
+                        if (note.time > o.timePerSong) {
+                            o.timePerSong = note.time;
+                        }
+                    });
+                });
+            };
+            return Song;
+        })();
+        Game.Song = Song;
     })(Musicope.Game || (Musicope.Game = {}));
     var Game = Musicope.Game;
 })(Musicope || (Musicope = {}));
@@ -2708,22 +2661,16 @@ var Musicope;
 var Musicope;
 (function (Musicope) {
     (function (Game) {
-        (function (Players) {
-            var o;
-
-            var Basic = (function () {
-                function Basic(device, song, metronome, scene, params) {
-                    this.device = device;
-                    this.song = song;
-                    this.metronome = metronome;
-                    this.scene = scene;
-                    this.params = params;
-                    o = this;
-                    o.correctTimesInParams();
-                    o.subscribeToParamsChange();
-                    o.assignClasses();
-                }
-                Basic.prototype.step = function () {
+        var Player = (function () {
+            function Player(device, song, metronome, scene, params) {
+                var _this = this;
+                this.device = device;
+                this.song = song;
+                this.metronome = metronome;
+                this.scene = scene;
+                this.params = params;
+                this.step = function () {
+                    var o = _this;
                     o.playNotes.play();
                     o.playSustains.play();
                     o.metronome.play(o.params.readOnly.p_elapsedTime);
@@ -2732,8 +2679,8 @@ var Musicope;
                     o.hideTimeBarIfStops(isFreeze);
                     return o.updateTime(isFreeze);
                 };
-
-                Basic.prototype.correctTimesInParams = function () {
+                this.correctTimesInParams = function () {
+                    var o = _this;
                     if (typeof o.params.readOnly.p_initTime == 'undefined') {
                         o.params.setParam("p_initTime", -2 * o.song.timePerBar);
                     }
@@ -2741,14 +2688,14 @@ var Musicope;
                         o.params.setParam("p_elapsedTime", o.params.readOnly.p_initTime);
                     }
                 };
-
-                Basic.prototype.subscribeToParamsChange = function () {
+                this.subscribeToParamsChange = function () {
+                    var o = _this;
                     o.params.subscribe("players.Basic", "^p_elapsedTime$", function (name, value) {
                         o.reset();
                     });
                 };
-
-                Basic.prototype.reset = function () {
+                this.reset = function () {
+                    var o = _this;
                     o.scene.unsetAllActiveIds();
                     o.metronome.reset();
                     var idsBelowCurrentTime = o.getIdsBelowCurrentTime();
@@ -2756,19 +2703,18 @@ var Musicope;
                     o.playNotes.reset(idsBelowCurrentTime);
                     o.deviceOnNotesToOff();
                 };
-
-                Basic.prototype.deviceOnNotesToOff = function () {
-                    var o = this;
+                this.deviceOnNotesToOff = function () {
+                    var o = _this;
                     for (var i = 0; i < 128; i++) {
                         o.device.out(144, i, 0);
                     }
                 };
-
-                Basic.prototype.getIdsBelowCurrentTime = function () {
+                this.getIdsBelowCurrentTime = function () {
+                    var o = _this;
                     return o.song.playerTracks.map(o.getIdBelowCurrentTime);
                 };
-
-                Basic.prototype.getIdBelowCurrentTime = function (notes) {
+                this.getIdBelowCurrentTime = function (notes) {
+                    var o = _this;
                     if (notes.length > 0) {
                         var id = notes.length - 1;
                         while (id >= 0 && notes[id] && notes[id].time > o.params.readOnly.p_elapsedTime) {
@@ -2777,15 +2723,15 @@ var Musicope;
                         return id;
                     }
                 };
-
-                Basic.prototype.assignClasses = function () {
-                    o.fromDevice = new Musicope.Game.Players.BasicFns.FromDevice(o.device, o.scene, o.params, o.song.playerTracks);
-                    o.playNotes = new Musicope.Game.Players.BasicFns.PlayNotes(o.device, o.scene, o.params, o.song.playerTracks);
-                    o.playSustains = new Musicope.Game.Players.BasicFns.PlaySustains(o.device, o.params, o.song.sustainNotes);
-                    o.waitForNote = new Musicope.Game.Players.BasicFns.WaitForNote(o.device, o.params, o.song.playerTracks, o.fromDevice.onNoteOn);
+                this.assignClasses = function () {
+                    var o = _this;
+                    o.fromDevice = new Musicope.Game.PlayerFns.FromDevice(o.device, o.scene, o.params, o.song.playerTracks);
+                    o.playNotes = new Musicope.Game.PlayerFns.PlayNotes(o.device, o.scene, o.params, o.song.playerTracks);
+                    o.playSustains = new Musicope.Game.PlayerFns.PlaySustains(o.device, o.params, o.song.sustainNotes);
+                    o.waitForNote = new Musicope.Game.PlayerFns.WaitForNote(o.device, o.params, o.song.playerTracks, o.fromDevice.onNoteOn);
                 };
-
-                Basic.prototype.updateTime = function (isFreeze) {
+                this.updateTime = function (isFreeze) {
+                    var o = _this;
                     var currentTime = o.device.time();
                     if (!o.previousTime) {
                         o.previousTime = currentTime;
@@ -2804,8 +2750,8 @@ var Musicope;
 
                     return isSongEnd;
                 };
-
-                Basic.prototype.hideTimeBarIfStops = function (isFreeze) {
+                this.hideTimeBarIfStops = function (isFreeze) {
+                    var o = _this;
                     if (isFreeze) {
                         o.scene.setActiveId(2);
                         o.scene.setActiveId(1);
@@ -2814,11 +2760,15 @@ var Musicope;
                         o.scene.unsetActiveId(1);
                     }
                 };
-                return Basic;
-            })();
-            Players.Basic = Basic;
-        })(Game.Players || (Game.Players = {}));
-        var Players = Game.Players;
+                var o = this;
+                o = this;
+                o.correctTimesInParams();
+                o.subscribeToParamsChange();
+                o.assignClasses();
+            }
+            return Player;
+        })();
+        Game.Player = Player;
     })(Musicope.Game || (Musicope.Game = {}));
     var Game = Musicope.Game;
 })(Musicope || (Musicope = {}));
@@ -2877,659 +2827,641 @@ var Musicope;
 var Musicope;
 (function (Musicope) {
     (function (Game) {
-        (function (Scenes) {
-            (function (BasicFns) {
-                // http://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
-                function hexToRgb(hex, alpha) {
-                    var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
-                    hex = hex.replace(shorthandRegex, function (m, r, g, b) {
-                        return (r + r + g + g + b + b);
-                    });
-                    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-                    return [parseInt(result[1], 16) / 255, parseInt(result[2], 16) / 255, parseInt(result[3], 16) / 255, alpha || 1];
+        (function (SceneFns) {
+            // http://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
+            function hexToRgb(hex, alpha) {
+                var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+                hex = hex.replace(shorthandRegex, function (m, r, g, b) {
+                    return (r + r + g + g + b + b);
+                });
+                var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+                return [parseInt(result[1], 16) / 255, parseInt(result[2], 16) / 255, parseInt(result[3], 16) / 255, alpha || 1];
+            }
+            SceneFns.hexToRgb = hexToRgb;
+
+            var whiteNoteIds = [
+                21, 23,
+                24, 26, 28, 29, 31, 33, 35,
+                36, 38, 40, 41, 43, 45, 47,
+                48, 50, 52, 53, 55, 57, 59,
+                60, 62, 64, 65, 67, 69, 71,
+                72, 74, 76, 77, 79, 81, 83,
+                84, 86, 88, 89, 91, 93, 95,
+                96, 98, 100, 101, 103, 105, 107,
+                108];
+
+            var blackNoteIds = [
+                22,
+                25, 27, 30, 32, 34,
+                37, 39, 42, 44, 46,
+                49, 51, 54, 56, 58,
+                61, 63, 66, 68, 70,
+                73, 75, 78, 80, 82,
+                85, 87, 90, 92, 94,
+                97, 99, 102, 104, 106];
+
+            var blackNoteSpots = [
+                1, 3, 4, 6, 7, 8, 10, 11, 13, 14, 15, 17, 18, 20, 21, 22, 24, 25, 27, 28, 29, 31, 32,
+                34, 35, 36, 38, 39, 41, 42, 43, 45, 46, 48, 49, 50];
+
+            function drawNoteCover(loc) {
+                if (loc.input.readOnly.s_noteCoverRelHeight > 0.0) {
+                    var y0 = loc.yEndOfTimeBar;
+                    var y1 = y0 + loc.input.readOnly.s_noteCoverRelHeight * (loc.input.sceneHeight - loc.yEndOfTimeBar);
+                    var color = [0, 0, 0, 1];
+                    var activeColor = [0, 0, 0, 0.5];
+                    loc.input.drawRect(0, y0, loc.input.sceneWidth + 1, y1, [1], color, activeColor);
                 }
-                BasicFns.hexToRgb = hexToRgb;
+            }
 
-                var whiteNoteIds = [
-                    21, 23,
-                    24, 26, 28, 29, 31, 33, 35,
-                    36, 38, 40, 41, 43, 45, 47,
-                    48, 50, 52, 53, 55, 57, 59,
-                    60, 62, 64, 65, 67, 69, 71,
-                    72, 74, 76, 77, 79, 81, 83,
-                    84, 86, 88, 89, 91, 93, 95,
-                    96, 98, 100, 101, 103, 105, 107,
-                    108];
+            function drawPianoBlackNotes(loc) {
+                blackNoteIds.forEach(function (id, i) {
+                    var x0 = blackNoteSpots[i] * loc.whiteWidth - loc.blackWidth + 2;
+                    var x1 = x0 + 2 * loc.blackWidth - 3;
+                    var y0 = Math.floor(loc.yEndOfPiano * 0.4);
+                    var y1 = loc.yEndOfPiano - 2;
+                    var activeColor = hexToRgb(loc.input.readOnly.s_colPianoBlack);
+                    loc.input.drawRect(x0, y0, x1, y1, [id], [0, 0, 0, 1], activeColor);
+                });
+            }
 
-                var blackNoteIds = [
-                    22,
-                    25, 27, 30, 32, 34,
-                    37, 39, 42, 44, 46,
-                    49, 51, 54, 56, 58,
-                    61, 63, 66, 68, 70,
-                    73, 75, 78, 80, 82,
-                    85, 87, 90, 92, 94,
-                    97, 99, 102, 104, 106];
-
-                var blackNoteSpots = [
-                    1, 3, 4, 6, 7, 8, 10, 11, 13, 14, 15, 17, 18, 20, 21, 22, 24, 25, 27, 28, 29, 31, 32,
-                    34, 35, 36, 38, 39, 41, 42, 43, 45, 46, 48, 49, 50];
-
-                function drawNoteCover(loc) {
-                    if (loc.input.readOnly.s_noteCoverRelHeight > 0.0) {
-                        var y0 = loc.yEndOfTimeBar;
-                        var y1 = y0 + loc.input.readOnly.s_noteCoverRelHeight * (loc.input.sceneHeight - loc.yEndOfTimeBar);
-                        var color = [0, 0, 0, 1];
-                        var activeColor = [0, 0, 0, 0.5];
-                        loc.input.drawRect(0, y0, loc.input.sceneWidth + 1, y1, [1], color, activeColor);
-                    }
+            function getColorForWhitePianoNotes(id, loc) {
+                var unPressedColor = [1, 1, 1, 1];
+                var neverPlayedNote = id < loc.input.minPlayedNoteId || id > loc.input.maxPlayedNoteId;
+                var outOfReachNote = id < loc.input.p_minNote || id > loc.input.p_maxNote;
+                var color;
+                if (neverPlayedNote && !outOfReachNote) {
+                    var notPlayedColor = hexToRgb(loc.input.readOnly.s_colUnPlayedNotesInReach);
+                    color = notPlayedColor;
+                } else if (neverPlayedNote) {
+                    var notPlayedColor = hexToRgb(loc.input.readOnly.s_colUnPlayedNotes);
+                    color = notPlayedColor;
+                } else if (outOfReachNote) {
+                    var outOfReachColor = hexToRgb(loc.input.readOnly.s_colOutOfReachNotes);
+                    color = outOfReachColor;
+                } else {
+                    color = unPressedColor;
                 }
+                return color;
+            }
 
-                function drawPianoBlackNotes(loc) {
-                    blackNoteIds.forEach(function (id, i) {
-                        var x0 = blackNoteSpots[i] * loc.whiteWidth - loc.blackWidth + 2;
-                        var x1 = x0 + 2 * loc.blackWidth - 3;
-                        var y0 = Math.floor(loc.yEndOfPiano * 0.4);
-                        var y1 = loc.yEndOfPiano - 2;
-                        var activeColor = hexToRgb(loc.input.readOnly.s_colPianoBlack);
-                        loc.input.drawRect(x0, y0, x1, y1, [id], [0, 0, 0, 1], activeColor);
-                    });
+            function drawPianoWhiteNotes(loc) {
+                whiteNoteIds.forEach(function (id, i) {
+                    var x0 = i * loc.whiteWidth;
+                    var x1 = x0 + loc.whiteWidth - 1;
+                    var y0 = 12;
+                    var y1 = loc.yEndOfPiano - 2;
+                    var color = getColorForWhitePianoNotes(id, loc);
+                    var activeColor = hexToRgb(loc.input.readOnly.s_colPianoWhite);
+                    loc.input.drawRect(x0, y0, x1, y1, [id], color, activeColor);
+                });
+            }
+
+            function drawPianoTimeBarColor(loc) {
+                var color = hexToRgb(loc.input.readOnly.s_colTime, 0.9);
+                var activeColor = hexToRgb(loc.input.readOnly.s_colTime, 0.4);
+                var y0 = loc.yEndOfPiano;
+                var y1 = loc.yEndOfTimeBar;
+                loc.input.drawRect(0, y0, 1, y1, [1, 2, 2, 1], color, activeColor);
+            }
+
+            function drawPianoTimeBarWhite(loc) {
+                var y0 = loc.yEndOfPiano;
+                var y1 = loc.yEndOfTimeBar;
+                var color = [1, 1, 1, 0.9];
+                var activeColor = [1, 1, 1, 0.4];
+                loc.input.drawRect(0, y0, loc.input.sceneWidth, y1, [2, 1, 1, 2], color, activeColor);
+                loc.input.drawRect(0, y1, loc.input.sceneWidth, 2 * y1 - y0, [3, 3, 3, 3], [0, 1, 0, 0.3], activeColor);
+            }
+
+            function drawPianoBackBlack(loc) {
+                var y1 = loc.yEndOfPiano;
+                loc.input.drawRect(0, 0, loc.input.sceneWidth + 1, y1, [150], [0, 0, 0, 1], [0, 0, 0, 1]);
+            }
+
+            function drawTimeBar(loc) {
+                drawPianoTimeBarWhite(loc);
+                drawPianoTimeBarColor(loc);
+            }
+
+            function drawPiano(loc) {
+                if (loc.input.readOnly.s_showPiano) {
+                    drawPianoBackBlack(loc);
+                    drawPianoWhiteNotes(loc);
+                    drawPianoBlackNotes(loc);
                 }
+            }
 
-                function getColorForWhitePianoNotes(id, loc) {
-                    var unPressedColor = [1, 1, 1, 1];
-                    var neverPlayedNote = id < loc.input.minPlayedNoteId || id > loc.input.maxPlayedNoteId;
-                    var outOfReachNote = id < loc.input.p_minNote || id > loc.input.p_maxNote;
-                    var color;
-                    if (neverPlayedNote && !outOfReachNote) {
-                        var notPlayedColor = hexToRgb(loc.input.readOnly.s_colUnPlayedNotesInReach);
-                        color = notPlayedColor;
-                    } else if (neverPlayedNote) {
-                        var notPlayedColor = hexToRgb(loc.input.readOnly.s_colUnPlayedNotes);
-                        color = notPlayedColor;
-                    } else if (outOfReachNote) {
-                        var outOfReachColor = hexToRgb(loc.input.readOnly.s_colOutOfReachNotes);
-                        color = outOfReachColor;
-                    } else {
-                        color = unPressedColor;
-                    }
+            function drawSustainNotes(loc) {
+                var color = hexToRgb(loc.input.readOnly.s_colSustain);
+                loc.input.sustainNotes.forEach(function (note) {
+                    var y0 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOn + 1;
+                    var y1 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOff - 2;
+                    var ipos = whiteNoteIds.length;
+                    var x0 = ipos * loc.whiteWidth + 3;
+                    var x1 = x0 + loc.whiteWidth - 5;
+                    loc.input.drawRect(x0, y0, x1, y1, [200], color, color);
+                });
+            }
+
+            function getColorByVelocity(color, velocity, minMaxVel) {
+                if (Math.abs(minMaxVel[1] - minMaxVel[0]) > 10) {
+                    var out = [];
+                    var scale = 0.6 + 0.4 * (velocity - minMaxVel[0]) / (minMaxVel[1] - minMaxVel[0]);
+                    out.push(scale * color[0]);
+                    out.push(scale * color[1]);
+                    out.push(scale * color[2]);
+                    out.push(color[3]);
+                    return out;
+                } else {
                     return color;
                 }
+            }
 
-                function drawPianoWhiteNotes(loc) {
-                    whiteNoteIds.forEach(function (id, i) {
-                        var x0 = i * loc.whiteWidth;
-                        var x1 = x0 + loc.whiteWidth - 1;
-                        var y0 = 12;
-                        var y1 = loc.yEndOfPiano - 2;
-                        var color = getColorForWhitePianoNotes(id, loc);
-                        var activeColor = hexToRgb(loc.input.readOnly.s_colPianoWhite);
-                        loc.input.drawRect(x0, y0, x1, y1, [id], color, activeColor);
-                    });
-                }
+            function getMinMaxVelocity(notes) {
+                var max = 0, min = 200;
+                notes.forEach(function (note) {
+                    max = Math.max(max, note.velocityOn);
+                    min = Math.min(min, note.velocityOn);
+                });
+                return [min, max];
+            }
 
-                function drawPianoTimeBarColor(loc) {
-                    var color = hexToRgb(loc.input.readOnly.s_colTime, 0.9);
-                    var activeColor = hexToRgb(loc.input.readOnly.s_colTime, 0.4);
-                    var y0 = loc.yEndOfPiano;
-                    var y1 = loc.yEndOfTimeBar;
-                    loc.input.drawRect(0, y0, 1, y1, [1, 2, 2, 1], color, activeColor);
-                }
-
-                function drawPianoTimeBarWhite(loc) {
-                    var y0 = loc.yEndOfPiano;
-                    var y1 = loc.yEndOfTimeBar;
-                    var color = [1, 1, 1, 0.9];
-                    var activeColor = [1, 1, 1, 0.4];
-                    loc.input.drawRect(0, y0, loc.input.sceneWidth, y1, [2, 1, 1, 2], color, activeColor);
-                    loc.input.drawRect(0, y1, loc.input.sceneWidth, 2 * y1 - y0, [3, 3, 3, 3], [0, 1, 0, 0.3], activeColor);
-                }
-
-                function drawPianoBackBlack(loc) {
-                    var y1 = loc.yEndOfPiano;
-                    loc.input.drawRect(0, 0, loc.input.sceneWidth + 1, y1, [150], [0, 0, 0, 1], [0, 0, 0, 1]);
-                }
-
-                function drawTimeBar(loc) {
-                    drawPianoTimeBarWhite(loc);
-                    drawPianoTimeBarColor(loc);
-                }
-
-                function drawPiano(loc) {
-                    if (loc.input.readOnly.s_showPiano) {
-                        drawPianoBackBlack(loc);
-                        drawPianoWhiteNotes(loc);
-                        drawPianoBlackNotes(loc);
+            function drawTrack(loc, trackId) {
+                var whiteNoteColor = hexToRgb(loc.input.readOnly.s_colWhites[trackId]);
+                var blackNoteColor = hexToRgb(loc.input.readOnly.s_colBlacks[trackId]);
+                var minMaxVel = getMinMaxVelocity(loc.input.tracks[trackId]);
+                loc.input.tracks[trackId].forEach(function (note) {
+                    var y0 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOn + 1;
+                    var y1 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOff - 2;
+                    var ipos = whiteNoteIds.indexOf(note.id);
+                    if (ipos >= 0) {
+                        var x0 = ipos * loc.whiteWidth + 3;
+                        var x1 = x0 + loc.whiteWidth - 5;
+                        var color = getColorByVelocity(whiteNoteColor, note.velocityOn, minMaxVel);
+                        loc.input.drawRect(x0, y0, x1, y1, [trackId + 200], color, color);
+                    } else {
+                        var pos = blackNoteIds.indexOf(note.id);
+                        if (pos >= 0) {
+                            var x0 = blackNoteSpots[pos] * loc.whiteWidth - loc.blackWidth + 2;
+                            var x1 = x0 + 2 * loc.blackWidth - 3;
+                            var color = getColorByVelocity(blackNoteColor, note.velocityOn, minMaxVel);
+                            loc.input.drawRect(x0, y0, x1, y1, [trackId + 202], color, color);
+                        }
                     }
-                }
+                });
+            }
 
-                function drawSustainNotes(loc) {
+            function drawSustainBackground(loc) {
+                if (loc.input.readOnly.s_showSustainBg) {
                     var color = hexToRgb(loc.input.readOnly.s_colSustain);
+                    var color2 = hexToRgb(loc.input.readOnly.s_colSustain, 0.5);
                     loc.input.sustainNotes.forEach(function (note) {
                         var y0 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOn + 1;
                         var y1 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOff - 2;
                         var ipos = whiteNoteIds.length;
-                        var x0 = ipos * loc.whiteWidth + 3;
-                        var x1 = x0 + loc.whiteWidth - 5;
-                        loc.input.drawRect(x0, y0, x1, y1, [200], color, color);
+                        loc.input.drawRect(0, y0, loc.input.sceneWidth + 1, y0 + 2, [200], color, color);
+                        loc.input.drawRect(0, y1, loc.input.sceneWidth + 1, y1 + 2, [200], color2, color);
                     });
                 }
+            }
 
-                function getColorByVelocity(color, velocity, minMaxVel) {
-                    if (Math.abs(minMaxVel[1] - minMaxVel[0]) > 10) {
-                        var out = [];
-                        var scale = 0.6 + 0.4 * (velocity - minMaxVel[0]) / (minMaxVel[1] - minMaxVel[0]);
-                        out.push(scale * color[0]);
-                        out.push(scale * color[1]);
-                        out.push(scale * color[2]);
-                        out.push(color[3]);
-                        return out;
-                    } else {
-                        return color;
+            function drawBlackRails(loc) {
+                if (loc.input.readOnly.s_showBlackRails) {
+                    blackNoteIds.forEach(function (id, i) {
+                        var x0 = blackNoteSpots[i] * loc.whiteWidth - loc.blackWidth + 2;
+                        var x1 = x0 + 2 * loc.blackWidth - 3;
+                        var y0 = loc.yEndOfPiano;
+                        var y1 = loc.input.sceneHeight;
+                        var color1 = hexToRgb(loc.input.readOnly.s_colorBlackRails2);
+                        var color2 = hexToRgb(loc.input.readOnly.s_colorBlackRails3);
+                        var color = (i - 1) % 5 === 0 || (i - 2) % 5 === 0 ? color1 : color2;
+                        loc.input.drawRect(x0, y0, x1, y1, [id], color, color);
+                    });
+                }
+            }
+
+            function drawScene(input) {
+                var whiteWidth = Math.floor(input.sceneWidth / whiteNoteIds.length);
+                var maxRadius = Math.max.apply(null, input.readOnly.p_radiuses);
+                var timePerSceneHeigth = input.sceneHeight / input.pixelsPerTime;
+                var timeBarHeight = input.sceneHeight * maxRadius / timePerSceneHeigth;
+                var yEndOfTimeBar = Math.floor(input.readOnly.s_showPiano ? 0.2 * input.sceneHeight : timeBarHeight);
+                var loc = {
+                    input: input,
+                    whiteWidth: whiteWidth,
+                    blackWidth: Math.round(0.25 * whiteWidth),
+                    yEndOfTimeBar: yEndOfTimeBar,
+                    yEndOfPiano: yEndOfTimeBar - timeBarHeight,
+                    xRemainder: input.sceneWidth - whiteWidth * whiteNoteIds.length
+                };
+                drawSustainBackground(loc);
+                drawBlackRails(loc);
+                input.readOnly.s_views.forEach(function (view, i) {
+                    if (view === "full") {
+                        drawTrack(loc, i);
                     }
-                }
-
-                function getMinMaxVelocity(notes) {
-                    var max = 0, min = 200;
-                    notes.forEach(function (note) {
-                        max = Math.max(max, note.velocityOn);
-                        min = Math.min(min, note.velocityOn);
-                    });
-                    return [min, max];
-                }
-
-                function drawTrack(loc, trackId) {
-                    var whiteNoteColor = hexToRgb(loc.input.readOnly.s_colWhites[trackId]);
-                    var blackNoteColor = hexToRgb(loc.input.readOnly.s_colBlacks[trackId]);
-                    var minMaxVel = getMinMaxVelocity(loc.input.tracks[trackId]);
-                    loc.input.tracks[trackId].forEach(function (note) {
-                        var y0 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOn + 1;
-                        var y1 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOff - 2;
-                        var ipos = whiteNoteIds.indexOf(note.id);
-                        if (ipos >= 0) {
-                            var x0 = ipos * loc.whiteWidth + 3;
-                            var x1 = x0 + loc.whiteWidth - 5;
-                            var color = getColorByVelocity(whiteNoteColor, note.velocityOn, minMaxVel);
-                            loc.input.drawRect(x0, y0, x1, y1, [trackId + 200], color, color);
-                        } else {
-                            var pos = blackNoteIds.indexOf(note.id);
-                            if (pos >= 0) {
-                                var x0 = blackNoteSpots[pos] * loc.whiteWidth - loc.blackWidth + 2;
-                                var x1 = x0 + 2 * loc.blackWidth - 3;
-                                var color = getColorByVelocity(blackNoteColor, note.velocityOn, minMaxVel);
-                                loc.input.drawRect(x0, y0, x1, y1, [trackId + 202], color, color);
-                            }
-                        }
-                    });
-                }
-
-                function drawSustainBackground(loc) {
-                    if (loc.input.readOnly.s_showSustainBg) {
-                        var color = hexToRgb(loc.input.readOnly.s_colSustain);
-                        var color2 = hexToRgb(loc.input.readOnly.s_colSustain, 0.5);
-                        loc.input.sustainNotes.forEach(function (note) {
-                            var y0 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOn + 1;
-                            var y1 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOff - 2;
-                            var ipos = whiteNoteIds.length;
-                            loc.input.drawRect(0, y0, loc.input.sceneWidth + 1, y0 + 2, [200], color, color);
-                            loc.input.drawRect(0, y1, loc.input.sceneWidth + 1, y1 + 2, [200], color2, color);
-                        });
-                    }
-                }
-
-                function drawBlackRails(loc) {
-                    if (loc.input.readOnly.s_showBlackRails) {
-                        blackNoteIds.forEach(function (id, i) {
-                            var x0 = blackNoteSpots[i] * loc.whiteWidth - loc.blackWidth + 2;
-                            var x1 = x0 + 2 * loc.blackWidth - 3;
-                            var y0 = loc.yEndOfPiano;
-                            var y1 = loc.input.sceneHeight;
-                            var color1 = hexToRgb(loc.input.readOnly.s_colorBlackRails2);
-                            var color2 = hexToRgb(loc.input.readOnly.s_colorBlackRails3);
-                            var color = (i - 1) % 5 === 0 || (i - 2) % 5 === 0 ? color1 : color2;
-                            loc.input.drawRect(x0, y0, x1, y1, [id], color, color);
-                        });
-                    }
-                }
-
-                function drawScene(input) {
-                    var whiteWidth = Math.floor(input.sceneWidth / whiteNoteIds.length);
-                    var maxRadius = Math.max.apply(null, input.readOnly.p_radiuses);
-                    var timePerSceneHeigth = input.sceneHeight / input.pixelsPerTime;
-                    var timeBarHeight = input.sceneHeight * maxRadius / timePerSceneHeigth;
-                    var yEndOfTimeBar = Math.floor(input.readOnly.s_showPiano ? 0.2 * input.sceneHeight : timeBarHeight);
-                    var loc = {
-                        input: input,
-                        whiteWidth: whiteWidth,
-                        blackWidth: Math.round(0.25 * whiteWidth),
-                        yEndOfTimeBar: yEndOfTimeBar,
-                        yEndOfPiano: yEndOfTimeBar - timeBarHeight,
-                        xRemainder: input.sceneWidth - whiteWidth * whiteNoteIds.length
-                    };
-                    drawSustainBackground(loc);
-                    drawBlackRails(loc);
-                    input.readOnly.s_views.forEach(function (view, i) {
-                        if (view === "full") {
-                            drawTrack(loc, i);
-                        }
-                    });
-                    drawSustainNotes(loc);
-                    drawPiano(loc);
-                    drawTimeBar(loc);
-                    drawNoteCover(loc);
-                }
-                BasicFns.drawScene = drawScene;
-            })(Scenes.BasicFns || (Scenes.BasicFns = {}));
-            var BasicFns = Scenes.BasicFns;
-        })(Game.Scenes || (Game.Scenes = {}));
-        var Scenes = Game.Scenes;
+                });
+                drawSustainNotes(loc);
+                drawPiano(loc);
+                drawTimeBar(loc);
+                drawNoteCover(loc);
+            }
+            SceneFns.drawScene = drawScene;
+        })(Game.SceneFns || (Game.SceneFns = {}));
+        var SceneFns = Game.SceneFns;
     })(Musicope.Game || (Musicope.Game = {}));
     var Game = Musicope.Game;
 })(Musicope || (Musicope = {}));
 var Musicope;
 (function (Musicope) {
     (function (Game) {
-        (function (Scenes) {
-            (function (BasicFns) {
-                var WebGL = (function () {
-                    function WebGL(canvas, attributes) {
-                        this.attributes = attributes;
-                        var o = this;
-                        o.gl = WebGL.getContext(canvas);
-                        o.gl.blendFunc(o.gl.SRC_ALPHA, o.gl.ONE_MINUS_SRC_ALPHA);
-                        o.gl.enable(o.gl.BLEND);
-                        o.gl.disable(o.gl.DEPTH_TEST);
-                        o.initShaders();
-                    }
-                    WebGL.prototype.redraw = function (dx, dy, pressedNotes) {
-                        var o = this;
-                        o.gl.clear(o.gl.COLOR_BUFFER_BIT);
-                        o.gl.uniform1f(o.udx, dx); // creates garbage! ca 200
-                        o.gl.uniform1f(o.udy, dy); // creates garbage! ca 200
-                        o.gl.uniform1iv(o.uactive, pressedNotes);
-                        o.gl.drawArrays(o.gl.TRIANGLES, 0, o.attrLength);
-                    };
-
-                    WebGL.prototype.setBuffer = function (bufferData) {
-                        var o = this;
-
-                        var dims = 0;
-                        o.attributes.forEach(function (attr) {
-                            dims += attr.dim;
-                        });
-                        o.attrLength = bufferData.length / dims;
-
-                        if (o.buffer) {
-                            o.gl.deleteBuffer(o.buffer);
-                        }
-                        o.buffer = o.gl.createBuffer();
-                        o.gl.bindBuffer(o.gl.ARRAY_BUFFER, o.buffer);
-                        o.gl.bufferData(o.gl.ARRAY_BUFFER, bufferData, o.gl.STATIC_DRAW);
-                        o.assignAttribPointers();
-                    };
-
-                    WebGL.prototype.setClearColor = function (rgba) {
-                        var o = this;
-                        o.gl.clearColor(rgba[0], rgba[1], rgba[2], rgba[3]);
-                    };
-
-                    WebGL.prototype.initShaders = function () {
-                        var o = this;
-
-                        var vertexShader = o.getShader("scenes/basic/_assets/vertex.glsl");
-                        var fragmentShader = o.getShader("scenes/basic/_assets/fragment.glsl");
-                        var shaderProgram = this.gl.createProgram();
-                        this.gl.attachShader(shaderProgram, vertexShader);
-                        this.gl.attachShader(shaderProgram, fragmentShader);
-                        this.gl.linkProgram(shaderProgram);
-                        if (!this.gl.getProgramParameter(shaderProgram, this.gl.LINK_STATUS)) {
-                            alert("Unable to initialize the shader program.");
-                        }
-                        this.gl.useProgram(shaderProgram);
-
-                        o.udx = o.gl.getUniformLocation(shaderProgram, "u_dx");
-                        o.udy = o.gl.getUniformLocation(shaderProgram, "u_dy");
-                        o.uactive = o.gl.getUniformLocation(shaderProgram, "u_active");
-
-                        o.attributeLocs = o.attributes.map(function (attr) {
-                            return o.gl.getAttribLocation(shaderProgram, attr.name);
-                        });
-                        o.attributeLocs.forEach(function (attr) {
-                            o.gl.enableVertexAttribArray(attr);
-                        });
-                    };
-
-                    WebGL.prototype.assignAttribPointers = function () {
-                        var o = this;
-                        var pos = 0;
-                        o.attributeLocs.forEach(function (loc, i) {
-                            var dim = o.attributes[i].dim;
-                            o.gl.vertexAttribPointer(loc, dim, o.gl.FLOAT, false, 44, pos);
-                            pos += dim * 4;
-                        });
-                    };
-
-                    WebGL.getContext = function (canvas) {
-                        return canvas.getContext("experimental-webgl", { antialias: true });
-                    };
-
-                    WebGL.prototype.getShader = function (path) {
-                        var o = this;
-                        var xhr = new XMLHttpRequest();
-                        xhr.open('GET', path, false);
-                        xhr.send();
-                        var shader;
-                        if (path.indexOf("fragment.glsl") > 0) {
-                            shader = o.gl.createShader(o.gl.FRAGMENT_SHADER);
-                        } else if (path.indexOf("vertex.glsl") > 0) {
-                            shader = o.gl.createShader(o.gl.VERTEX_SHADER);
-                        }
-                        o.gl.shaderSource(shader, xhr.responseText);
-                        o.gl.compileShader(shader);
-                        if (!o.gl.getShaderParameter(shader, o.gl.COMPILE_STATUS)) {
-                            var lastError = o.gl.getShaderInfoLog(shader);
-                            o.gl.deleteShader(shader);
-                            alert("Error compiling shader '" + shader + "':" + lastError);
-                        }
-                        return shader;
-                    };
-                    return WebGL;
-                })();
-                BasicFns.WebGL = WebGL;
-            })(Scenes.BasicFns || (Scenes.BasicFns = {}));
-            var BasicFns = Scenes.BasicFns;
-        })(Game.Scenes || (Game.Scenes = {}));
-        var Scenes = Game.Scenes;
-    })(Musicope.Game || (Musicope.Game = {}));
-    var Game = Musicope.Game;
-})(Musicope || (Musicope = {}));
-var Musicope;
-(function (Musicope) {
-    (function (Game) {
-        (function (Scenes) {
-            var Basic = (function () {
-                function Basic(song, params) {
-                    this.song = song;
-                    this.params = params;
-                    this.activeIds = new Int32Array(127);
+        (function (SceneFns) {
+            var WebGL = (function () {
+                function WebGL(canvas, attributes) {
+                    this.attributes = attributes;
                     var o = this;
-                    o.subscribeToParamsChange();
-                    o.setBackgrColors();
-                    o.canvas = o.getCanvas();
-                    o.setCanvasDim();
-                    o.setupWebGL();
+                    o.gl = WebGL.getContext(canvas);
+                    o.gl.blendFunc(o.gl.SRC_ALPHA, o.gl.ONE_MINUS_SRC_ALPHA);
+                    o.gl.enable(o.gl.BLEND);
+                    o.gl.disable(o.gl.DEPTH_TEST);
+                    o.initShaders();
+                }
+                WebGL.prototype.redraw = function (dx, dy, pressedNotes) {
+                    var o = this;
+                    o.gl.clear(o.gl.COLOR_BUFFER_BIT);
+                    o.gl.uniform1f(o.udx, dx); // creates garbage! ca 200
+                    o.gl.uniform1f(o.udy, dy); // creates garbage! ca 200
+                    o.gl.uniform1iv(o.uactive, pressedNotes);
+                    o.gl.drawArrays(o.gl.TRIANGLES, 0, o.attrLength);
+                };
+
+                WebGL.prototype.setBuffer = function (bufferData) {
+                    var o = this;
+
+                    var dims = 0;
+                    o.attributes.forEach(function (attr) {
+                        dims += attr.dim;
+                    });
+                    o.attrLength = bufferData.length / dims;
+
+                    if (o.buffer) {
+                        o.gl.deleteBuffer(o.buffer);
+                    }
+                    o.buffer = o.gl.createBuffer();
+                    o.gl.bindBuffer(o.gl.ARRAY_BUFFER, o.buffer);
+                    o.gl.bufferData(o.gl.ARRAY_BUFFER, bufferData, o.gl.STATIC_DRAW);
+                    o.assignAttribPointers();
+                };
+
+                WebGL.prototype.setClearColor = function (rgba) {
+                    var o = this;
+                    o.gl.clearColor(rgba[0], rgba[1], rgba[2], rgba[3]);
+                };
+
+                WebGL.prototype.initShaders = function () {
+                    var o = this;
+
+                    var vertexShader = o.getShader("scene/_assets/vertex.glsl");
+                    var fragmentShader = o.getShader("scene/_assets/fragment.glsl");
+                    var shaderProgram = this.gl.createProgram();
+                    this.gl.attachShader(shaderProgram, vertexShader);
+                    this.gl.attachShader(shaderProgram, fragmentShader);
+                    this.gl.linkProgram(shaderProgram);
+                    if (!this.gl.getProgramParameter(shaderProgram, this.gl.LINK_STATUS)) {
+                        alert("Unable to initialize the shader program.");
+                    }
+                    this.gl.useProgram(shaderProgram);
+
+                    o.udx = o.gl.getUniformLocation(shaderProgram, "u_dx");
+                    o.udy = o.gl.getUniformLocation(shaderProgram, "u_dy");
+                    o.uactive = o.gl.getUniformLocation(shaderProgram, "u_active");
+
+                    o.attributeLocs = o.attributes.map(function (attr) {
+                        return o.gl.getAttribLocation(shaderProgram, attr.name);
+                    });
+                    o.attributeLocs.forEach(function (attr) {
+                        o.gl.enableVertexAttribArray(attr);
+                    });
+                };
+
+                WebGL.prototype.assignAttribPointers = function () {
+                    var o = this;
+                    var pos = 0;
+                    o.attributeLocs.forEach(function (loc, i) {
+                        var dim = o.attributes[i].dim;
+                        o.gl.vertexAttribPointer(loc, dim, o.gl.FLOAT, false, 44, pos);
+                        pos += dim * 4;
+                    });
+                };
+
+                WebGL.getContext = function (canvas) {
+                    return canvas.getContext("experimental-webgl", { antialias: true });
+                };
+
+                WebGL.prototype.getShader = function (path) {
+                    var o = this;
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('GET', path, false);
+                    xhr.send();
+                    var shader;
+                    if (path.indexOf("fragment.glsl") > 0) {
+                        shader = o.gl.createShader(o.gl.FRAGMENT_SHADER);
+                    } else if (path.indexOf("vertex.glsl") > 0) {
+                        shader = o.gl.createShader(o.gl.VERTEX_SHADER);
+                    }
+                    o.gl.shaderSource(shader, xhr.responseText);
+                    o.gl.compileShader(shader);
+                    if (!o.gl.getShaderParameter(shader, o.gl.COMPILE_STATUS)) {
+                        var lastError = o.gl.getShaderInfoLog(shader);
+                        o.gl.deleteShader(shader);
+                        alert("Error compiling shader '" + shader + "':" + lastError);
+                    }
+                    return shader;
+                };
+                return WebGL;
+            })();
+            SceneFns.WebGL = WebGL;
+        })(Game.SceneFns || (Game.SceneFns = {}));
+        var SceneFns = Game.SceneFns;
+    })(Musicope.Game || (Musicope.Game = {}));
+    var Game = Musicope.Game;
+})(Musicope || (Musicope = {}));
+var Musicope;
+(function (Musicope) {
+    (function (Game) {
+        function concat(arrays) {
+            var result = (function () {
+                var length = 0;
+                arrays.forEach(function (a) {
+                    length += a.length;
+                });
+                return new Float32Array(length);
+            })();
+            var pos = 0;
+            arrays.forEach(function (a) {
+                result.set(a, pos);
+                pos += a.length;
+            });
+            return result;
+        }
+
+        var Scene = (function () {
+            function Scene(song, params) {
+                this.song = song;
+                this.params = params;
+                this.activeIds = new Int32Array(127);
+                var o = this;
+                o.subscribeToParamsChange();
+                o.setBackgrColors();
+                o.canvas = o.getCanvas();
+                o.setCanvasDim();
+                o.setupWebGL();
+                o.setupScene();
+            }
+            Scene.prototype.setActiveId = function (id) {
+                this.activeIds[id] = 1;
+            };
+
+            Scene.prototype.unsetActiveId = function (id) {
+                this.activeIds[id] = 0;
+            };
+
+            Scene.prototype.unsetAllActiveIds = function () {
+                for (var i = 0; i < this.activeIds.length; i++) {
+                    this.activeIds[i] = 0;
+                }
+            };
+
+            Scene.prototype.redraw = function (time, isPaused) {
+                var o = this;
+                o.setPausedState(isPaused);
+                var dx = 2 * time / o.song.timePerSong;
+                var dy = -time * o.pixelsPerTime / o.canvas.height * 2;
+                o.webgl.redraw(dx, dy, o.activeIds);
+            };
+
+            Scene.prototype.subscribeToParamsChange = function () {
+                var o = this;
+                o.params.subscribe("scene.Basic", "^s_noteCoverRelHeight$", function (name, value) {
                     o.setupScene();
+                });
+            };
+
+            Scene.prototype.setBackgrColors = function () {
+                var o = this;
+                o.pausedColor = new Int32Array(Musicope.Game.SceneFns.hexToRgb(o.params.readOnly.s_colPaused));
+                o.unpausedColor = new Int32Array(Musicope.Game.SceneFns.hexToRgb(o.params.readOnly.s_colUnPaused));
+            };
+
+            Scene.prototype.setPausedState = function (isPaused) {
+                var o = this;
+                if (isPaused) {
+                    o.webgl.setClearColor(o.pausedColor);
+                } else {
+                    o.webgl.setClearColor(o.unpausedColor);
                 }
-                Basic.prototype.setActiveId = function (id) {
-                    this.activeIds[id] = 1;
-                };
+            };
 
-                Basic.prototype.unsetActiveId = function (id) {
-                    this.activeIds[id] = 0;
-                };
+            Scene.prototype.getCanvas = function () {
+                var c = $("<canvas class='canvas' />").appendTo("body");
+                c.css({ position: 'absolute', left: 0, top: 0 });
+                return c[0];
+            };
 
-                Basic.prototype.unsetAllActiveIds = function () {
-                    for (var i = 0; i < this.activeIds.length; i++) {
-                        this.activeIds[i] = 0;
-                    }
-                };
-
-                Basic.prototype.redraw = function (time, isPaused) {
-                    var o = this;
-                    o.setPausedState(isPaused);
-                    var dx = 2 * time / o.song.timePerSong;
-                    var dy = -time * o.pixelsPerTime / o.canvas.height * 2;
-                    o.webgl.redraw(dx, dy, o.activeIds);
-                };
-
-                Basic.prototype.subscribeToParamsChange = function () {
-                    var o = this;
-                    o.params.subscribe("scene.Basic", "^s_noteCoverRelHeight$", function (name, value) {
-                        o.setupScene();
-                    });
-                };
-
-                Basic.prototype.setBackgrColors = function () {
-                    var o = this;
-                    o.pausedColor = new Int32Array(Musicope.Game.Scenes.BasicFns.hexToRgb(o.params.readOnly.s_colPaused));
-                    o.unpausedColor = new Int32Array(Musicope.Game.Scenes.BasicFns.hexToRgb(o.params.readOnly.s_colUnPaused));
-                };
-
-                Basic.prototype.setPausedState = function (isPaused) {
-                    var o = this;
-                    if (isPaused) {
-                        o.webgl.setClearColor(o.pausedColor);
-                    } else {
-                        o.webgl.setClearColor(o.unpausedColor);
-                    }
-                };
-
-                Basic.prototype.getCanvas = function () {
-                    var c = $("<canvas class='canvas' />").appendTo("body");
-                    c.css({ position: 'absolute', left: 0, top: 0 });
-                    return c[0];
-                };
-
-                Basic.prototype.setCanvasDim = function () {
-                    var o = this;
+            Scene.prototype.setCanvasDim = function () {
+                var o = this;
+                o.canvas.width = window.innerWidth;
+                o.canvas.height = window.innerHeight;
+                o.pixelsPerTime = o.canvas.height * 4 / (o.song.noteValuePerBeat * o.params.readOnly.s_quartersPerHeight * o.song.timePerBeat);
+                $(window).resize(function () {
                     o.canvas.width = window.innerWidth;
                     o.canvas.height = window.innerHeight;
-                    o.pixelsPerTime = o.canvas.height * 4 / (o.song.noteValuePerBeat * o.params.readOnly.s_quartersPerHeight * o.song.timePerBeat);
-                    $(window).resize(function () {
-                        o.canvas.width = window.innerWidth;
-                        o.canvas.height = window.innerHeight;
-                    });
-                };
-
-                Basic.prototype.setupWebGL = function () {
-                    var o = this;
-                    var attributes = [
-                        { name: "a_position", dim: 2 },
-                        { name: "a_color", dim: 4 },
-                        { name: "a_id", dim: 1 },
-                        { name: "a_activeColor", dim: 4 }
-                    ];
-                    o.webgl = new Musicope.Game.Scenes.BasicFns.WebGL(o.canvas, attributes);
-                };
-
-                Basic.prototype.setupScene = function () {
-                    var o = this;
-                    var bag = [];
-
-                    var input = {
-                        drawRect: function (x0, y0, x1, y1, ids, color, activeColor) {
-                            bag.push(o.rect(x0, y0, x1, y1, ids, [color], [activeColor]));
-                        },
-                        readOnly: o.params.readOnly,
-                        pixelsPerTime: o.pixelsPerTime,
-                        sceneWidth: o.canvas.width,
-                        sceneHeight: o.canvas.height,
-                        tracks: o.song.sceneTracks,
-                        sustainNotes: o.song.sceneSustainNotes,
-                        p_minNote: o.params.readOnly.p_minNote,
-                        p_maxNote: o.params.readOnly.p_maxNote,
-                        minPlayedNoteId: o.song.minPlayedNoteId,
-                        maxPlayedNoteId: o.song.maxPlayedNoteId
-                    };
-                    Musicope.Game.Scenes.BasicFns.drawScene(input);
-                    var bufferData = Basic.concat(bag);
-                    o.webgl.setBuffer(bufferData);
-                };
-
-                Basic.prototype.rect = function (x0, y0, x1, y1, ids, colors, activeColors) {
-                    var o = this;
-                    function fx(v) {
-                        return v / o.canvas.width * 2 - 1;
-                    }
-                    function fy(v) {
-                        return v / o.canvas.height * 2 - 1;
-                    }
-                    if (colors.length === 1) {
-                        colors = [colors[0], colors[0], colors[0], colors[0]];
-                    }
-                    if (!activeColors) {
-                        activeColors = colors;
-                    } else if (activeColors.length === 1) {
-                        activeColors = [activeColors[0], activeColors[0], activeColors[0], activeColors[0]];
-                    }
-                    if (ids.length === 1) {
-                        ids = [ids[0], ids[0], ids[0], ids[0]];
-                    }
-                    var out = new Float32Array([
-                        fx(x0), fy(y0), colors[0][0], colors[0][1], colors[0][2], colors[0][3], ids[0], activeColors[0][0], activeColors[0][1], activeColors[0][2], activeColors[0][3],
-                        fx(x1), fy(y0), colors[1][0], colors[1][1], colors[1][2], colors[1][3], ids[1], activeColors[1][0], activeColors[1][1], activeColors[1][2], activeColors[1][3],
-                        fx(x1), fy(y1), colors[2][0], colors[2][1], colors[2][2], colors[2][3], ids[2], activeColors[2][0], activeColors[2][1], activeColors[2][2], activeColors[2][3],
-                        fx(x0), fy(y0), colors[0][0], colors[0][1], colors[0][2], colors[0][3], ids[0], activeColors[0][0], activeColors[0][1], activeColors[0][2], activeColors[0][3],
-                        fx(x1), fy(y1), colors[2][0], colors[2][1], colors[2][2], colors[2][3], ids[2], activeColors[2][0], activeColors[2][1], activeColors[2][2], activeColors[2][3],
-                        fx(x0), fy(y1), colors[3][0], colors[3][1], colors[3][2], colors[3][3], ids[3], activeColors[3][0], activeColors[3][1], activeColors[3][2], activeColors[3][3]]);
-                    return out;
-                };
-
-                Basic.concat = function (arrays) {
-                    var result = (function () {
-                        var length = 0;
-                        arrays.forEach(function (a) {
-                            length += a.length;
-                        });
-                        return new Float32Array(length);
-                    })();
-                    var pos = 0;
-                    arrays.forEach(function (a) {
-                        result.set(a, pos);
-                        pos += a.length;
-                    });
-                    return result;
-                };
-                return Basic;
-            })();
-            Scenes.Basic = Basic;
-        })(Game.Scenes || (Game.Scenes = {}));
-        var Scenes = Game.Scenes;
-    })(Musicope.Game || (Musicope.Game = {}));
-    var Game = Musicope.Game;
-})(Musicope || (Musicope = {}));
-var Musicope;
-(function (Musicope) {
-    (function (Game) {
-        (function (Params) {
-            Params.basicDefParams = {
-                // controllers
-                c_songUrl: undefined,
-                c_idevice: "Jazz",
-                c_iscene: "Basic",
-                c_iplayer: "Basic",
-                c_iparser: "Basic",
-                c_callbackUrl: undefined,
-                // players
-                p_deviceIn: "0",
-                p_deviceOut: "1",
-                p_elapsedTime: undefined,
-                p_initTime: undefined,
-                p_isPaused: false,
-                p_minNote: 36,
-                p_maxNote: 96,
-                p_playOutOfReachNotes: false,
-                p_waitForOutOfReachNotes: true,
-                p_radiuses: [200, 200],
-                p_speed: 1,
-                p_sustain: true,
-                p_userHands: [false, false],
-                p_volumes: [1, 1],
-                p_waits: [true, true],
-                p_maxVelocity: [90, 90],
-                // metronomes
-                m_channel: 153,
-                m_id1: 60,
-                m_id2: 56,
-                m_isOn: true,
-                m_ticksPerBeat: 1,
-                m_velocity: 15,
-                // parsers
-                f_normalize: 60,
-                f_trackIds: [1, 0],
-                // scenes
-                s_showPiano: true,
-                s_showSustainBg: false,
-                s_views: ["full", "full"],
-                s_quartersPerHeight: 10,
-                s_showBlackRails: true,
-                s_noteCoverRelHeight: 0.0,
-                s_colorBlackRails2: "#371313",
-                s_colorBlackRails3: "#282200",
-                s_colWhites: ["#ff5252", "#ffd800"],
-                s_colBlacks: ["#b73f3f", "#a78d00"],
-                s_colTime: "#0094ff",
-                s_colPianoWhite: "#2c79b2",
-                s_colPianoBlack: "#3faeff",
-                s_colSustain: "#00ff90",
-                s_colSustainBg: "#002f1a",
-                s_colPaused: "#090714",
-                s_colUnPaused: "#0d0c0c",
-                s_colUnPlayedNotes: "#808080",
-                s_colOutOfReachNotes: "#ff5252",
-                s_colUnPlayedNotesInReach: "#00ff90"
+                });
             };
-        })(Game.Params || (Game.Params = {}));
-        var Params = Game.Params;
+
+            Scene.prototype.setupWebGL = function () {
+                var o = this;
+                var attributes = [
+                    { name: "a_position", dim: 2 },
+                    { name: "a_color", dim: 4 },
+                    { name: "a_id", dim: 1 },
+                    { name: "a_activeColor", dim: 4 }
+                ];
+                o.webgl = new Musicope.Game.SceneFns.WebGL(o.canvas, attributes);
+            };
+
+            Scene.prototype.setupScene = function () {
+                var o = this;
+                var bag = [];
+
+                var input = {
+                    drawRect: function (x0, y0, x1, y1, ids, color, activeColor) {
+                        bag.push(o.rect(x0, y0, x1, y1, ids, [color], [activeColor]));
+                    },
+                    readOnly: o.params.readOnly,
+                    pixelsPerTime: o.pixelsPerTime,
+                    sceneWidth: o.canvas.width,
+                    sceneHeight: o.canvas.height,
+                    tracks: o.song.sceneTracks,
+                    sustainNotes: o.song.sceneSustainNotes,
+                    p_minNote: o.params.readOnly.p_minNote,
+                    p_maxNote: o.params.readOnly.p_maxNote,
+                    minPlayedNoteId: o.song.minPlayedNoteId,
+                    maxPlayedNoteId: o.song.maxPlayedNoteId
+                };
+                Musicope.Game.SceneFns.drawScene(input);
+                var bufferData = concat(bag);
+                o.webgl.setBuffer(bufferData);
+            };
+
+            Scene.prototype.rect = function (x0, y0, x1, y1, ids, colors, activeColors) {
+                var o = this;
+                function fx(v) {
+                    return v / o.canvas.width * 2 - 1;
+                }
+                function fy(v) {
+                    return v / o.canvas.height * 2 - 1;
+                }
+                if (colors.length === 1) {
+                    colors = [colors[0], colors[0], colors[0], colors[0]];
+                }
+                if (!activeColors) {
+                    activeColors = colors;
+                } else if (activeColors.length === 1) {
+                    activeColors = [activeColors[0], activeColors[0], activeColors[0], activeColors[0]];
+                }
+                if (ids.length === 1) {
+                    ids = [ids[0], ids[0], ids[0], ids[0]];
+                }
+                var out = new Float32Array([
+                    fx(x0), fy(y0), colors[0][0], colors[0][1], colors[0][2], colors[0][3], ids[0], activeColors[0][0], activeColors[0][1], activeColors[0][2], activeColors[0][3],
+                    fx(x1), fy(y0), colors[1][0], colors[1][1], colors[1][2], colors[1][3], ids[1], activeColors[1][0], activeColors[1][1], activeColors[1][2], activeColors[1][3],
+                    fx(x1), fy(y1), colors[2][0], colors[2][1], colors[2][2], colors[2][3], ids[2], activeColors[2][0], activeColors[2][1], activeColors[2][2], activeColors[2][3],
+                    fx(x0), fy(y0), colors[0][0], colors[0][1], colors[0][2], colors[0][3], ids[0], activeColors[0][0], activeColors[0][1], activeColors[0][2], activeColors[0][3],
+                    fx(x1), fy(y1), colors[2][0], colors[2][1], colors[2][2], colors[2][3], ids[2], activeColors[2][0], activeColors[2][1], activeColors[2][2], activeColors[2][3],
+                    fx(x0), fy(y1), colors[3][0], colors[3][1], colors[3][2], colors[3][3], ids[3], activeColors[3][0], activeColors[3][1], activeColors[3][2], activeColors[3][3]]);
+                return out;
+            };
+            return Scene;
+        })();
+        Game.Scene = Scene;
     })(Musicope.Game || (Musicope.Game = {}));
     var Game = Musicope.Game;
 })(Musicope || (Musicope = {}));
 var Musicope;
 (function (Musicope) {
     (function (Game) {
-        (function (Params) {
-            var Basic = (function () {
-                function Basic() {
-                    this.subscriptions = {};
-                    var o = this;
-                    o.readOnly = Musicope.Params.getUrlParams(Musicope.Game.Params.basicDefParams);
+        Game.defParams = {
+            // controllers
+            c_songUrl: undefined,
+            c_idevice: "Jazz",
+            c_callbackUrl: undefined,
+            // players
+            p_deviceIn: "0",
+            p_deviceOut: "1",
+            p_elapsedTime: undefined,
+            p_initTime: undefined,
+            p_isPaused: false,
+            p_minNote: 36,
+            p_maxNote: 96,
+            p_playOutOfReachNotes: false,
+            p_waitForOutOfReachNotes: true,
+            p_radiuses: [200, 200],
+            p_speed: 1,
+            p_sustain: true,
+            p_userHands: [false, false],
+            p_volumes: [1, 1],
+            p_waits: [true, true],
+            p_maxVelocity: [90, 90],
+            // metronomes
+            m_channel: 153,
+            m_id1: 60,
+            m_id2: 56,
+            m_isOn: true,
+            m_ticksPerBeat: 1,
+            m_velocity: 15,
+            // parsers
+            f_normalize: 60,
+            f_trackIds: [1, 0],
+            // scenes
+            s_showPiano: true,
+            s_showSustainBg: false,
+            s_views: ["full", "full"],
+            s_quartersPerHeight: 10,
+            s_showBlackRails: true,
+            s_noteCoverRelHeight: 0.0,
+            s_colorBlackRails2: "#371313",
+            s_colorBlackRails3: "#282200",
+            s_colWhites: ["#ff5252", "#ffd800"],
+            s_colBlacks: ["#b73f3f", "#a78d00"],
+            s_colTime: "#0094ff",
+            s_colPianoWhite: "#2c79b2",
+            s_colPianoBlack: "#3faeff",
+            s_colSustain: "#00ff90",
+            s_colSustainBg: "#002f1a",
+            s_colPaused: "#090714",
+            s_colUnPaused: "#0d0c0c",
+            s_colUnPlayedNotes: "#808080",
+            s_colOutOfReachNotes: "#ff5252",
+            s_colUnPlayedNotesInReach: "#00ff90"
+        };
+    })(Musicope.Game || (Musicope.Game = {}));
+    var Game = Musicope.Game;
+})(Musicope || (Musicope = {}));
+var Musicope;
+(function (Musicope) {
+    (function (Game) {
+        var Params = (function () {
+            function Params() {
+                this.subscriptions = {};
+                var o = this;
+                o.readOnly = Musicope.Params.getUrlParams(Musicope.Game.defParams);
+            }
+            Params.prototype.subscribe = function (id, regex, callback) {
+                var o = this;
+                o.subscriptions[id] = {
+                    regex: new RegExp(regex),
+                    callback: callback
+                };
+            };
+
+            Params.prototype.unsubscribe = function (id) {
+                var o = this;
+                delete o.subscriptions[id];
+            };
+
+            Params.prototype.setParam = function (name, value, dontNotifyOthers) {
+                var o = this;
+                o.readOnly[name] = value;
+                if (!dontNotifyOthers) {
+                    o.call(name, value);
                 }
-                Basic.prototype.subscribe = function (id, regex, callback) {
-                    var o = this;
-                    o.subscriptions[id] = {
-                        regex: new RegExp(regex),
-                        callback: callback
-                    };
-                };
+            };
 
-                Basic.prototype.unsubscribe = function (id) {
-                    var o = this;
-                    delete o.subscriptions[id];
-                };
+            Params.prototype.areEqual = function (param1, param2) {
+                if ("every" in param1 && "every" in param2) {
+                    var areEqual = param1.every(function (param1i, i) {
+                        return param1i == param2[i];
+                    });
+                    return areEqual;
+                } else {
+                    return param1 == param2;
+                }
+            };
 
-                Basic.prototype.setParam = function (name, value, dontNotifyOthers) {
-                    var o = this;
-                    o.readOnly[name] = value;
-                    if (!dontNotifyOthers) {
-                        o.call(name, value);
+            Params.prototype.call = function (param, value) {
+                var o = this;
+                for (var prop in o.subscriptions) {
+                    var s = o.subscriptions[prop];
+                    if (param.search(s["regex"]) > -1) {
+                        s["callback"](param, value);
                     }
-                };
-
-                Basic.prototype.areEqual = function (param1, param2) {
-                    if ("every" in param1 && "every" in param2) {
-                        var areEqual = param1.every(function (param1i, i) {
-                            return param1i == param2[i];
-                        });
-                        return areEqual;
-                    } else {
-                        return param1 == param2;
-                    }
-                };
-
-                Basic.prototype.call = function (param, value) {
-                    var o = this;
-                    for (var prop in o.subscriptions) {
-                        var s = o.subscriptions[prop];
-                        if (param.search(s["regex"]) > -1) {
-                            s["callback"](param, value);
-                        }
-                    }
-                };
-                return Basic;
-            })();
-            Params.Basic = Basic;
-        })(Game.Params || (Game.Params = {}));
-        var Params = Game.Params;
+                }
+            };
+            return Params;
+        })();
+        Game.Params = Params;
     })(Musicope.Game || (Musicope.Game = {}));
     var Game = Musicope.Game;
 })(Musicope || (Musicope = {}));

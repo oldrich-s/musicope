@@ -1,4 +1,4 @@
-module Musicope.List.Controllers {
+module Musicope.List {
 
   export interface ISong {
     path: string;
@@ -8,18 +8,4 @@ module Musicope.List.Controllers {
     db: {};
   }
 
-  export interface IController {
-    listIndex: KnockoutObservable<number>;
-    displayedSongs: KnockoutObservable<any[]>;
-    searchQuery: KnockoutObservable<string>;
-    gameParams: KnockoutObservable<string>;
-    songs: ISong[];
-    updateFilteredSongs(songs: ISong[]): void;
-    correctPosition(dom): void;
-    redirect(indexFn: () => number, song: ISong): void;
-  }
-
-  export interface IControllerNew {
-    new (): IController;
-  }
 }

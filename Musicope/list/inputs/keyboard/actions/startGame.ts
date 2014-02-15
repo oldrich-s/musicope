@@ -6,7 +6,7 @@ module Musicope.List.Inputs.KeyboardFns.Actions.List {
     description = "";
     key = "enter";
 
-    private contr: Controllers.IController;
+    private contr: Controller;
 
     constructor(p: IKeyboardParams) {
       var o = this;

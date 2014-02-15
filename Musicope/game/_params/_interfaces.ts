@@ -1,13 +1,10 @@
-module Musicope.Game.Params {
+module Musicope.Game {
 
   export interface IParamsData {
 
     // controllers
     c_songUrl: string;
     c_idevice: string;
-    c_iscene: string;
-    c_iplayer: string;
-    c_iparser: string;
     c_callbackUrl: string;
 
     // players
@@ -63,15 +60,4 @@ module Musicope.Game.Params {
     f_trackIds: number[];
   }
 
-  export interface IParams {
-    readOnly: IParamsData;
-    subscribe(id:string, regex: string, callback: (name: string, value: any) => void): void;
-    unsubscribe(id: string): void;
-    setParam(name: string, value: any, dontNotifyOthers?: boolean): void;
-    areEqual(param1: any, param2: any): boolean;
-  }
-
-  export interface IParamsNew {
-    new (): IParams;
-  }
 }

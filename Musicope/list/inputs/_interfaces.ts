@@ -1,7 +1,7 @@
 module Musicope.List.Inputs {
 
   export interface IInputParams {
-    controller: Controllers.IController;
+    controller: Controller;
   }
 
   export interface IInput {}
