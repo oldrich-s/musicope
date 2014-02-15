@@ -4,7 +4,7 @@ module Musicope.Game.Inputs.KeyboardFns.Actions.List {
 
     id = "slow down";
     description = "slow down the song by 10%";
-    key = KeyCodes.downArrow;
+    key = "down";
 
     constructor(private p: IKeyboardParams) { }
 

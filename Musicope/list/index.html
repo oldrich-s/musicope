@@ -10,8 +10,8 @@
 <body>
 
   <div id="header">
-    <input autocomplete="off" autofocus="autofocus" id="query" data-bind="value: searchQuery, valueUpdate:'afterkeydown'" placeholder="Search" />
-    <input class="gameParams" data-bind="value: gameParams, valueUpdate:'afterkeydown'" placeholder="parameters"/>
+    <input autocomplete="off" autofocus="autofocus" id="query" data-bind="value: searchQuery, valueUpdate:'afterkeydown'" placeholder="Search" class="mousetrap" />
+    <input class="gameParams" data-bind="value: gameParams, valueUpdate:'afterkeydown'" placeholder="parameters" />
   </div>
 
   <div class="midContainer" data-bind="foreach: displayedSongs" align="center">
@@ -31,6 +31,7 @@
   <script src="../Scripts/jquery-2.1.0.min.js"></script>
   <script src="../Scripts/knockout-3.0.0.js"></script>
   <script src="../Scripts/purl.js"></script>
+  <script src="../Scripts/mousetrap.js"></script>
   <script src="https://cdn.firebase.com/v0/firebase.js"></script>
   <script src="../Scripts/app.js"></script>
   <script>

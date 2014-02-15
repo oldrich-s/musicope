@@ -4,7 +4,7 @@ module Musicope.Game.Inputs.KeyboardFns.Actions.List {
 
     id = "cover notes";
     description = "Cover notes";
-    key = KeyCodes.c;
+    key = "c";
 
     private states = [0.0, 0.2, 0.4, 0.6, 0.8];
 

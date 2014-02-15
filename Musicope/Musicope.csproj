@@ -73,6 +73,7 @@
     <Content Include="list\index.html" />
     <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\knockout\knockout.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\mousetrap\mousetrap.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\pouchDB\pouch.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\webgl\webgl.d.ts" />
     <TypeScriptCompile Include="game\inputs\keyboard\actions\coverNotes.ts" />
@@ -89,6 +90,7 @@
     <Content Include="Scripts\jquery-2.1.0.min.js" />
     <Content Include="Scripts\knockout-3.0.0.debug.js" />
     <Content Include="Scripts\knockout-3.0.0.js" />
+    <Content Include="Scripts\mousetrap.js" />
     <Content Include="Scripts\pouch.js" />
     <Content Include="Scripts\webglhelper.js" />
     <Content Include="proxy.php">
@@ -136,7 +138,6 @@
     <Content Include="game\index.css" />
     <Content Include="game\index.html" />
     <TypeScriptCompile Include="game\inputs\keyboard\_main.ts" />
-    <TypeScriptCompile Include="Typescripts\keyCodes.ts" />
     <TypeScriptCompile Include="game\inputs\keyboard\actions\moveForward.ts" />
     <TypeScriptCompile Include="game\inputs\keyboard\actions\metronomeOn.ts" />
     <TypeScriptCompile Include="game\inputs\keyboard\actions\pauseOn.ts" />

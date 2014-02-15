@@ -4,7 +4,7 @@ module Musicope.Game.Inputs.KeyboardFns.Actions.List {
 
     id = "speed up";
     description = "speed up the song by 10%";
-    key = KeyCodes.upArrow;
+    key = "up";
 
     constructor(private p: IKeyboardParams) { }
 

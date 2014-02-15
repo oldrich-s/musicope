@@ -4,7 +4,7 @@ module Musicope.List.Inputs.KeyboardFns.Actions.List {
 
     id = "start game";
     description = "";
-    key = KeyCodes.enter;
+    key = "enter";
 
     private contr: Controllers.IController;
 

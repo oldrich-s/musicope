@@ -4,7 +4,7 @@ module Musicope.Game.Inputs.KeyboardFns.Actions.List {
 
     id = "move home";
     description = "move to the initial state of the song";
-    key = KeyCodes.home;
+    key = "home";
 
     constructor(private p: IKeyboardParams) { }
 

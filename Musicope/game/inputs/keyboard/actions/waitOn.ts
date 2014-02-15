@@ -4,7 +4,7 @@ module Musicope.Game.Inputs.KeyboardFns.Actions.List {
 
     id = "wait";
     description = "shall the song wait for the user?";
-    key = KeyCodes.w;
+    key = "w";
 
     private options = [[false, false], [true, true]];
     private names = ["off", "on"];

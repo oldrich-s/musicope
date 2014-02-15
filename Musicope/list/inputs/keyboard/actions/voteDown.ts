@@ -4,8 +4,7 @@ module Musicope.List.Inputs.KeyboardFns.Actions.List {
 
     id = "vote down";
     description = "";
-    key = KeyCodes.downArrow;
-    isCtrl = true;
+    key = "ctrl+down";
 
     private contr: Controllers.IController;
 

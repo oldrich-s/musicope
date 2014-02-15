@@ -4,7 +4,7 @@ module Musicope.List.Inputs.KeyboardFns.Actions.List {
 
     id = "step up";
     description = "";
-    key = KeyCodes.upArrow;
+    key = "up";
 
     private contr: Controllers.IController;
 

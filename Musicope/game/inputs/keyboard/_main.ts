@@ -40,26 +40,12 @@ module Musicope.Game.Inputs {
 
     private signupActions() {
       var o = this;
-      $(document).keydown((e) => {
-        o.analyzePressedKeys(e);
+      o.actions.forEach((action) => {
+        Mousetrap.bind(action.key, () => {
+          action.triggerAction();
+          KeyboardFns.Overlay.display(action.id, action.getCurrentState());
+        });
       });
-    }
-
-    private analyzePressedKeys(e: JQueryKeyEventObject) {
-      var o = this;
-      for (var i = 0; i < o.actions.length; i++) {
-        var match = o.doActionKeysMatch(o.actions[i], e);
-        if (match) {
-          o.actions[i].triggerAction();
-          KeyboardFns.Overlay.display(o.actions[i].id, o.actions[i].getCurrentState());
-          return;
-        }
-      }
-    }
-
-    private doActionKeysMatch(action: KeyboardFns.Actions.IKeyboardAction, e: JQueryKeyEventObject) {
-      var sameKeys = action.key === e.which;
-      return sameKeys;
     }
 
   }

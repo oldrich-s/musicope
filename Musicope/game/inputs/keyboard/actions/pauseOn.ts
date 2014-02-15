@@ -4,7 +4,7 @@ module Musicope.Game.Inputs.KeyboardFns.Actions.List {
 
     id = "pause";
     description = "pause and unpause the game";
-    key = KeyCodes.space;
+    key = "space";
 
     constructor(private p: IKeyboardParams) { }
 

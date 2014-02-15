@@ -4,7 +4,7 @@ module Musicope.Game.Inputs.KeyboardFns.Actions.List {
 
     id = "metronome";
     description = "toggle state of the metronome on/off";
-    key = KeyCodes.m;
+    key = "m";
 
     constructor(private p: IKeyboardParams) { }
 

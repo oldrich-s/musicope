@@ -4,7 +4,7 @@ module Musicope.Game.Inputs.KeyboardFns.Actions.List {
 
     id = "user hands";
     description = "toggle which hands the user plays.";
-    key = KeyCodes.h;
+    key = "h";
 
     private options = [[false, false], [false, true], [true, false], [true, true]];
     private names = ["none", "right", "left", "both"];

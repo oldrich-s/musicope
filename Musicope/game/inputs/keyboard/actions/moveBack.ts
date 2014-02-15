@@ -4,7 +4,7 @@ module Musicope.Game.Inputs.KeyboardFns.Actions.List {
 
     id = "move back";
     description = "move back by the amount of 2 beats";
-    key = KeyCodes.leftArrow;
+    key = "left";
 
     constructor(private p: IKeyboardParams) { }
 

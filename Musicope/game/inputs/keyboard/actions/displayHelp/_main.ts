@@ -4,7 +4,7 @@ module Musicope.Game.Inputs.KeyboardFns.Actions.List {
 
     id = "display help";
     description = "displays a help window";
-    key = KeyCodes.enter;
+    key = "enter";
 
     private window: JQuery;
     private isDisplayed = false;
@@ -60,18 +60,10 @@ module Musicope.Game.Inputs.KeyboardFns.Actions.List {
         var descriptionCell = $("<td class='descriptionCell'/>").appendTo(row);
         var currentCell = $("<td class='currentCell'/>").appendTo(row);
         idCell.text(action.id);
-        keyCell.text("" + o.keyCodeToName(action.key));
+        keyCell.text("" + action.key);
         descriptionCell.text(action.description);
         currentCell.text(o.tryRoundValue(action.getCurrentState()));
       });
-    }
-
-    private keyCodeToName(keyCode: number): string {
-      for (var prop in KeyCodes) {
-        if (KeyCodes[prop] === keyCode) {
-          return prop;
-        }
-      }
     }
 
     private tryRoundValue(value: any) {

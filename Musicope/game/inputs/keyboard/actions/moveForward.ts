@@ -4,7 +4,7 @@ module Musicope.Game.Inputs.KeyboardFns.Actions.List {
 
     id = "move forward";
     description = "move forward by the amount of 2 beats";
-    key = KeyCodes.rightArrow;
+    key = "right";
 
     constructor(private p: IKeyboardParams) { }
 

@@ -3,7 +3,7 @@ module Musicope.Game.Inputs.KeyboardFns.Actions {
   export interface IKeyboardAction {
     id: string;
     description: string;
-    key: number;
+    key: string;
     triggerAction(): void;
     getCurrentState(): any;
   }

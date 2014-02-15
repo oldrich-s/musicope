@@ -10,7 +10,7 @@
                                 this.p = p;
                                 this.id = "cover notes";
                                 this.description = "Cover notes";
-                                this.key = Musicope.KeyCodes.c;
+                                this.key = "c";
                                 this.states = [0.0, 0.2, 0.4, 0.6, 0.8];
                             }
                             CoverNotes.prototype.triggerAction = function () {
@@ -905,7 +905,7 @@ var Musicope;
                                 this.p = p;
                                 this.id = "display help";
                                 this.description = "displays a help window";
-                                this.key = Musicope.KeyCodes.enter;
+                                this.key = "enter";
                                 this.isDisplayed = false;
                                 var o = this;
                                 $.get("inputs/keyboard/actions/displayHelp/_assets/overlay.html?1").done(function (result) {
@@ -955,18 +955,10 @@ var Musicope;
                                     var descriptionCell = $("<td class='descriptionCell'/>").appendTo(row);
                                     var currentCell = $("<td class='currentCell'/>").appendTo(row);
                                     idCell.text(action.id);
-                                    keyCell.text("" + o.keyCodeToName(action.key));
+                                    keyCell.text("" + action.key);
                                     descriptionCell.text(action.description);
                                     currentCell.text(o.tryRoundValue(action.getCurrentState()));
                                 });
-                            };
-
-                            displayHelp.prototype.keyCodeToName = function (keyCode) {
-                                for (var prop in Musicope.KeyCodes) {
-                                    if (Musicope.KeyCodes[prop] === keyCode) {
-                                        return prop;
-                                    }
-                                }
                             };
 
                             displayHelp.prototype.tryRoundValue = function (value) {
@@ -1123,7 +1115,7 @@ var Musicope;
                                 this.p = p;
                                 this.id = "move home";
                                 this.description = "move to the initial state of the song";
-                                this.key = Musicope.KeyCodes.home;
+                                this.key = "home";
                             }
                             MoveHome.prototype.triggerAction = function () {
                                 var o = this;
@@ -1160,7 +1152,7 @@ var Musicope;
                                 this.p = p;
                                 this.id = "move back";
                                 this.description = "move back by the amount of 2 beats";
-                                this.key = Musicope.KeyCodes.leftArrow;
+                                this.key = "left";
                             }
                             MoveBack.prototype.triggerAction = function () {
                                 var o = this;
@@ -1199,7 +1191,7 @@ var Musicope;
                                 this.p = p;
                                 this.id = "speed up";
                                 this.description = "speed up the song by 10%";
-                                this.key = Musicope.KeyCodes.upArrow;
+                                this.key = "up";
                             }
                             SpeedUp.prototype.triggerAction = function () {
                                 var o = this;
@@ -1236,7 +1228,7 @@ var Musicope;
                                 this.p = p;
                                 this.id = "slow down";
                                 this.description = "slow down the song by 10%";
-                                this.key = Musicope.KeyCodes.downArrow;
+                                this.key = "down";
                             }
                             SlowDown.prototype.triggerAction = function () {
                                 var o = this;
@@ -1273,7 +1265,7 @@ var Musicope;
                                 this.p = p;
                                 this.id = "wait";
                                 this.description = "shall the song wait for the user?";
-                                this.key = Musicope.KeyCodes.w;
+                                this.key = "w";
                                 this.options = [[false, false], [true, true]];
                                 this.names = ["off", "on"];
                             }
@@ -1604,7 +1596,7 @@ var Musicope;
                             function StartGame(p) {
                                 this.id = "start game";
                                 this.description = "";
-                                this.key = Musicope.KeyCodes.enter;
+                                this.key = "enter";
                                 var o = this;
                                 o.contr = p.inputParams.controller;
                             }
@@ -1643,7 +1635,7 @@ var Musicope;
                             function StepDown(p) {
                                 this.id = "step down";
                                 this.description = "";
-                                this.key = Musicope.KeyCodes.downArrow;
+                                this.key = "down";
                                 var o = this;
                                 o.contr = p.inputParams.controller;
                             }
@@ -1684,7 +1676,7 @@ var Musicope;
                             function StepUp(p) {
                                 this.id = "step up";
                                 this.description = "";
-                                this.key = Musicope.KeyCodes.upArrow;
+                                this.key = "up";
                                 var o = this;
                                 o.contr = p.inputParams.controller;
                             }
@@ -1724,8 +1716,7 @@ var Musicope;
                             function VoteDown(p) {
                                 this.id = "vote down";
                                 this.description = "";
-                                this.key = Musicope.KeyCodes.downArrow;
-                                this.isCtrl = true;
+                                this.key = "ctrl+down";
                                 var o = this;
                                 o.contr = p.inputParams.controller;
                             }
@@ -1764,8 +1755,7 @@ var Musicope;
                             function VoteUp(p) {
                                 this.id = "vote up";
                                 this.description = "";
-                                this.key = Musicope.KeyCodes.upArrow;
-                                this.isCtrl = true;
+                                this.key = "ctrl+up";
                                 var o = this;
                                 o.contr = p.inputParams.controller;
                             }
@@ -1819,28 +1809,12 @@ var Musicope;
 
                     Keyboard.prototype.signupActions = function () {
                         var o = this;
-                        $(document).keydown(function (e) {
-                            o.analyzePressedKeys(e);
-                        });
-                    };
-
-                    Keyboard.prototype.analyzePressedKeys = function (e) {
-                        var o = this;
-                        for (var i = 0; i < o.actions.length; i++) {
-                            if (o.doActionKeysMatch(o.actions[i], e)) {
-                                o.actions[i].triggerAction();
+                        o.actions.forEach(function (action) {
+                            Mousetrap.bind(action.key, function (e) {
+                                action.triggerAction();
                                 e.preventDefault();
-                                return;
-                            }
-                        }
-                    };
-
-                    Keyboard.prototype.doActionKeysMatch = function (action, e) {
-                        var sameKeys = action.key === e.which;
-                        var sameAlt = (!action.isAlt && !e["altKey"]) || (action.isAlt && e["altKey"]);
-                        var sameCtrl = (!action.isCtrl && !e["ctrlKey"]) || (action.isCtrl && e["ctrlKey"]);
-                        var sameShift = (!action.isShift && !e["shiftKey"]) || (action.isShift && e["shiftKey"]);
-                        return sameKeys && sameAlt && sameCtrl && sameShift;
+                            });
+                        });
                     };
                     return Keyboard;
                 })();
@@ -2305,26 +2279,12 @@ var Musicope;
 
                 Keyboard.prototype.signupActions = function () {
                     var o = this;
-                    $(document).keydown(function (e) {
-                        o.analyzePressedKeys(e);
+                    o.actions.forEach(function (action) {
+                        Mousetrap.bind(action.key, function () {
+                            action.triggerAction();
+                            Musicope.Game.Inputs.KeyboardFns.Overlay.display(action.id, action.getCurrentState());
+                        });
                     });
-                };
-
-                Keyboard.prototype.analyzePressedKeys = function (e) {
-                    var o = this;
-                    for (var i = 0; i < o.actions.length; i++) {
-                        var match = o.doActionKeysMatch(o.actions[i], e);
-                        if (match) {
-                            o.actions[i].triggerAction();
-                            Musicope.Game.Inputs.KeyboardFns.Overlay.display(o.actions[i].id, o.actions[i].getCurrentState());
-                            return;
-                        }
-                    }
-                };
-
-                Keyboard.prototype.doActionKeysMatch = function (action, e) {
-                    var sameKeys = action.key === e.which;
-                    return sameKeys;
                 };
                 return Keyboard;
             })();
@@ -2333,111 +2293,6 @@ var Musicope;
         var Inputs = Game.Inputs;
     })(Musicope.Game || (Musicope.Game = {}));
     var Game = Musicope.Game;
-})(Musicope || (Musicope = {}));
-var Musicope;
-(function (Musicope) {
-    (function (KeyCodes) {
-        KeyCodes.backspace = 8;
-        KeyCodes.tab = 9;
-        KeyCodes.enter = 13;
-        KeyCodes.shift = 16;
-        KeyCodes.ctrl = 17;
-        KeyCodes.alt = 18;
-        KeyCodes.pause = 19;
-        KeyCodes.capsLock = 20;
-        KeyCodes.escape = 27;
-        KeyCodes.space = 32;
-        KeyCodes.pageUp = 33;
-        KeyCodes.pageDown = 34;
-        KeyCodes.end = 35;
-        KeyCodes.home = 36;
-        KeyCodes.leftArrow = 37;
-        KeyCodes.upArrow = 38;
-        KeyCodes.rightArrow = 39;
-        KeyCodes.downArrow = 40;
-        KeyCodes.insert = 45;
-        KeyCodes.delete_ = 46;
-        KeyCodes.n0 = 48;
-        KeyCodes.n1 = 49;
-        KeyCodes.n2 = 50;
-        KeyCodes.n3 = 51;
-        KeyCodes.n4 = 52;
-        KeyCodes.n5 = 53;
-        KeyCodes.n6 = 54;
-        KeyCodes.n7 = 55;
-        KeyCodes.n8 = 56;
-        KeyCodes.n9 = 57;
-        KeyCodes.a = 65;
-        KeyCodes.b = 66;
-        KeyCodes.c = 67;
-        KeyCodes.d = 68;
-        KeyCodes.e = 69;
-        KeyCodes.f = 70;
-        KeyCodes.g = 71;
-        KeyCodes.h = 72;
-        KeyCodes.i = 73;
-        KeyCodes.j = 74;
-        KeyCodes.k = 75;
-        KeyCodes.l = 76;
-        KeyCodes.m = 77;
-        KeyCodes.n = 78;
-        KeyCodes.o = 79;
-        KeyCodes.p = 80;
-        KeyCodes.q = 81;
-        KeyCodes.r = 82;
-        KeyCodes.s = 83;
-        KeyCodes.t = 84;
-        KeyCodes.u = 85;
-        KeyCodes.v = 86;
-        KeyCodes.w = 87;
-        KeyCodes.x = 88;
-        KeyCodes.y = 89;
-        KeyCodes.z = 90;
-        KeyCodes.leftWindowKey = 91;
-        KeyCodes.rightWindowKey = 92;
-        KeyCodes.selectKey = 93;
-        KeyCodes.numpad0 = 96;
-        KeyCodes.numpad1 = 97;
-        KeyCodes.numpad2 = 98;
-        KeyCodes.numpad3 = 99;
-        KeyCodes.numpad4 = 100;
-        KeyCodes.numpad5 = 101;
-        KeyCodes.numpad6 = 102;
-        KeyCodes.numpad7 = 103;
-        KeyCodes.numpad8 = 104;
-        KeyCodes.numpad9 = 105;
-        KeyCodes.multiply = 106;
-        KeyCodes.add = 107;
-        KeyCodes.subtract = 109;
-        KeyCodes.decimalPoint = 110;
-        KeyCodes.divide = 111;
-        KeyCodes.f1 = 112;
-        KeyCodes.f2 = 113;
-        KeyCodes.f3 = 114;
-        KeyCodes.f4 = 115;
-        KeyCodes.f5 = 116;
-        KeyCodes.f6 = 117;
-        KeyCodes.f7 = 118;
-        KeyCodes.f8 = 119;
-        KeyCodes.f9 = 120;
-        KeyCodes.f10 = 121;
-        KeyCodes.f11 = 122;
-        KeyCodes.f12 = 123;
-        KeyCodes.numLock = 144;
-        KeyCodes.scrollLock = 145;
-        KeyCodes.semiColon = 186;
-        KeyCodes.equalSign = 187;
-        KeyCodes.comma = 188;
-        KeyCodes.dash = 189;
-        KeyCodes.period = 190;
-        KeyCodes.forwardSlash = 191;
-        KeyCodes.graveAccent = 192;
-        KeyCodes.openBracket = 219;
-        KeyCodes.backSlash = 220;
-        KeyCodes.closeBraket = 221;
-        KeyCodes.singleQuote = 222;
-    })(Musicope.KeyCodes || (Musicope.KeyCodes = {}));
-    var KeyCodes = Musicope.KeyCodes;
 })(Musicope || (Musicope = {}));
 var Musicope;
 (function (Musicope) {
@@ -2451,7 +2306,7 @@ var Musicope;
                                 this.p = p;
                                 this.id = "move forward";
                                 this.description = "move forward by the amount of 2 beats";
-                                this.key = Musicope.KeyCodes.rightArrow;
+                                this.key = "right";
                             }
                             MoveForward.prototype.triggerAction = function () {
                                 var o = this;
@@ -2490,7 +2345,7 @@ var Musicope;
                                 this.p = p;
                                 this.id = "metronome";
                                 this.description = "toggle state of the metronome on/off";
-                                this.key = Musicope.KeyCodes.m;
+                                this.key = "m";
                             }
                             MetronomeOn.prototype.triggerAction = function () {
                                 var o = this;
@@ -2527,7 +2382,7 @@ var Musicope;
                                 this.p = p;
                                 this.id = "pause";
                                 this.description = "pause and unpause the game";
-                                this.key = Musicope.KeyCodes.space;
+                                this.key = "space";
                             }
                             PauseOn.prototype.triggerAction = function () {
                                 var o = this;
@@ -2564,7 +2419,7 @@ var Musicope;
                                 this.p = p;
                                 this.id = "user hands";
                                 this.description = "toggle which hands the user plays.";
-                                this.key = Musicope.KeyCodes.h;
+                                this.key = "h";
                                 this.options = [[false, false], [false, true], [true, false], [true, true]];
                                 this.names = ["none", "right", "left", "both"];
                             }
