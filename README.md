@@ -1,8 +1,8 @@
 # Introduction
 
-Musicope is an open-source online piano game similar to [Synthesia][25] or [PianoCrumbs][26]. You find further information about the game at the Musicope [website][6]. Notice, that you must have [Jazz plug-in][9] installed in order to be able to play the game! The game uses WebGL so please use a [web browser][29] that supports WebGL.
+Musicope is an open-source online piano game similar to [Synthesia][25] or [PianoCrumbs][26]. Notice, that you must have [Jazz plug-in][9] installed in order to be able to play the game! The game uses WebGL so please use a [web browser][29] that supports WebGL.
 
-Musicope is in its **alpha** phase with a lot of bugs, lack of features and lack of documentation. You are therefore more than welcome to contribute! You can either enhance the [source code][24], you can [file a bug][7], or you can discuss the game at the Musicope [forum][8]. Any type of contribution is welcome!
+Musicope is in its **alpha** phase with a lot of bugs, lack of features and lack of documentation. You are therefore more than welcome to contribute! You can either enhance the [source code][24] or you can [file a bug][7]. Any type of contribution is welcome!
 
 Logic and source structure of the game will be given in the following brief overview of the game. The game consists of two separate views, [Game view][1] and [List view][2].
 
@@ -33,11 +33,9 @@ Others than that it is about studying the code :). If you have any question, you
 [1]: https://github.com/musicope/game/tree/master/src/Musicope/website/game
 [2]: https://github.com/musicope/game/tree/master/src/Musicope/website/list
 [3]: https://github.com/musicope/game/blob/master/src/Musicope/website/game/_params/_interfaces.ts
-[4]: http://piano.musicope.com/game/index.html?c_songUrl=../songs/sample/Unknown%20Artist%20-%20Korobeiniki-Tetris%20Theme%20Song.mid&
+
 [5]: https://github.com/musicope/game/blob/master/src/Musicope/website/game/_params/basic/defaults.ts
-[6]: http://musicope.com/
 [7]: https://github.com/musicope/game/issues
-[8]: http://qa.musicope.com/
 [9]: http://jazz-soft.net/
 [10]: https://github.com/musicope/game/tree/master/src/Musicope/website/game/inputs/keyboard/actions
 [11]: https://github.com/musicope/game/blob/master/src/Musicope/website/list/_params/_interfaces.ts
