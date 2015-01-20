@@ -4,6 +4,24 @@ Musicope is an open-source online piano game similar to [Synthesia][25] or [Pian
 
 Musicope is in its **alpha** phase with a lot of bugs, lack of features and lack of documentation. You are therefore more than welcome to contribute! You can either enhance the [source code][24] or you can [file a bug][7]. Any type of contribution is welcome!
 
+## Installation
+
+Follow these steps to install the game:
+
+* download the game from this github page ( https://github.com/musicope/game/archive/master.zip )
+* unpack it
+* go to `game-master/Musicope`
+* execute `mongoose-3.4.exe` to start the web server
+* in e.g. `Chrome` go to `http://localhost:8080/`
+
+To change the songs you can
+* change contents of the `songs/songs.json` to fit your needs
+* alternatively you can point the game to an alternative json file e.g.: `localhost:8080/list/?l_songsUrl=../songs/private.json`
+
+Good luck! ;)
+
+# Technical description
+
 Logic and source structure of the game will be given in the following brief overview of the game. The game consists of two separate views, [Game view][1] and [List view][2].
 
 ## Game View
@@ -26,14 +44,14 @@ As mentioned, the game consist of two separate views (Game View and List View). 
 
 All the views consist of plugins. Each plugin is contained in separate folder. Let's take [scenes][20] plugin as an example. Each plugin consists of [_interfaces.ts][21] which defines the interface of the plugin Class. Each plugin further contains [_load.ts][22] file which loads all the plugins of the specified interface. Whenever you create a plugin for a specified interface, place your plugin reference into the respective *_load.ts*.
 
-Others than that it is about studying the code :). If you have any question, you are welcome to the Musicope [forum][8].
+Others than that it is about studying the code :).
 
 
 
 [1]: https://github.com/musicope/game/tree/master/src/Musicope/website/game
 [2]: https://github.com/musicope/game/tree/master/src/Musicope/website/list
 [3]: https://github.com/musicope/game/blob/master/src/Musicope/website/game/_params/_interfaces.ts
-
+[4]: localhost:8080/game/index.html?c_songUrl=../songs/sample/Unknown%20Artist%20-%20Korobeiniki-Tetris%20Theme%20Song.mid&
 [5]: https://github.com/musicope/game/blob/master/src/Musicope/website/game/_params/basic/defaults.ts
 [7]: https://github.com/musicope/game/issues
 [9]: http://jazz-soft.net/
