@@ -3,15 +3,13 @@ open System.IO
 let root = DirectoryInfo __SOURCE_DIRECTORY__
 
 let rec fn (dir: DirectoryInfo) =
-  let str =
+  let strA =
     dir.GetFiles "*.mid"
       |> Array.map (fun file ->
         "\"../songs" + file.FullName.Replace(root.FullName, "").Replace("\\","/") + "\"" )
-      |> String.concat ",\n"
-  let str2 = dir.GetDirectories() |> Array.map (fun dir -> fn dir ) |> String.concat ",\n"
-  let mid = if str.Length > 10 && str2.Length > 10 then ",\n" else ""
-  str + mid + str2
+  let str2A = dir.GetDirectories() |> Array.collect (fun dir -> fn dir )
+  Array.append strA str2A
 
 let str = fn root
 
-File.WriteAllText (root.FullName + "\\private.json", "[" + str + "]")
+File.WriteAllText (root.FullName + "\\private.json", "[" + (str |> String.concat ",\n") + "]")
