@@ -1,8 +1,4 @@
-﻿declare var Dropbox;
-
-module Musicope.Game {
-
-    var client = new Dropbox.Client({ key: "ckt9l58i8fpcq6d" });
+﻿module Musicope.Game {
 
     export class Controller {
 
@@ -48,7 +44,7 @@ module Musicope.Game {
         private getSongDropbox() {
             var o = this;
             var out = $.Deferred();
-            client.authenticate(function (error, client) {
+            dropbox.authenticate(function (error, client) {
                 client.readFile(o.params.readOnly.c_songUrl, { arrayBuffer: true }, function (error, data) {
                     var arr = new Uint8Array(data);
                     out.resolve(arr);
@@ -104,9 +100,7 @@ module Musicope.Game {
             var o = this;
             var isEnd = false;
             function _step() {
-                if (o.params.readOnly.c_callbackUrl && isEnd) {
-                    o.redirect();
-                } else {
+                if (!isEnd) {
                     o.requestAnimationFrame.call(window, _step);
                     isEnd = o.player.step();
                 }
@@ -118,11 +112,6 @@ module Musicope.Game {
         window["requestAnimationFrame"] || window["webkitRequestAnimationFrame"] ||
         window["mozRequestAnimationFrame"] || window["oRequestAnimationFrame"] ||
         window["msRequestAnimationFrame"] || function (callback) { window.setTimeout(callback, 1000 / 60); };
-
-        private redirect() {
-            var o = this;
-            window.location.href = o.params.readOnly.c_callbackUrl;
-        }
 
     }
 

@@ -1,11 +1,15 @@
-$(document).ready(function () {
-    var c = new Musicope.Game.Controller();
-});
+var Musicope;
+(function (Musicope) {
+    Musicope.dropbox = new Dropbox.Client({ key: "ckt9l58i8fpcq6d" });
+    $(document).ready(function () {
+        Musicope.List.init();
+        //var c = new Musicope.Game.Controller();
+    });
+})(Musicope || (Musicope = {}));
 var Musicope;
 (function (Musicope) {
     var Game;
     (function (Game) {
-        var client = new Dropbox.Client({ key: "ckt9l58i8fpcq6d" });
         var Controller = (function () {
             function Controller() {
                 this.requestAnimationFrame = window["requestAnimationFrame"] || window["webkitRequestAnimationFrame"] || window["mozRequestAnimationFrame"] || window["oRequestAnimationFrame"] || window["msRequestAnimationFrame"] || function (callback) {
@@ -42,7 +46,7 @@ var Musicope;
             Controller.prototype.getSongDropbox = function () {
                 var o = this;
                 var out = $.Deferred();
-                client.authenticate(function (error, client) {
+                Musicope.dropbox.authenticate(function (error, client) {
                     client.readFile(o.params.readOnly.c_songUrl, { arrayBuffer: true }, function (error, data) {
                         var arr = new Uint8Array(data);
                         out.resolve(arr);
@@ -92,19 +96,12 @@ var Musicope;
                 var o = this;
                 var isEnd = false;
                 function _step() {
-                    if (o.params.readOnly.c_callbackUrl && isEnd) {
-                        o.redirect();
-                    }
-                    else {
+                    if (!isEnd) {
                         o.requestAnimationFrame.call(window, _step);
                         isEnd = o.player.step();
                     }
                 }
                 _step();
-            };
-            Controller.prototype.redirect = function () {
-                var o = this;
-                window.location.href = o.params.readOnly.c_callbackUrl;
             };
             return Controller;
         })();
@@ -314,7 +311,7 @@ var Musicope;
                                 this.key = "enter";
                                 this.isDisplayed = false;
                                 var o = this;
-                                $.get("inputs/keyboard/actions/displayHelp/_assets/overlay.html?1").done(function (result) {
+                                $.get("Content/overlay.html?1").done(function (result) {
                                     $(result).appendTo("body");
                                     o.window = $("#displayHelpOverlay");
                                 });
@@ -1625,7 +1622,6 @@ var Musicope;
             };
             Scene.prototype.getCanvas = function () {
                 var c = $("<canvas class='canvas' />").appendTo("body");
-                c.css({ position: 'absolute', left: 0, top: 0 });
                 return c[0];
             };
             Scene.prototype.setCanvasDim = function () {
@@ -2086,8 +2082,8 @@ var Musicope;
                 };
                 WebGL.prototype.initShaders = function () {
                     var o = this;
-                    var vertexShader = o.getShader("scene/_assets/vertex.glsl");
-                    var fragmentShader = o.getShader("scene/_assets/fragment.glsl");
+                    var vertexShader = o.getShader("Content/vertex.glsl");
+                    var fragmentShader = o.getShader("Content/fragment.glsl");
                     var shaderProgram = this.gl.createProgram();
                     this.gl.attachShader(shaderProgram, vertexShader);
                     this.gl.attachShader(shaderProgram, fragmentShader);
@@ -2124,10 +2120,10 @@ var Musicope;
                     xhr.open('GET', path, false);
                     xhr.send();
                     var shader;
-                    if (path.indexOf("fragment.glsl") > 0) {
+                    if (path.indexOf("fragment.glsl") >= 0) {
                         shader = o.gl.createShader(o.gl.FRAGMENT_SHADER);
                     }
-                    else if (path.indexOf("vertex.glsl") > 0) {
+                    else if (path.indexOf("vertex.glsl") >= 0) {
                         shader = o.gl.createShader(o.gl.VERTEX_SHADER);
                     }
                     o.gl.shaderSource(shader, xhr.responseText);
@@ -2303,5 +2299,176 @@ var Musicope;
         })();
         Game.Song = Song;
     })(Game = Musicope.Game || (Musicope.Game = {}));
+})(Musicope || (Musicope = {}));
+var Musicope;
+(function (Musicope) {
+    var List;
+    (function (List) {
+        function startGame(path) {
+            var options = List.Options.getOptions();
+            var c = new Musicope.Game.Controller();
+        }
+        List.startGame = startGame;
+        function populateDOM(items) {
+            items.forEach(function (item) {
+                var title = item.name.replace(".mid", "");
+                var path = item.path.replace(item.name, "");
+                var template = $('.song-list-template').html().trim().replace("{{title}}", title).replace("{{path}}", path).replace("{{url}}", item.path);
+                $(template).appendTo('.midContainer');
+            });
+        }
+        function getAllMidiFiles(client) {
+            var files = $.Deferred();
+            client.search('songs', '.mid', {}, function (error, entries) {
+                files.resolve(entries);
+            });
+            return files;
+        }
+        function init() {
+            var items = [];
+            Musicope.dropbox.authenticate(function (error, client) {
+                getAllMidiFiles(client).done(function (_items) {
+                    items = _items;
+                    populateDOM(items);
+                    List.Keyboard.bindKeyboard();
+                });
+            });
+            $(document).on('click', '.elLink', function () {
+                var path = $(this).siblings('.elURL').text().trim();
+                startGame(path);
+            });
+            var lastQuery = "";
+            $('#query').data('timeout', null).keyup(function () {
+                var _this = this;
+                clearTimeout($(this).data('timeout'));
+                $(this).data('timeout', setTimeout(function () {
+                    var query = $(_this).val();
+                    if (query !== lastQuery) {
+                        List.filterSongs(query, items);
+                        List.Keyboard.resetIndex();
+                        lastQuery = query;
+                    }
+                }, 500));
+            });
+        }
+        List.init = init;
+    })(List = Musicope.List || (Musicope.List = {}));
+})(Musicope || (Musicope = {}));
+var Musicope;
+(function (Musicope) {
+    var List;
+    (function (List) {
+        function filterSongsByQueries(items, queries) {
+            var els = $('.el');
+            items.forEach(function (item, i) {
+                var url = item.path.toLowerCase();
+                var found = queries.every(function (query) {
+                    return url.indexOf(query) > -1;
+                });
+                var display = found ? 'block' : 'none';
+                $(els[i]).css('display', display);
+            });
+        }
+        function splitQuery(query) {
+            var queries = query.toLowerCase().split(" ");
+            var trimmedQueries = queries.map(function (query) {
+                return query.trim();
+            });
+            var nonEmptyQueries = trimmedQueries.filter(function (query) {
+                return query != "";
+            });
+            return nonEmptyQueries;
+        }
+        function filterSongs(query, items) {
+            var queries = splitQuery(query);
+            filterSongsByQueries(items, queries);
+        }
+        List.filterSongs = filterSongs;
+    })(List = Musicope.List || (Musicope.List = {}));
+})(Musicope || (Musicope = {}));
+var Musicope;
+(function (Musicope) {
+    var List;
+    (function (List) {
+        var Keyboard;
+        (function (Keyboard) {
+            var index = 0;
+            function correctPosition() {
+                var el = $(".elFocus");
+                var rely = el.offset()["top"] - $(window).scrollTop() + 0.5 * el.height();
+                if (rely > 0.9 * window.innerHeight) {
+                    var dy = window.innerHeight - 1.5 * el.height() - rely;
+                    $(window).scrollTop($(window).scrollTop() - dy);
+                }
+                else if (rely < 0.2 * window.innerHeight) {
+                    $(window).scrollTop(el.offset()["top"] - 2 * el.height());
+                }
+                return true;
+            }
+            function enter(els) {
+                Mousetrap.bind('enter', function (e) {
+                    var path = $(els[index]).find('.elURL').text().trim();
+                    List.startGame(path);
+                    e.preventDefault();
+                });
+            }
+            function up(els) {
+                Mousetrap.bind('up', function (e) {
+                    for (var i = index - 1; i >= 0; i--) {
+                        if (els[i].style.display !== 'none') {
+                            els.removeClass('elFocus');
+                            $(els[i]).addClass('elFocus');
+                            index = i;
+                            break;
+                        }
+                    }
+                    correctPosition();
+                    e.preventDefault();
+                });
+            }
+            function down(els) {
+                Mousetrap.bind('down', function (e) {
+                    for (var i = index + 1; i < els.length; i++) {
+                        if (els[i].style.display !== 'none') {
+                            els.removeClass('elFocus');
+                            $(els[i]).addClass('elFocus');
+                            index = i;
+                            break;
+                        }
+                    }
+                    correctPosition();
+                    e.preventDefault();
+                });
+            }
+            function resetIndex() {
+                var els = $('.el');
+                index = $('.el:visible:first').index();
+                els.removeClass('elFocus');
+                $(els[index]).addClass('elFocus');
+                $(window).scrollTop(0);
+            }
+            Keyboard.resetIndex = resetIndex;
+            function bindKeyboard() {
+                var els = $('.el');
+                $('.el').first().addClass('elFocus');
+                down(els);
+                up(els);
+                enter(els);
+            }
+            Keyboard.bindKeyboard = bindKeyboard;
+        })(Keyboard = List.Keyboard || (List.Keyboard = {}));
+    })(List = Musicope.List || (Musicope.List = {}));
+})(Musicope || (Musicope = {}));
+var Musicope;
+(function (Musicope) {
+    var List;
+    (function (List) {
+        var Options;
+        (function (Options) {
+            function getOptions() {
+            }
+            Options.getOptions = getOptions;
+        })(Options = List.Options || (List.Options = {}));
+    })(List = Musicope.List || (Musicope.List = {}));
 })(Musicope || (Musicope = {}));
 //# sourceMappingURL=app.js.map

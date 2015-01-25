@@ -5,7 +5,6 @@
         // controllers
         c_songUrl: string;
         c_idevice: string;
-        c_callbackUrl: string;
 
         // players
         p_deviceIn: string;

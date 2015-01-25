@@ -55,8 +55,8 @@
         private initShaders() {
             var o = this;
 
-            var vertexShader = o.getShader("scene/_assets/vertex.glsl");
-            var fragmentShader = o.getShader("scene/_assets/fragment.glsl");
+            var vertexShader = o.getShader("Content/vertex.glsl");
+            var fragmentShader = o.getShader("Content/fragment.glsl");
             var shaderProgram = this.gl.createProgram();
             this.gl.attachShader(shaderProgram, vertexShader);
             this.gl.attachShader(shaderProgram, fragmentShader);
@@ -100,9 +100,9 @@
             xhr.open('GET', path, false);
             xhr.send();
             var shader;
-            if (path.indexOf("fragment.glsl") > 0) {
+            if (path.indexOf("fragment.glsl") >= 0) {
                 shader = o.gl.createShader(o.gl.FRAGMENT_SHADER);
-            } else if (path.indexOf("vertex.glsl") > 0) {
+            } else if (path.indexOf("vertex.glsl") >= 0) {
                 shader = o.gl.createShader(o.gl.VERTEX_SHADER);
             }
             o.gl.shaderSource(shader, xhr.responseText);

@@ -1,3 +1,11 @@
-﻿$(document).ready(function () {
-    var c = new Musicope.Game.Controller();
-});
+﻿module Musicope {
+    export var dropbox = new Dropbox.Client({ key: "ckt9l58i8fpcq6d" });
+
+    $(document).ready(() => {
+
+        List.init();
+
+        //var c = new Musicope.Game.Controller();
+
+    });
+} 

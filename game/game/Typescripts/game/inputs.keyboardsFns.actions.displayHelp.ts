@@ -11,7 +11,7 @@
 
         constructor(private p: IKeyboardParams) {
             var o = this;
-            $.get("inputs/keyboard/actions/displayHelp/_assets/overlay.html?1").done((result) => {
+            $.get("Content/overlay.html?1").done((result) => {
                 $(result).appendTo("body");
                 o.window = $("#displayHelpOverlay");
             });

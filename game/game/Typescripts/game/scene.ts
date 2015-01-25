@@ -82,7 +82,6 @@
 
         private getCanvas(): HTMLCanvasElement {
             var c = $("<canvas class='canvas' />").appendTo("body");
-            c.css({ position: 'absolute', left: 0, top: 0 });
             return <any> c[0];
         }
 
