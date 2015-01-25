@@ -1,0 +1,35 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Musicope the Game</title>
+    <link rel="stylesheet" href="Content/app.css" />
+    <link rel="shortcut icon" href="Content/icon.ico" />
+    <script src="Scripts/jquery-2.1.3.min.js"></script>
+    <script src="Scripts/mousetrap.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/dropbox.js/0.10.2/dropbox.min.js"></script>
+    <script src="Scripts/_app.js"></script>
+</head>
+<body>
+    <div id="header">
+        <input autocomplete="off" autofocus="autofocus" id="query" placeholder="Search" class="mousetrap" />
+    </div>
+    <div class="midContainer" align="center">
+    </div>
+    <script type="text/html" class="song-list-template">
+        <div class="el">
+            <div class="vote">
+                <a class="vote-up" href="#"></a>
+                <span class="vote-count"></span>
+                <a class="vote-down" href="#"></a>
+            </div>
+            <a class="elLink" href="#">
+                <span class="elLinkName">{{title}}</span>
+                <span class="elLinkPath">{{path}}</span>
+            </a>
+            <div style="display:none" class="elURL">{{url}}</div>
+        </div>
+    </script>
+</body>
+</html>
