@@ -13,10 +13,25 @@
     <script src="Scripts/app.js"></script>
 </head>
 <body>
-    <div id="header">
-        <input autocomplete="off" autofocus="autofocus" id="query" placeholder="Search" class="mousetrap" />
+    <div id="listView">
+        <div id="header">
+            <input autocomplete="off" autofocus="autofocus" id="query" placeholder="Search" class="mousetrap" />
+        </div>
+        <div class="midContainer" align="center">
+        </div>
     </div>
-    <div class="midContainer" align="center">
+    <div id="gameView">
+        <div id="displayHelpOverlay">
+            <table>
+                <tr>
+                    <th>name</th>
+                    <th>hotkeys</th>
+                    <th>description</th>
+                    <th>current value</th>
+                </tr>
+            </table>
+        </div>
+        <canvas class='canvas' />
     </div>
     <script type="text/html" class="song-list-template">
         <div class="el">
@@ -31,6 +46,43 @@
             </a>
             <div style="display:none" class="elURL">{{url}}</div>
         </div>
+    </script>
+    <script type="text/template" class="fragment">
+#pragma debug(on)
+
+precision mediump float;
+
+varying lowp vec4 v_color;
+
+void main() {
+gl_FragColor = v_color;
+}
+    </script>
+    <script type="text/template" class="vertex">
+uniform float u_dy;
+uniform float u_dx;
+uniform bool u_active[127];
+attribute vec2 a_position;
+attribute vec4 a_color;
+attribute float a_id;
+attribute vec4 a_activeColor;
+varying lowp vec4 v_color;
+void main() {
+
+int id = int(a_id);
+
+if (id > 199) { // movable
+gl_Position = vec4(a_position.x, a_position.y + u_dy, 0, 1);
+} else if(id == 2) {
+gl_Position = vec4(a_position.x + u_dx, a_position.y, 0, 1);
+} else { // fixed
+gl_Position = vec4(a_position.x, a_position.y, 0, 1);
+}
+
+vec4 outc = a_color;
+if (id < 127 && u_active[id]) { outc = a_activeColor; }
+v_color = outc;
+}
     </script>
 </body>
 </html>

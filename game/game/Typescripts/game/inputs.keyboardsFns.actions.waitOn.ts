@@ -13,12 +13,12 @@
 
         triggerAction() {
             var o = this;
-            o.p.params.setParam("p_waits", Tools.toggle(o.p.params.readOnly.p_waits, o.options));
+            Params.setParam("p_waits", Tools.toggle(params.p_waits, o.options));
         }
 
         getCurrentState() {
             var o = this;
-            var i = o.options.indexOf(o.p.params.readOnly.p_waits);
+            var i = o.options.indexOf(params.p_waits);
             return o.names[i];
         }
 

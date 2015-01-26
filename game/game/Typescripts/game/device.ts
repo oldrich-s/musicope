@@ -1,4 +1,4 @@
-﻿module Musicope.Devices {
+﻿module Musicope {
 
     interface IJazz {
         MidiInOpen(name: string, callback: (timestamp: number, byte1: number, byte2: number, byte3: number) => void): void;
@@ -17,7 +17,7 @@
 
     var jazz: IJazz;
 
-    export class Jazz implements IDevice {
+    export class Device  {
 
         constructor() {
             var o = this;

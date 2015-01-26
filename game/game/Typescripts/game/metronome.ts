@@ -4,19 +4,19 @@
 
         private lastPlayedId: number = -10000;
 
-        constructor(private timePerBeat: number, private beatsPerBar: number, private device: Devices.IDevice, private params: Params) {
+        constructor(private timePerBeat: number, private beatsPerBar: number, private device: Device) {
             var o = this;
             o.subscribe();
         }
 
         play(time: number) {
             var o = this;
-            if (o.params.readOnly.m_isOn) {
-                var id = Math.floor(o.params.readOnly.m_ticksPerBeat * time / o.timePerBeat);
+            if (params.m_isOn) {
+                var id = Math.floor(params.m_ticksPerBeat * time / o.timePerBeat);
                 if (id > o.lastPlayedId) {
-                    var noteId = id % o.beatsPerBar == 0 ? o.params.readOnly.m_id1 : o.params.readOnly.m_id2;
-                    var velocity = Math.min(127, o.params.readOnly.m_velocity);
-                    o.device.out(o.params.readOnly.m_channel, noteId, velocity);
+                    var noteId = id % o.beatsPerBar == 0 ? params.m_id1 : params.m_id2;
+                    var velocity = Math.min(127, params.m_velocity);
+                    o.device.out(params.m_channel, noteId, velocity);
                     o.lastPlayedId = id;
                 }
             }
@@ -26,7 +26,7 @@
 
         private subscribe() {
             var o = this;
-            o.params.subscribe("metronomes.Basic", "^m_.+$",(name, value) => {
+            Params.subscribe("metronomes.Basic", "^m_.+$",(name, value) => {
                 o.reset();
             });
         }

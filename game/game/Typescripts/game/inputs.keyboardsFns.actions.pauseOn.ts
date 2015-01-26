@@ -10,12 +10,12 @@
 
         triggerAction() {
             var o = this;
-            o.p.params.setParam("p_isPaused", !o.p.params.readOnly.p_isPaused);
+            Params.setParam("p_isPaused", !params.p_isPaused);
         }
 
         getCurrentState() {
             var o = this;
-            return o.p.params.readOnly.p_isPaused ? "on" : "off";
+            return params.p_isPaused ? "on" : "off";
         }
 
     }

@@ -3,7 +3,7 @@
     export interface IInput { }
 
     export interface IInputNew {
-        new (params: Params, song: Song): IInput;
+        new (song: Song): IInput;
     }
 
 } 

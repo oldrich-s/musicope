@@ -55,8 +55,8 @@
         private initShaders() {
             var o = this;
 
-            var vertexShader = o.getShader("Content/vertex.glsl");
-            var fragmentShader = o.getShader("Content/fragment.glsl");
+            var vertexShader = o.getShader(".vertex");
+            var fragmentShader = o.getShader(".fragment");
             var shaderProgram = this.gl.createProgram();
             this.gl.attachShader(shaderProgram, vertexShader);
             this.gl.attachShader(shaderProgram, fragmentShader);
@@ -94,18 +94,15 @@
             return canvas.getContext("experimental-webgl", { antialias: true });
         }
 
-        private getShader(path: string) {
+        private getShader(id: string) {
             var o = this;
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', path, false);
-            xhr.send();
             var shader;
-            if (path.indexOf("fragment.glsl") >= 0) {
+            if (id === ".fragment") {
                 shader = o.gl.createShader(o.gl.FRAGMENT_SHADER);
-            } else if (path.indexOf("vertex.glsl") >= 0) {
+            } else if (id === ".vertex") {
                 shader = o.gl.createShader(o.gl.VERTEX_SHADER);
             }
-            o.gl.shaderSource(shader, xhr.responseText);
+            o.gl.shaderSource(shader, $(id).text().trim());
             o.gl.compileShader(shader);
             if (!o.gl.getShaderParameter(shader, o.gl.COMPILE_STATUS)) {
                 var lastError = o.gl.getShaderInfoLog(shader);

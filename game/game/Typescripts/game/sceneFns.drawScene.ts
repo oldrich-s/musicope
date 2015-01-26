@@ -2,7 +2,6 @@
 
     export interface Input {
         drawRect(x0: number, y0: number, x1: number, y1: number, ids: number[], color: number[], activeColor: number[]): void;
-        readOnly: IParamsData;
         pixelsPerTime: number;
         sceneWidth: number;
         sceneHeight: number;
@@ -57,9 +56,9 @@
         34, 35, 36, 38, 39, 41, 42, 43, 45, 46, 48, 49, 50];
 
     function drawNoteCover(loc: Local) {
-        if (loc.input.readOnly.s_noteCoverRelHeight > 0.0) {
+        if (params.s_noteCoverRelHeight > 0.0) {
             var y0 = loc.yEndOfTimeBar;
-            var y1 = y0 + loc.input.readOnly.s_noteCoverRelHeight * (loc.input.sceneHeight - loc.yEndOfTimeBar);
+            var y1 = y0 + params.s_noteCoverRelHeight * (loc.input.sceneHeight - loc.yEndOfTimeBar);
             var color = [0, 0, 0, 1];
             var activeColor = [0, 0, 0, 0.5];
             loc.input.drawRect(0, y0, loc.input.sceneWidth + 1, y1, [1], color, activeColor);
@@ -72,7 +71,7 @@
             var x1 = x0 + 2 * loc.blackWidth - 3;
             var y0 = Math.floor(loc.yEndOfPiano * 0.4);
             var y1 = loc.yEndOfPiano - 2;
-            var activeColor = hexToRgb(loc.input.readOnly.s_colPianoBlack);
+            var activeColor = hexToRgb(params.s_colPianoBlack);
             loc.input.drawRect(x0, y0, x1, y1, [id], [0, 0, 0, 1], activeColor);
         });
     }
@@ -83,13 +82,13 @@
         var outOfReachNote = id < loc.input.p_minNote || id > loc.input.p_maxNote;
         var color;
         if (neverPlayedNote && !outOfReachNote) {
-            var notPlayedColor = hexToRgb(loc.input.readOnly.s_colUnPlayedNotesInReach);
+            var notPlayedColor = hexToRgb(params.s_colUnPlayedNotesInReach);
             color = notPlayedColor;
         } else if (neverPlayedNote) {
-            var notPlayedColor = hexToRgb(loc.input.readOnly.s_colUnPlayedNotes);
+            var notPlayedColor = hexToRgb(params.s_colUnPlayedNotes);
             color = notPlayedColor;
         } else if (outOfReachNote) {
-            var outOfReachColor = hexToRgb(loc.input.readOnly.s_colOutOfReachNotes);
+            var outOfReachColor = hexToRgb(params.s_colOutOfReachNotes);
             color = outOfReachColor;
         } else {
             color = unPressedColor;
@@ -104,14 +103,14 @@
             var y0 = 12;
             var y1 = loc.yEndOfPiano - 2;
             var color = getColorForWhitePianoNotes(id, loc);
-            var activeColor = hexToRgb(loc.input.readOnly.s_colPianoWhite);
+            var activeColor = hexToRgb(params.s_colPianoWhite);
             loc.input.drawRect(x0, y0, x1, y1, [id], color, activeColor);
         });
     }
 
     function drawPianoTimeBarColor(loc: Local) {
-        var color = hexToRgb(loc.input.readOnly.s_colTime, 0.9);
-        var activeColor = hexToRgb(loc.input.readOnly.s_colTime, 0.4);
+        var color = hexToRgb(params.s_colTime, 0.9);
+        var activeColor = hexToRgb(params.s_colTime, 0.4);
         var y0 = loc.yEndOfPiano;
         var y1 = loc.yEndOfTimeBar;
         loc.input.drawRect(0, y0, 1, y1, [1, 2, 2, 1], color, activeColor);
@@ -137,7 +136,7 @@
     }
 
     function drawPiano(loc: Local) {
-        if (loc.input.readOnly.s_showPiano) {
+        if (params.s_showPiano) {
             drawPianoBackBlack(loc);
             drawPianoWhiteNotes(loc);
             drawPianoBlackNotes(loc);
@@ -145,7 +144,7 @@
     }
 
     function drawSustainNotes(loc: Local) {
-        var color = hexToRgb(loc.input.readOnly.s_colSustain);
+        var color = hexToRgb(params.s_colSustain);
         loc.input.sustainNotes.forEach((note) => {
             var y0 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOn + 1;
             var y1 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOff - 2;
@@ -181,8 +180,8 @@
     }
 
     function drawTrack(loc: Local, trackId: number) {
-        var whiteNoteColor = hexToRgb(loc.input.readOnly.s_colWhites[trackId]);
-        var blackNoteColor = hexToRgb(loc.input.readOnly.s_colBlacks[trackId]);
+        var whiteNoteColor = hexToRgb(params.s_colWhites[trackId]);
+        var blackNoteColor = hexToRgb(params.s_colBlacks[trackId]);
         var minMaxVel = getMinMaxVelocity(loc.input.tracks[trackId]);
         loc.input.tracks[trackId].forEach(function (note) {
             var y0 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOn + 1;
@@ -206,9 +205,9 @@
     }
 
     function drawSustainBackground(loc: Local) {
-        if (loc.input.readOnly.s_showSustainBg) {
-            var color = hexToRgb(loc.input.readOnly.s_colSustain);
-            var color2 = hexToRgb(loc.input.readOnly.s_colSustain, 0.5);
+        if (params.s_showSustainBg) {
+            var color = hexToRgb(params.s_colSustain);
+            var color2 = hexToRgb(params.s_colSustain, 0.5);
             loc.input.sustainNotes.forEach((note) => {
                 var y0 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOn + 1;
                 var y1 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOff - 2;
@@ -220,14 +219,14 @@
     }
 
     function drawBlackRails(loc: Local) {
-        if (loc.input.readOnly.s_showBlackRails) {
+        if (params.s_showBlackRails) {
             blackNoteIds.forEach((id, i) => {
                 var x0 = blackNoteSpots[i] * loc.whiteWidth - loc.blackWidth + 2;
                 var x1 = x0 + 2 * loc.blackWidth - 3;
                 var y0 = loc.yEndOfPiano;
                 var y1 = loc.input.sceneHeight;
-                var color1 = hexToRgb(loc.input.readOnly.s_colorBlackRails2);
-                var color2 = hexToRgb(loc.input.readOnly.s_colorBlackRails3);
+                var color1 = hexToRgb(params.s_colorBlackRails2);
+                var color2 = hexToRgb(params.s_colorBlackRails3);
                 var color = (i - 1) % 5 === 0 || (i - 2) % 5 === 0 ? color1 : color2;
                 loc.input.drawRect(x0, y0, x1, y1, [id], color, color);
             });
@@ -236,10 +235,10 @@
 
     export function drawScene(input: Input) {
         var whiteWidth = Math.floor(input.sceneWidth / whiteNoteIds.length);
-        var maxRadius = Math.max.apply(null, input.readOnly.p_radiuses);
+        var maxRadius = Math.max.apply(null, params.p_radiuses);
         var timePerSceneHeigth = input.sceneHeight / input.pixelsPerTime;
         var timeBarHeight = input.sceneHeight * maxRadius / timePerSceneHeigth;
-        var yEndOfTimeBar = Math.floor(input.readOnly.s_showPiano ? 0.2 * input.sceneHeight : timeBarHeight);
+        var yEndOfTimeBar = Math.floor(params.s_showPiano ? 0.2 * input.sceneHeight : timeBarHeight);
         var loc: Local = {
             input: input,
             whiteWidth: whiteWidth,
@@ -250,7 +249,7 @@
         }
         drawSustainBackground(loc);
         drawBlackRails(loc);
-        input.readOnly.s_views.forEach((view, i) => {
+        params.s_views.forEach((view, i) => {
             if (view === "full") { drawTrack(loc, i); }
         });
         drawSustainNotes(loc);

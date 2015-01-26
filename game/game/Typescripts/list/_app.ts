@@ -1,10 +1,5 @@
 ﻿module Musicope.List {
 
-    export function startGame(path: string) {
-        var options = Options.getOptions();
-        var c = new Musicope.Game.Controller();
-    }
-
     function populateDOM(items: any[]) {
         items.forEach((item) => {
             var title = item.name.replace(".mid", "");
@@ -40,8 +35,8 @@
         });
 
         $(document).on('click', '.elLink', function () {
-            var path = $(this).siblings('.elURL').text().trim();
-            startGame(path);
+            params.c_songUrl = $(this).siblings('.elURL').text().trim();
+            var c = new Musicope.Game.Controller();
         });
 
         var lastQuery = "";

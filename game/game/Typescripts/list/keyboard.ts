@@ -16,8 +16,8 @@
 
     function enter(els: JQuery) {
         Mousetrap.bind('enter',(e) => {
-            var path = $(els[index]).find('.elURL').text().trim();
-            startGame(path);
+            params.c_songUrl = $(els[index]).find('.elURL').text().trim();
+            var c = new Musicope.Game.Controller();
             e.preventDefault();
         });
     }

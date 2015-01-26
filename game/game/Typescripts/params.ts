@@ -1,10 +1,9 @@
-﻿module Musicope.Game {
+﻿module Musicope {
 
-    export var defParams: IParamsData = {
+    export var defaultParams = {
 
         // controllers
         c_songUrl: undefined,
-        c_idevice: "Jazz",
         c_callbackUrl: undefined,
 
         // players
@@ -58,7 +57,8 @@
         s_colUnPlayedNotes: "#808080",
         s_colOutOfReachNotes: "#ff5252",
         s_colUnPlayedNotesInReach: "#00ff90"
-
     };
 
-}
+    export var params = jQuery.extend(true, {}, defaultParams);
+
+} 

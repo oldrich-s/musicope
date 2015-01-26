@@ -10,12 +10,12 @@
 
         triggerAction() {
             var o = this;
-            o.p.params.setParam("p_elapsedTime", o.p.params.readOnly.p_initTime);
+            Params.setParam("p_elapsedTime", params.p_initTime);
         }
 
         getCurrentState() {
             var o = this;
-            return o.p.params.readOnly.p_elapsedTime / 1000;
+            return params.p_elapsedTime / 1000;
         }
 
     }

@@ -4,7 +4,7 @@
 
         private actions: KeyboardFns.Actions.IKeyboardAction[] = [];
 
-        constructor(private params: Params, private song: Song) {
+        constructor(private song: Song) {
             var o = this;
             o.initActions();
             o.checkActionsDuplicates();
@@ -15,7 +15,6 @@
             var o = this;
             var deff = $.Deferred();
             var keyboardParams: KeyboardFns.Actions.IKeyboardParams = {
-                params: o.params,
                 song: o.song,
                 actions: deff.promise()
             }

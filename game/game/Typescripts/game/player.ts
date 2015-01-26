@@ -8,8 +8,7 @@
         private waitForNote: PlayerFns.WaitForNote;
         private fromDevice: PlayerFns.FromDevice;
 
-        constructor(private device: Devices.IDevice, private song: Song, private metronome: Metronome,
-            private scene: Scene, private params: Params) {
+        constructor(private device: Device, private song: Song, private metronome: Metronome, private scene: Scene) {
             var o = this;
             o = this;
             o.correctTimesInParams();
@@ -21,8 +20,8 @@
             var o = this;
             o.playNotes.play();
             o.playSustains.play();
-            o.metronome.play(o.params.readOnly.p_elapsedTime);
-            o.scene.redraw(o.params.readOnly.p_elapsedTime, o.params.readOnly.p_isPaused);
+            o.metronome.play(params.p_elapsedTime);
+            o.scene.redraw(params.p_elapsedTime, params.p_isPaused);
             var isFreeze = o.waitForNote.isFreeze();
             o.hideTimeBarIfStops(isFreeze);
             return o.updateTime(isFreeze);
@@ -30,17 +29,17 @@
 
         private correctTimesInParams = () => {
             var o = this;
-            if (typeof o.params.readOnly.p_initTime == 'undefined') {
-                o.params.setParam("p_initTime", -2 * o.song.timePerBar);
+            if (typeof params.p_initTime == 'undefined') {
+                Params.setParam("p_initTime", -2 * o.song.timePerBar);
             }
-            if (typeof o.params.readOnly.p_elapsedTime == 'undefined') {
-                o.params.setParam("p_elapsedTime", o.params.readOnly.p_initTime);
+            if (typeof params.p_elapsedTime == 'undefined') {
+                Params.setParam("p_elapsedTime", params.p_initTime);
             }
         }
 
         private subscribeToParamsChange = () => {
             var o = this;
-            o.params.subscribe("players.Basic", "^p_elapsedTime$",(name, value) => {
+            Params.subscribe("players.Basic", "^p_elapsedTime$",(name, value) => {
                 o.reset();
             });
         }
@@ -71,7 +70,7 @@
             var o = this;
             if (notes.length > 0) {
                 var id = notes.length - 1;
-                while (id >= 0 && notes[id] && notes[id].time > o.params.readOnly.p_elapsedTime) {
+                while (id >= 0 && notes[id] && notes[id].time > params.p_elapsedTime) {
                     id--;
                 }
                 return id;
@@ -80,10 +79,10 @@
 
         private assignClasses = () => {
             var o = this;
-            o.fromDevice = new PlayerFns.FromDevice(o.device, o.scene, o.params, o.song.playerTracks);
-            o.playNotes = new PlayerFns.PlayNotes(o.device, o.scene, o.params, o.song.playerTracks);
-            o.playSustains = new PlayerFns.PlaySustains(o.device, o.params, o.song.sustainNotes);
-            o.waitForNote = new PlayerFns.WaitForNote(o.device, o.params, o.song.playerTracks, o.fromDevice.onNoteOn);
+            o.fromDevice = new PlayerFns.FromDevice(o.device, o.scene, o.song.playerTracks);
+            o.playNotes = new PlayerFns.PlayNotes(o.device, o.scene, o.song.playerTracks);
+            o.playSustains = new PlayerFns.PlaySustains(o.device, o.song.sustainNotes);
+            o.waitForNote = new PlayerFns.WaitForNote(o.device, o.song.playerTracks, o.fromDevice.onNoteOn);
         }
 
         private updateTime = (isFreeze: boolean) => {
@@ -93,17 +92,17 @@
             var duration = currentTime - o.previousTime;
             o.previousTime = currentTime;
 
-            var isSongEnd = o.params.readOnly.p_elapsedTime > o.song.timePerSong + 1000;
+            var isSongEnd = params.p_elapsedTime > o.song.timePerSong + 1000;
 
             var doFreezeTime =
                 isSongEnd ||
-                o.params.readOnly.p_isPaused ||
+                params.p_isPaused ||
                 isFreeze || /*waiting for hands*/
                 duration > 100; /*window was out of focus*/
 
             if (!doFreezeTime) {
-                var newElapsedTime = o.params.readOnly.p_elapsedTime + o.params.readOnly.p_speed * duration;
-                o.params.setParam("p_elapsedTime", newElapsedTime, true);
+                var newElapsedTime = params.p_elapsedTime + params.p_speed * duration;
+                Params.setParam("p_elapsedTime", newElapsedTime, true);
             }
 
             return isSongEnd;

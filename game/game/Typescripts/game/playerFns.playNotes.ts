@@ -4,9 +4,8 @@
 
         private ids: number[];
 
-        constructor(private device: Devices.IDevice,
+        constructor(private device: Device,
             private scene: Scene,
-            private params: Params,
             private notes: Parsers.INote[][]) {
             var o = this;
             o = this;
@@ -39,12 +38,12 @@
         private isIdBelowCurrentTime = (trackId: number) => {
             var o = this;
             return o.notes[trackId][o.ids[trackId]] &&
-                o.notes[trackId][o.ids[trackId]].time < o.params.readOnly.p_elapsedTime;
+                o.notes[trackId][o.ids[trackId]].time < params.p_elapsedTime;
         }
 
         private playNote = (note: Parsers.INote, trackId: number) => {
             var o = this;
-            var playsUser = o.params.readOnly.p_userHands[trackId];
+            var playsUser = params.p_userHands[trackId];
             if (!playsUser || o.playOutOfReach(note)) {
                 if (note.on) {
                     o.device.out(144, note.id, Math.min(127, o.getVelocity(trackId, note)));
@@ -58,15 +57,15 @@
 
         private playOutOfReach = (note: Parsers.INote) => {
             var o = this;
-            var isBelowMin = note.id < o.params.readOnly.p_minNote;
-            var isAboveMax = note.id > o.params.readOnly.p_maxNote;
-            o.params.readOnly.p_playOutOfReachNotes && (isBelowMin || isAboveMax);
+            var isBelowMin = note.id < params.p_minNote;
+            var isAboveMax = note.id > params.p_maxNote;
+            params.p_playOutOfReachNotes && (isBelowMin || isAboveMax);
         }
 
         private getVelocity = (trackId: number, note: Parsers.INote) => {
             var o = this;
-            var velocity = o.params.readOnly.p_volumes[trackId] * note.velocity;
-            var maxVelocity = o.params.readOnly.p_maxVelocity[trackId];
+            var velocity = params.p_volumes[trackId] * note.velocity;
+            var maxVelocity = params.p_maxVelocity[trackId];
             if (maxVelocity && velocity > maxVelocity) {
                 velocity = maxVelocity;
             }

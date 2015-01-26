@@ -1,5 +1,7 @@
 ﻿module Musicope.Game.Inputs.KeyboardFns.Actions.List {
 
+    var isFirst = true;
+
     export class displayHelp implements IKeyboardAction {
 
         id = "display help";
@@ -11,17 +13,13 @@
 
         constructor(private p: IKeyboardParams) {
             var o = this;
-            $.get("Content/overlay.html?1").done((result) => {
-                $(result).appendTo("body");
-                o.window = $("#displayHelpOverlay");
-            });
-
+            o.window = $("#displayHelpOverlay");
         }
 
         triggerAction() {
             var o = this;
             o.isDisplayed = !o.isDisplayed;
-            o.p.params.setParam("p_isPaused", o.isDisplayed);
+            Params.setParam("p_isPaused", o.isDisplayed);
             o.display();
         }
 
@@ -34,14 +32,14 @@
             var o = this;
             if (o.isDisplayed) {
                 o.p.actions.done((actions: IKeyboardAction[]) => {
-                    o.p.params.subscribe("displayHelp", ".*",(name, value) => {
+                    Params.subscribe("displayHelp", ".*",(name, value) => {
                         o.refillTable(actions);
                     });
                     o.refillTable(actions);
                     o.window.css("display", "block");
                 });
             } else {
-                o.p.params.unsubscribe("displayHelp");
+                Params.unsubscribe("displayHelp");
                 o.window.css("display", "none");
             }
         }

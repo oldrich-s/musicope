@@ -3,9 +3,17 @@
 
     $(document).ready(() => {
 
-        List.init();
+        var canvas: HTMLCanvasElement = <any>$('.canvas')[0];
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        $(window).resize(() => {
+            if (canvas.style.display !== 'none') {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+        });
 
-        //var c = new Musicope.Game.Controller();
+        List.init();
 
     });
 } 

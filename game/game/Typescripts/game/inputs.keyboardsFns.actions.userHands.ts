@@ -13,12 +13,12 @@
 
         triggerAction() {
             var o = this;
-            o.p.params.setParam("p_userHands", Tools.toggle(o.p.params.readOnly.p_userHands, o.options));
+            Params.setParam("p_userHands", Tools.toggle(params.p_userHands, o.options));
         }
 
         getCurrentState() {
             var o = this;
-            var i = o.options.indexOf(o.p.params.readOnly.p_userHands);
+            var i = o.options.indexOf(params.p_userHands);
             return o.names[i];
         }
 

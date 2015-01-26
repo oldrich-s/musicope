@@ -25,11 +25,11 @@
         private pausedColor: Int32Array;
         private unpausedColor: Int32Array;
 
-        constructor(private song: Song, public params: Params) {
+        constructor(private song: Song) {
             var o = this;
             o.subscribeToParamsChange();
             o.setBackgrColors();
-            o.canvas = o.getCanvas();
+            o.canvas = <any>$(".canvas")[0];
             o.setCanvasDim();
             o.setupWebGL();
             o.setupScene();
@@ -60,15 +60,15 @@
 
         private subscribeToParamsChange() {
             var o = this;
-            o.params.subscribe("scene.Basic", "^s_noteCoverRelHeight$",(name, value) => {
+            Params.subscribe("scene.Basic", "^s_noteCoverRelHeight$",(name, value) => {
                 o.setupScene();
             });
         }
 
         private setBackgrColors() {
             var o = this;
-            o.pausedColor = new Int32Array(SceneFns.hexToRgb(o.params.readOnly.s_colPaused));
-            o.unpausedColor = new Int32Array(SceneFns.hexToRgb(o.params.readOnly.s_colUnPaused));
+            o.pausedColor = new Int32Array(SceneFns.hexToRgb(params.s_colPaused));
+            o.unpausedColor = new Int32Array(SceneFns.hexToRgb(params.s_colUnPaused));
         }
 
         private setPausedState(isPaused: boolean) {
@@ -80,20 +80,11 @@
             }
         }
 
-        private getCanvas(): HTMLCanvasElement {
-            var c = $("<canvas class='canvas' />").appendTo("body");
-            return <any> c[0];
-        }
-
         private setCanvasDim() {
             var o = this;
             o.canvas.width = window.innerWidth;
             o.canvas.height = window.innerHeight;
-            o.pixelsPerTime = o.canvas.height * 4 / (o.song.noteValuePerBeat * o.params.readOnly.s_quartersPerHeight * o.song.timePerBeat);
-            $(window).resize(() => {
-                o.canvas.width = window.innerWidth;
-                o.canvas.height = window.innerHeight;
-            });
+            o.pixelsPerTime = o.canvas.height * 4 / (o.song.noteValuePerBeat * params.s_quartersPerHeight * o.song.timePerBeat);
         }
 
         private setupWebGL() {
@@ -115,14 +106,13 @@
                 drawRect: (x0, y0, x1, y1, ids, color, activeColor) => {
                     bag.push(o.rect(x0, y0, x1, y1, ids, [color], [activeColor]));
                 },
-                readOnly: o.params.readOnly,
                 pixelsPerTime: o.pixelsPerTime,
                 sceneWidth: o.canvas.width,
                 sceneHeight: o.canvas.height,
                 tracks: o.song.sceneTracks,
                 sustainNotes: o.song.sceneSustainNotes,
-                p_minNote: o.params.readOnly.p_minNote,
-                p_maxNote: o.params.readOnly.p_maxNote,
+                p_minNote: params.p_minNote,
+                p_maxNote: params.p_maxNote,
                 minPlayedNoteId: o.song.minPlayedNoteId,
                 maxPlayedNoteId: o.song.maxPlayedNoteId
             };

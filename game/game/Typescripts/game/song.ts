@@ -14,7 +14,7 @@
         sceneTracks: INoteScene[][];
         sceneSustainNotes: ISustainNoteScene[];
 
-        constructor(midi: Uint8Array, private params: Params) {
+        constructor(midi: Uint8Array) {
             var o = this;
             o.setParamsFromParser(new Parsers.Midi.Midi(midi));
             o.sortPlayerTracksByHands();
@@ -38,21 +38,21 @@
 
         private sortPlayerTracksByHands() {
             var o = this;
-            o.playerTracks = o.params.readOnly.f_trackIds.map((trackId) => {
+            o.playerTracks = params.f_trackIds.map((trackId) => {
                 return o.playerTracks[trackId] || [];
             });
         }
 
         private normalizeVolumeOfPlayerTracks() {
             var o = this;
-            if (o.params.readOnly.f_normalize) {
+            if (params.f_normalize) {
                 var sumVelocity = 0, n = 0;
                 o.playerTracks.forEach((notes) => {
                     notes.forEach((note) => {
                         if (note.on) { n++; sumVelocity += note.velocity; }
                     });
                 });
-                var scaleVel = o.params.readOnly.f_normalize / (sumVelocity / n);
+                var scaleVel = params.f_normalize / (sumVelocity / n);
                 if (scaleVel < 1.0) {
                     o.playerTracks.forEach((notes) => {
                         notes.forEach((note) => { note.velocity = Math.max(0, Math.min(127, scaleVel * note.velocity)); });

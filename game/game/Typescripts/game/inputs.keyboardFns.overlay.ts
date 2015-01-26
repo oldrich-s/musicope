@@ -13,19 +13,20 @@
     }
 
     export function display(description: string, value: any) {
+        if (value) {
+            var str;
+            if (typeof value == "number") { str = Math.round(1000 * value) / 1000; }
+            else { str = value; }
 
-        var str;
-        if (typeof value == "number") { str = Math.round(1000 * value) / 1000; }
-        else { str = value; }
-
-        createDomIfNeeded();
-        displayDescription.text(description + ": ");
-        displayValue.text(str);
-        clearTimeout(oldTimeOut);
-        oldTimeOut = setTimeout(() => {
-            displayDescription.text("");
-            displayValue.text("");
-        }, 5000);
+            createDomIfNeeded();
+            displayDescription.text(description + ": ");
+            displayValue.text(str);
+            clearTimeout(oldTimeOut);
+            oldTimeOut = setTimeout(() => {
+                displayDescription.text("");
+                displayValue.text("");
+            }, 5000);
+        }
     }
 
 } 

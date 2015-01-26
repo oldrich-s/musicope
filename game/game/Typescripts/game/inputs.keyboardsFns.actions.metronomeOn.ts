@@ -10,12 +10,12 @@
 
         triggerAction() {
             var o = this;
-            o.p.params.setParam("m_isOn", !o.p.params.readOnly.m_isOn);
+            Params.setParam("m_isOn", !params.m_isOn);
         }
 
         getCurrentState() {
             var o = this;
-            return o.p.params.readOnly.m_isOn ? "on" : "off";
+            return params.m_isOn ? "on" : "off";
         }
 
     }

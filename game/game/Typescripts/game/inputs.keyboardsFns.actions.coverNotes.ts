@@ -12,13 +12,13 @@
 
         triggerAction() {
             var o = this;
-            var height: number = Tools.toggle(o.p.params.readOnly.s_noteCoverRelHeight, o.states);
-            o.p.params.setParam("s_noteCoverRelHeight", height);
+            var height: number = Tools.toggle(params.s_noteCoverRelHeight, o.states);
+            Params.setParam("s_noteCoverRelHeight", height);
         }
 
         getCurrentState() {
             var o = this;
-            return o.p.params.readOnly.s_noteCoverRelHeight;
+            return params.s_noteCoverRelHeight;
         }
 
     }
