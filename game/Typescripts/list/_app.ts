@@ -19,20 +19,22 @@
         els.detach().appendTo('.midContainer');
     }
     
-    function voteUp() {
+    function voteUp(e: JQueryEventObject) {
         var id = $(this).parents('.el').children('.elURL').text().trim();
         var old = parseInt(scores[id] || '0');
         scores[id] = old + 1;
         scoresDirty = true;
         $(this).siblings('.vote-count').text(old + 1);
+        e.preventDefault();
     }
 
-    function voteDown() {
+    function voteDown(e: JQueryEventObject) {
         var id = $(this).parents('.el').children('.elURL').text().trim();
         var old = parseInt(scores[id] || '0');
         scores[id] = old - 1;
         scoresDirty = true;
         $(this).siblings('.vote-count').text(old - 1);
+        e.preventDefault();
     }
 
     function populateDOM(items: any[], scores: any) {

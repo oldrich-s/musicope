@@ -46,7 +46,11 @@
         }
 
         out = (byte1: number, byte2: number, byte3: number) => {
-            this.output.send([byte1, byte2, byte3]);
+            var data = [byte1, byte2];
+            if (typeof byte3 === "number") {
+                data.push(byte3);
+            }
+            this.output.send(data);
         }
 
         outClose = () => {

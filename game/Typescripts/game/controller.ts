@@ -54,11 +54,10 @@
 
         private step() {
             var o = this;
-            var isEnd = false;
             function _step() {
-                if (!isEnd && $('.canvas').is(':visible')) {
+                if ($('.canvas').is(':visible')) {
                     o.requestAnimationFrame.call(window, _step);
-                    isEnd = o.player.step();
+                    o.player.step();
                 }
             }
             _step();

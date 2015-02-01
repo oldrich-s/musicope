@@ -3,9 +3,8 @@
     var subscriptions = {};
 
     function call(param: string, value: any) {
-        var o = this;
-        for (var prop in o.subscriptions) {
-            var s = o.subscriptions[prop];
+        for (var prop in subscriptions) {
+            var s = subscriptions[prop];
             if (param.search(s["regex"]) > -1) {
                 s["callback"](param, value);
             }
@@ -28,7 +27,7 @@
         delete subscriptions[id];
     }
 
-    export function setParam(name: string, value: any, dontNotifyOthers ?: boolean) {
+    export function setParam(name: string, value: any, dontNotifyOthers?: boolean) {
         params[name] = value;
         if (!dontNotifyOthers) {
             call(name, value);

@@ -67,11 +67,10 @@ var Musicope;
             };
             Controller.prototype.step = function () {
                 var o = this;
-                var isEnd = false;
                 function _step() {
-                    if (!isEnd && $('.canvas').is(':visible')) {
+                    if ($('.canvas').is(':visible')) {
                         o.requestAnimationFrame.call(window, _step);
-                        isEnd = o.player.step();
+                        o.player.step();
                     }
                 }
                 _step();
@@ -192,7 +191,11 @@ var Musicope;
                         return _this.midi;
                     };
                     this.out = function (byte1, byte2, byte3) {
-                        _this.output.send([byte1, byte2, byte3]);
+                        var data = [byte1, byte2];
+                        if (typeof byte3 === "number") {
+                            data.push(byte3);
+                        }
+                        _this.output.send(data);
                     };
                     this.outClose = function () {
                     };
@@ -2248,19 +2251,21 @@ var Musicope;
             });
             els.detach().appendTo('.midContainer');
         }
-        function voteUp() {
+        function voteUp(e) {
             var id = $(this).parents('.el').children('.elURL').text().trim();
             var old = parseInt(scores[id] || '0');
             scores[id] = old + 1;
             scoresDirty = true;
             $(this).siblings('.vote-count').text(old + 1);
+            e.preventDefault();
         }
-        function voteDown() {
+        function voteDown(e) {
             var id = $(this).parents('.el').children('.elURL').text().trim();
             var old = parseInt(scores[id] || '0');
             scores[id] = old - 1;
             scoresDirty = true;
             $(this).siblings('.vote-count').text(old - 1);
+            e.preventDefault();
         }
         function populateDOM(items, scores) {
             items.forEach(function (item) {
@@ -2458,9 +2463,8 @@ var Musicope;
     (function (Params) {
         var subscriptions = {};
         function call(param, value) {
-            var o = this;
-            for (var prop in o.subscriptions) {
-                var s = o.subscriptions[prop];
+            for (var prop in subscriptions) {
+                var s = subscriptions[prop];
                 if (param.search(s["regex"]) > -1) {
                     s["callback"](param, value);
                 }
