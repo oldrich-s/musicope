@@ -2230,13 +2230,70 @@ var Musicope;
 (function (Musicope) {
     var List;
     (function (List) {
-        function populateDOM(items) {
+        var scores = {};
+        var scoresDirty = false;
+        function sortList() {
+            var els = $('.midContainer .el:visible');
+            els.sort(function (a, b) {
+                var countA = parseInt($(a).find('.vote-count').text());
+                var countB = parseInt($(b).find('.vote-count').text());
+                if (countB === countA) {
+                    var nameA = $(a).find('.elLinkName').text();
+                    var nameB = $(b).find('.elLinkName').text();
+                    return nameA > nameB ? 1 : -1;
+                }
+                else {
+                    return countB - countA;
+                }
+            });
+            els.detach().appendTo('.midContainer');
+        }
+        function voteUp() {
+            var id = $(this).parents('.el').children('.elURL').text().trim();
+            var old = parseInt(scores[id] || '0');
+            scores[id] = old + 1;
+            scoresDirty = true;
+            $(this).siblings('.vote-count').text(old + 1);
+        }
+        function voteDown() {
+            var id = $(this).parents('.el').children('.elURL').text().trim();
+            var old = parseInt(scores[id] || '0');
+            scores[id] = old - 1;
+            scoresDirty = true;
+            $(this).siblings('.vote-count').text(old - 1);
+        }
+        function populateDOM(items, scores) {
             items.forEach(function (item) {
                 var title = item.name.replace(".mid", "");
                 var path = item.path.replace(item.name, "");
-                var template = $('.song-list-template').html().trim().replace("{{title}}", title).replace("{{path}}", path).replace("{{url}}", item.path);
+                var score = scores[item.path] || "0";
+                var template = $('.song-list-template').html().trim().replace("{{title}}", title).replace("{{path}}", path).replace("{{score}}", score).replace("{{url}}", item.path);
                 $(template).appendTo('.midContainer');
             });
+            sortList();
+        }
+        function startSavingScores() {
+            setInterval(function () {
+                if (scoresDirty) {
+                    var text = JSON.stringify(scores, null, 4);
+                    scoresDirty = false;
+                    Musicope.dropbox.writeFile('settings.json', text);
+                }
+            }, 1000);
+        }
+        function initScores() {
+            var def = $.Deferred();
+            Musicope.dropbox.readFile('settings.json', function (error, data) {
+                if (!data) {
+                    def.resolve();
+                }
+                else {
+                    scores = JSON.parse(data);
+                    def.resolve();
+                }
+                startSavingScores();
+            });
+            return def;
         }
         function getAllMidiFiles(client) {
             var files = $.Deferred();
@@ -2246,14 +2303,16 @@ var Musicope;
             return files;
         }
         function init() {
-            var items = [];
             Musicope.dropbox.authenticate(function (error, client) {
-                getAllMidiFiles(client).done(function (_items) {
-                    items = _items;
-                    populateDOM(items);
-                    List.Keyboard.bindKeyboard();
+                initScores().done(function () {
+                    getAllMidiFiles(client).done(function (items) {
+                        populateDOM(items, scores);
+                        List.Keyboard.bindKeyboard();
+                    });
                 });
             });
+            $(document).on('click', '.vote-up', voteUp);
+            $(document).on('click', '.vote-down', voteDown);
             $(document).on('click', '.elLink', function () {
                 Musicope.params.c_songUrl = $(this).siblings('.elURL').text().trim();
                 var c = new Musicope.Game.Controller();
@@ -2265,7 +2324,8 @@ var Musicope;
                 $(this).data('timeout', setTimeout(function () {
                     var query = $(_this).val();
                     if (query !== lastQuery) {
-                        List.filterSongs(query, items);
+                        List.filterSongs(query);
+                        sortList();
                         List.Keyboard.resetIndex();
                         lastQuery = query;
                     }
@@ -2279,15 +2339,15 @@ var Musicope;
 (function (Musicope) {
     var List;
     (function (List) {
-        function filterSongsByQueries(items, queries) {
+        function filterSongsByQueries(queries) {
             var els = $('.el');
-            items.forEach(function (item, i) {
-                var url = item.path.toLowerCase();
+            els.each(function (i, item) {
+                var url = $(item).find('.elURL').text().trim().toLowerCase();
                 var found = queries.every(function (query) {
                     return url.indexOf(query) > -1;
                 });
                 var display = found ? 'block' : 'none';
-                $(els[i]).css('display', display);
+                $(item).css('display', display);
             });
         }
         function splitQuery(query) {
@@ -2300,9 +2360,9 @@ var Musicope;
             });
             return nonEmptyQueries;
         }
-        function filterSongs(query, items) {
+        function filterSongs(query) {
             var queries = splitQuery(query);
-            filterSongsByQueries(items, queries);
+            filterSongsByQueries(queries);
         }
         List.filterSongs = filterSongs;
     })(List = Musicope.List || (Musicope.List = {}));

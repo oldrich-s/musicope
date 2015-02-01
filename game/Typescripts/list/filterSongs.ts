@@ -1,14 +1,14 @@
 ﻿module Musicope.List {
 
-    function filterSongsByQueries(items: any[], queries: string[]) {
+    function filterSongsByQueries(queries: string[]) {
         var els = $('.el');
-        items.forEach((item, i) => {
-            var url = item.path.toLowerCase();
+        els.each((i, item) => {
+            var url = $(item).find('.elURL').text().trim().toLowerCase();
             var found = queries.every((query) => {
                 return url.indexOf(query) > -1;
             });
             var display = found ? 'block' : 'none';
-            $(els[i]).css('display', display);
+            $(item).css('display', display);
         });
     }
 
@@ -19,9 +19,9 @@
         return nonEmptyQueries;
     }
 
-    export function filterSongs(query: string, items: any[]) {
+    export function filterSongs(query: string) {
         var queries = splitQuery(query);
-        filterSongsByQueries(items, queries);
+        filterSongsByQueries(queries);
     }
 
 } 
