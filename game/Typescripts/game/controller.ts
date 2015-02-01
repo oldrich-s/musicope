@@ -2,7 +2,7 @@
 
     export class Controller {
 
-        private device: Device;
+        private device: Devices.IDevice;
         private input: IInput;
         private metronome: Metronome;
         private song: Song;
@@ -15,14 +15,16 @@
             $('#gameView').show();
             if (!params.c_songUrl) { throw "c_songUrl does not exist!"; }
             else {
-                o.device = new Device();
-                if (!o.device.exists()) {
-                    throw "Device does not exist!"
-                } else {
-                    o.getSong().done((arr: Uint8Array) => {
-                        o.init(arr);
-                    });
-                }
+                o.device = new Devices[params.c_device]();
+                o.device.init().done(() => {
+                    if (!o.device.exists()) {
+                        throw "Device does not exist!"
+                    } else {
+                        o.getSong().done((arr: Uint8Array) => {
+                            o.init(arr);
+                        });
+                    }
+                });
             }
         }
 

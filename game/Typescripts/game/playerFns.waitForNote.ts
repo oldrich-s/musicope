@@ -5,7 +5,7 @@
         private ids: number[];
         private notesPressedTime: number[][];
 
-        constructor(private device: Device,
+        constructor(private device: Devices.IDevice,
             private notes: Parsers.INote[][],
             private onNoteOn: (func: (noteId: number) => void) => void) {
             var o = this;

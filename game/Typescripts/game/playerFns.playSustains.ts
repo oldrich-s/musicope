@@ -4,7 +4,7 @@
 
         private id = 0;
 
-        constructor(private device: Device,
+        constructor(private device: Devices.IDevice,
             private sustainNotes: Parsers.ISustainNote[]) {
             var o = this;
         }

@@ -1,9 +1,10 @@
 ﻿module Musicope {
 
-    export var defaultParams = {
+    export var defaultParams: IParams = {
 
         // controllers
         c_songUrl: undefined,
+        c_device: "WebMidi",
         c_callbackUrl: undefined,
 
         // players
@@ -59,6 +60,6 @@
         s_colUnPlayedNotesInReach: "#00ff90"
     };
 
-    export var params = jQuery.extend(true, {}, defaultParams);
+    export var params: IParams = jQuery.extend(true, {}, defaultParams);
 
 } 

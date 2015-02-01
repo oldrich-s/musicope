@@ -8,7 +8,7 @@
         private waitForNote: PlayerFns.WaitForNote;
         private fromDevice: PlayerFns.FromDevice;
 
-        constructor(private device: Device, private song: Song, private metronome: Metronome, private scene: Scene) {
+        constructor(private device: Devices.IDevice, private song: Song, private metronome: Metronome, private scene: Scene) {
             var o = this;
             o = this;
             o.correctTimesInParams();

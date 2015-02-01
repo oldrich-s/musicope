@@ -30,15 +30,17 @@ var Musicope;
                     throw "c_songUrl does not exist!";
                 }
                 else {
-                    o.device = new Musicope.Device();
-                    if (!o.device.exists()) {
-                        throw "Device does not exist!";
-                    }
-                    else {
-                        o.getSong().done(function (arr) {
-                            o.init(arr);
-                        });
-                    }
+                    o.device = new Game.Devices[Musicope.params.c_device]();
+                    o.device.init().done(function () {
+                        if (!o.device.exists()) {
+                            throw "Device does not exist!";
+                        }
+                        else {
+                            o.getSong().done(function (arr) {
+                                o.init(arr);
+                            });
+                        }
+                    });
                 }
             }
             Controller.prototype.getSong = function () {
@@ -81,64 +83,138 @@ var Musicope;
 })(Musicope || (Musicope = {}));
 var Musicope;
 (function (Musicope) {
-    var jazz;
-    var Device = (function () {
-        function Device() {
-            var o = this;
-            if (!o.exists()) {
-                o.init();
-            }
-            window.onbeforeunload = function () {
-                jazz.MidiInClose();
-                jazz.MidiOutClose();
-            };
-        }
-        Device.prototype.inOpen = function (nameOrIndex, callback) {
-            jazz.MidiInOpen(nameOrIndex, callback);
-        };
-        Device.prototype.inClose = function () {
-            jazz.MidiInClose();
-        };
-        Device.prototype.inList = function () {
-            return jazz.MidiInList();
-        };
-        Device.prototype.exists = function () {
-            return jazz && jazz.isJazz;
-        };
-        Device.prototype.out = function (byte1, byte2, byte3) {
-            jazz.MidiOut(byte1, byte2, byte3);
-        };
-        Device.prototype.outClose = function () {
-            jazz.MidiOutClose();
-        };
-        Device.prototype.outList = function () {
-            return jazz.MidiOutList();
-        };
-        Device.prototype.outOpen = function (name) {
-            jazz.MidiOutOpen(name);
-        };
-        Device.prototype.time = function () {
-            return jazz.Time();
-        };
-        Device.prototype.init = function () {
-            var jazz1 = document.createElement("object");
-            var jazz2 = document.createElement("object");
-            jazz1.setAttribute("classid", "CLSID:1ACE1618-1C7D-4561-AEE1-34842AA85E90");
-            jazz1.setAttribute("style", "margin-left:-1000px;");
-            jazz2.setAttribute("type", "audio/x-jazz");
-            jazz2.setAttribute("style", "visibility:hidden;");
-            var styleStr = "visibility: visible; display:block; position:absolute; top:0; left:0; width:100%; height:100%; text-align: center; vertical-align:middle; font-size: xx-large; background-color: black; color: #ffe44c;";
-            jazz2.innerHTML = '<div style="' + styleStr + '"><br />Please install <a style="color:red" href="http://jazz-soft.net/download/Jazz-Plugin/">JAZZ</a> plugin to make the game function. Thank you :-)</div>';
-            jazz1.appendChild(jazz2);
-            document.body.appendChild(jazz1);
-            jazz = jazz1;
-            if (!jazz || !jazz.isJazz) {
-                jazz = jazz2;
-            }
-        };
-        return Device;
-    })();
-    Musicope.Device = Device;
+    var Game;
+    (function (Game) {
+        var Devices;
+        (function (Devices) {
+            var jazz;
+            var Jazz = (function () {
+                function Jazz() {
+                    var _this = this;
+                    this.init = function () {
+                        var o = _this;
+                        if (!o.exists()) {
+                            var jazz1 = document.createElement("object");
+                            var jazz2 = document.createElement("object");
+                            jazz1.setAttribute("classid", "CLSID:1ACE1618-1C7D-4561-AEE1-34842AA85E90");
+                            jazz1.setAttribute("style", "margin-left:-1000px;");
+                            jazz2.setAttribute("type", "audio/x-jazz");
+                            jazz2.setAttribute("style", "visibility:hidden;");
+                            var styleStr = "visibility: visible; display:block; position:absolute; top:0; left:0; width:100%; height:100%; text-align: center; vertical-align:middle; font-size: xx-large; background-color: black; color: #ffe44c;";
+                            jazz2.innerHTML = '<div style="' + styleStr + '"><br />Please install <a style="color:red" href="http://jazz-soft.net/download/Jazz-Plugin/">JAZZ</a> plugin to make the game function. Thank you :-)</div>';
+                            jazz1.appendChild(jazz2);
+                            document.body.appendChild(jazz1);
+                            jazz = jazz1;
+                            if (!jazz || !jazz.isJazz) {
+                                jazz = jazz2;
+                            }
+                        }
+                        return $.Deferred().resolve();
+                    };
+                    var o = this;
+                    window.onbeforeunload = function () {
+                        jazz.MidiInClose();
+                        jazz.MidiOutClose();
+                    };
+                }
+                Jazz.prototype.inOpen = function (callback) {
+                    jazz.MidiInOpen(Musicope.params.p_deviceIn, callback);
+                };
+                Jazz.prototype.inClose = function () {
+                    jazz.MidiInClose();
+                };
+                Jazz.prototype.inList = function () {
+                    return jazz.MidiInList();
+                };
+                Jazz.prototype.exists = function () {
+                    return jazz && jazz.isJazz;
+                };
+                Jazz.prototype.out = function (byte1, byte2, byte3) {
+                    jazz.MidiOut(byte1, byte2, byte3);
+                };
+                Jazz.prototype.outClose = function () {
+                    jazz.MidiOutClose();
+                };
+                Jazz.prototype.outList = function () {
+                    return jazz.MidiOutList();
+                };
+                Jazz.prototype.outOpen = function () {
+                    jazz.MidiOutOpen(Musicope.params.p_deviceOut);
+                };
+                Jazz.prototype.time = function () {
+                    return jazz.Time();
+                };
+                return Jazz;
+            })();
+            Devices.Jazz = Jazz;
+        })(Devices = Game.Devices || (Game.Devices = {}));
+    })(Game = Musicope.Game || (Musicope.Game = {}));
+})(Musicope || (Musicope = {}));
+var Musicope;
+(function (Musicope) {
+    var Game;
+    (function (Game) {
+        var Devices;
+        (function (Devices) {
+            var WebMidi = (function () {
+                function WebMidi() {
+                    var _this = this;
+                    this.init = function () {
+                        var o = _this;
+                        var def = $.Deferred();
+                        navigator.requestMIDIAccess().then(function (m) {
+                            o.midi = m;
+                            def.resolve();
+                        }, function (msg) {
+                            console.log("Failed to get MIDI access - " + msg);
+                        });
+                        return def;
+                    };
+                    this.inOpen = function (callback) {
+                        var o = _this;
+                        o.input = o.midi.inputs.get(Musicope.params.p_deviceIn);
+                        if (o.input && o.input.value) {
+                            o.input.value.onmidimessage = function (e) {
+                                callback(e.timestamp, e.data[0], e.data[1], e.data[3]);
+                            };
+                        }
+                    };
+                    this.inClose = function () {
+                        var o = _this;
+                        if (o.input && o.input.value) {
+                            o.input.value.onmidimessage = null;
+                        }
+                    };
+                    this.inList = function () {
+                        return _this.midi.inputs;
+                    };
+                    this.exists = function () {
+                        return _this.midi;
+                    };
+                    this.out = function (byte1, byte2, byte3) {
+                        _this.output.send([byte1, byte2, byte3]);
+                    };
+                    this.outClose = function () {
+                    };
+                    this.outList = function () {
+                        return _this.midi.outputs;
+                    };
+                    this.outOpen = function () {
+                        var o = _this;
+                        o.output = o.midi.outputs.get(Musicope.params.p_deviceOut);
+                        if (!o.output) {
+                            o.output = o.midi.outputs.get(0);
+                        }
+                    };
+                    this.time = function () {
+                        return Date.now();
+                    };
+                }
+                return WebMidi;
+            })();
+            Devices.WebMidi = WebMidi;
+        })(Devices = Game.Devices || (Game.Devices = {}));
+    })(Game = Musicope.Game || (Musicope.Game = {}));
 })(Musicope || (Musicope = {}));
 var Musicope;
 (function (Musicope) {
@@ -1130,11 +1206,9 @@ var Musicope;
                     this.oldId = -1;
                     this.initDevice = function () {
                         var o = _this;
-                        var midiOut = Musicope.params.p_deviceOut;
-                        var midiIn = Musicope.params.p_deviceIn;
-                        o.device.outOpen(midiOut);
+                        o.device.outOpen();
                         o.device.out(0x80, 0, 0);
-                        o.device.inOpen(midiIn, o.deviceIn);
+                        o.device.inOpen(o.deviceIn);
                     };
                     this.onNoteOn = function (func) {
                         var o = _this;
@@ -2374,6 +2448,7 @@ var Musicope;
     Musicope.defaultParams = {
         // controllers
         c_songUrl: undefined,
+        c_device: "WebMidi",
         c_callbackUrl: undefined,
         // players
         p_deviceIn: "0",

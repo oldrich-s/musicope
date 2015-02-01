@@ -4,7 +4,7 @@
 
         private ids: number[];
 
-        constructor(private device: Device,
+        constructor(private device: Devices.IDevice,
             private scene: Scene,
             private notes: Parsers.INote[][]) {
             var o = this;

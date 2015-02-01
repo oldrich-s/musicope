@@ -35,7 +35,9 @@
     <TypeScriptCompile Include="Scripts\typings\purl\purl-jquery.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\purl\purl.d.ts" />
     <TypeScriptCompile Include="Typescripts\game\controller.ts" />
-    <TypeScriptCompile Include="Typescripts\game\device.ts" />
+    <TypeScriptCompile Include="Typescripts\game\devices.declarations.ts" />
+    <TypeScriptCompile Include="Typescripts\game\devices.webMidi.ts" />
+    <TypeScriptCompile Include="Typescripts\game\devices.jazz.ts" />
     <TypeScriptCompile Include="Typescripts\game\input.declarations.ts" />
     <TypeScriptCompile Include="Typescripts\game\inputs.keyboardFns.overlay.ts" />
     <TypeScriptCompile Include="Typescripts\game\inputs.keyboardsFns.actions.coverNotes.ts" />
@@ -54,6 +56,7 @@
     <TypeScriptCompile Include="Typescripts\game\inputs.keyboardsFns.actions.waitOn.ts" />
     <TypeScriptCompile Include="Typescripts\game\inputs.ts" />
     <TypeScriptCompile Include="Typescripts\game\metronome.ts" />
+    <TypeScriptCompile Include="Typescripts\params.declarations.ts" />
     <TypeScriptCompile Include="Typescripts\params.functions.ts" />
     <TypeScriptCompile Include="Typescripts\game\parsers.declarations.ts" />
     <TypeScriptCompile Include="Typescripts\game\parsers.midi.ts" />

@@ -8,7 +8,7 @@
         private oldVelocity = -1;
         private oldId = -1;
 
-        constructor(private device: Device,
+        constructor(private device: Devices.IDevice,
             private scene: Scene,
             private notes: Parsers.INote[][]) {
             var o = this;
@@ -17,11 +17,9 @@
 
         private initDevice = () => {
             var o = this;
-            var midiOut = params.p_deviceOut;
-            var midiIn = params.p_deviceIn;
-            o.device.outOpen(midiOut);
+            o.device.outOpen();
             o.device.out(0x80, 0, 0);
-            o.device.inOpen(midiIn, o.deviceIn);
+            o.device.inOpen(o.deviceIn);
         }
 
         onNoteOn = (func: (noteId: number) => void) => {
