@@ -173,9 +173,9 @@ var Musicope;
                     this.inOpen = function (callback) {
                         var o = _this;
                         o.input = o.midi.inputs.get(Musicope.params.p_deviceIn);
-                        if (o.input && o.input.value) {
-                            o.input.value.onmidimessage = function (e) {
-                                callback(e.timestamp, e.data[0], e.data[1], e.data[3]);
+                        if (o.input) {
+                            o.input.onmidimessage = function (e) {
+                                callback(e.timeStamp, e.data[0], e.data[1], e.data[2]);
                             };
                         }
                     };
