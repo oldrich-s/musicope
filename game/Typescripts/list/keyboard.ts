@@ -1,7 +1,5 @@
 ﻿module Musicope.List.Keyboard {
 
-    var index = 0;
-
     function correctPosition() {
         var el = $(".elFocus");
         var rely: number = el.offset()["top"] - $(window).scrollTop() + 0.5 * el.height();
@@ -14,57 +12,50 @@
         return true;
     }
 
-    function enter(els: JQuery) {
+    function enter() {
         Mousetrap.bind('enter',(e) => {
-            params.c_songUrl = $(els[index]).find('.elURL').text().trim();
+            params.c_songUrl = $('.el').filter('.elFocus').find('.elURL').text().trim();
             var c = new Musicope.Game.Controller();
             e.preventDefault();
         });
     }
 
-    function up(els: JQuery) {
+    function up() {
         Mousetrap.bind('up',(e) => {
-            for (var i = index - 1; i >= 0; i--) {
-                if (els[i].style.display !== 'none') {
-                    els.removeClass('elFocus');
-                    $(els[i]).addClass('elFocus');
-                    index = i;
-                    break;
-                }
+            var oldEl = $('.el').filter('.elFocus');
+            var newEl = oldEl.prev(':visible');
+            if (newEl.length > 0) {
+                oldEl.removeClass('elFocus');
+                newEl.addClass('elFocus');
+                correctPosition();
             }
-            correctPosition();
             e.preventDefault();
         });
     }
 
-    function down(els: JQuery) {
+    function down() {
         Mousetrap.bind('down',(e) => {
-            for (var i = index + 1; i < els.length; i++) {
-                if (els[i].style.display !== 'none') {
-                    els.removeClass('elFocus');
-                    $(els[i]).addClass('elFocus');
-                    index = i;
-                    break;
-                }
+            var oldEl = $('.el').filter('.elFocus');
+            var newEl = oldEl.next(':visible');
+            if (newEl.length > 0) {
+                oldEl.removeClass('elFocus');
+                newEl.addClass('elFocus');
+                correctPosition();
             }
-            correctPosition();
             e.preventDefault();
         });
     }
 
     export function resetIndex() {
-        var els = $('.el');
-        index = $('.el:visible:first').index();
-        els.removeClass('elFocus');
-        $(els[index]).addClass('elFocus');
+        $('.elFocus').removeClass('elFocus');
+        $('.el:visible:first').addClass('elFocus');
         $(window).scrollTop(0);
     }
 
     export function bindKeyboard() {
-        var els = $('.el');
-        $('.el').first().addClass('elFocus');
-        down(els);
-        up(els);
-        enter(els);
+        $('.el:visible:first').addClass('elFocus');
+        down();
+        up();
+        enter();
     }
 } 

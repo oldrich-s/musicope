@@ -13,6 +13,8 @@
             $('#gameView').hide();
             $('#listView').show();
             $('#query').focus();
+            var top = $('.elFocus').offset().top - 0.5 * $(window).height();
+            $(window).scrollTop(top);
             Musicope.List.Keyboard.bindKeyboard();
         }
 

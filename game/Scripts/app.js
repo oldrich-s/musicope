@@ -449,6 +449,8 @@ var Musicope;
                                 $('#gameView').hide();
                                 $('#listView').show();
                                 $('#query').focus();
+                                var top = $('.elFocus').offset().top - 0.5 * $(window).height();
+                                $(window).scrollTop(top);
                                 Musicope.List.Keyboard.bindKeyboard();
                             };
                             Exit.prototype.getCurrentState = function () {
@@ -2378,7 +2380,6 @@ var Musicope;
     (function (List) {
         var Keyboard;
         (function (Keyboard) {
-            var index = 0;
             function correctPosition() {
                 var el = $(".elFocus");
                 var rely = el.offset()["top"] - $(window).scrollTop() + 0.5 * el.height();
@@ -2391,55 +2392,48 @@ var Musicope;
                 }
                 return true;
             }
-            function enter(els) {
+            function enter() {
                 Mousetrap.bind('enter', function (e) {
-                    Musicope.params.c_songUrl = $(els[index]).find('.elURL').text().trim();
+                    Musicope.params.c_songUrl = $('.el').filter('.elFocus').find('.elURL').text().trim();
                     var c = new Musicope.Game.Controller();
                     e.preventDefault();
                 });
             }
-            function up(els) {
+            function up() {
                 Mousetrap.bind('up', function (e) {
-                    for (var i = index - 1; i >= 0; i--) {
-                        if (els[i].style.display !== 'none') {
-                            els.removeClass('elFocus');
-                            $(els[i]).addClass('elFocus');
-                            index = i;
-                            break;
-                        }
+                    var oldEl = $('.el').filter('.elFocus');
+                    var newEl = oldEl.prev(':visible');
+                    if (newEl.length > 0) {
+                        oldEl.removeClass('elFocus');
+                        newEl.addClass('elFocus');
+                        correctPosition();
                     }
-                    correctPosition();
                     e.preventDefault();
                 });
             }
-            function down(els) {
+            function down() {
                 Mousetrap.bind('down', function (e) {
-                    for (var i = index + 1; i < els.length; i++) {
-                        if (els[i].style.display !== 'none') {
-                            els.removeClass('elFocus');
-                            $(els[i]).addClass('elFocus');
-                            index = i;
-                            break;
-                        }
+                    var oldEl = $('.el').filter('.elFocus');
+                    var newEl = oldEl.next(':visible');
+                    if (newEl.length > 0) {
+                        oldEl.removeClass('elFocus');
+                        newEl.addClass('elFocus');
+                        correctPosition();
                     }
-                    correctPosition();
                     e.preventDefault();
                 });
             }
             function resetIndex() {
-                var els = $('.el');
-                index = $('.el:visible:first').index();
-                els.removeClass('elFocus');
-                $(els[index]).addClass('elFocus');
+                $('.elFocus').removeClass('elFocus');
+                $('.el:visible:first').addClass('elFocus');
                 $(window).scrollTop(0);
             }
             Keyboard.resetIndex = resetIndex;
             function bindKeyboard() {
-                var els = $('.el');
-                $('.el').first().addClass('elFocus');
-                down(els);
-                up(els);
-                enter(els);
+                $('.el:visible:first').addClass('elFocus');
+                down();
+                up();
+                enter();
             }
             Keyboard.bindKeyboard = bindKeyboard;
         })(Keyboard = List.Keyboard || (List.Keyboard = {}));

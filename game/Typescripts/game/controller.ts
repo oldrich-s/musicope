@@ -11,6 +11,7 @@
 
         constructor() {
             var o = this;
+
             $('#listView').hide();
             $('#gameView').show();
             if (!params.c_songUrl) { throw "c_songUrl does not exist!"; }
