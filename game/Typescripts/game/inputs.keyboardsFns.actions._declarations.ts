@@ -9,7 +9,7 @@
     }
 
     export interface IKeyboardParams {
-        song: Song;
+        song: ISong;
         actions: JQueryPromise<IKeyboardAction[]>;
     }
 

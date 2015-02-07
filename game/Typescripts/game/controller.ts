@@ -5,7 +5,7 @@
         private device: Devices.IDevice;
         private input: IInput;
         private metronome: Metronome;
-        private song: Song;
+        private song: ISong;
         private player: Player;
         private scene: Scene;
 
@@ -29,7 +29,6 @@
             var o = this;
             o.device.dispose();
             o.metronome.dispose();
-            o.song.dispose();
         }
 
         private getSong() {
@@ -47,9 +46,9 @@
 
         private init(arr: Uint8Array): void {
             var o = this;
-            o.song = new Song(arr);
+            o.song = parseSong(arr);
             o.scene = new Scene(o.song);
-            o.metronome = new Metronome(o.song.timePerBeat, o.song.timePerBar / o.song.timePerBeat, o.device);
+            o.metronome = new Metronome(o.song.midi.timePerBeat, o.song.midi.timePerBar / o.song.midi.timePerBeat, o.device);
             o.player = new Player(o.device, o.song, o.metronome, o.scene);
             for (var prop in Inputs) {
                 if ((<string>prop).indexOf("Fns") < 0) {

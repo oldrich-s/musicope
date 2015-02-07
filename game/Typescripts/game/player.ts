@@ -8,7 +8,7 @@
         private waitForNote: PlayerFns.WaitForNote;
         private fromDevice: PlayerFns.FromDevice;
 
-        constructor(private device: Devices.IDevice, private song: Song, private metronome: Metronome, private scene: Scene) {
+        constructor(private device: Devices.IDevice, private song: ISong, private metronome: Metronome, private scene: Scene) {
             var o = this;
             o = this;
             o.correctTimesInParams();
@@ -30,7 +30,7 @@
         private correctTimesInParams = () => {
             var o = this;
             if (typeof params.p_initTime == 'undefined') {
-                Params.setParam("p_initTime", -2 * o.song.timePerBar);
+                Params.setParam("p_initTime", -2 * o.song.midi.timePerBar);
             }
             if (typeof params.p_elapsedTime == 'undefined') {
                 Params.setParam("p_elapsedTime", params.p_initTime);
@@ -63,7 +63,7 @@
 
         private getIdsBelowCurrentTime = (): number[]=> {
             var o = this;
-            return o.song.playerTracks.map(o.getIdBelowCurrentTime);
+            return o.song.midi.tracks.map(o.getIdBelowCurrentTime);
         }
 
         private getIdBelowCurrentTime = (notes: Parsers.INote[]) => {
@@ -79,10 +79,10 @@
 
         private assignClasses = () => {
             var o = this;
-            o.fromDevice = new PlayerFns.FromDevice(o.device, o.scene, o.song.playerTracks);
-            o.playNotes = new PlayerFns.PlayNotes(o.device, o.scene, o.song.playerTracks);
-            o.playSustains = new PlayerFns.PlaySustains(o.device, o.song.sustainNotes);
-            o.waitForNote = new PlayerFns.WaitForNote(o.device, o.song.playerTracks, o.fromDevice.onNoteOn);
+            o.fromDevice = new PlayerFns.FromDevice(o.device, o.scene, o.song.midi.tracks);
+            o.playNotes = new PlayerFns.PlayNotes(o.device, o.scene, o.song.midi.tracks);
+            o.playSustains = new PlayerFns.PlaySustains(o.device, o.song.midi.sustainNotes);
+            o.waitForNote = new PlayerFns.WaitForNote(o.device, o.song.midi.tracks, o.fromDevice.onNoteOn);
         }
 
         private updateTime = (isFreeze: boolean) => {

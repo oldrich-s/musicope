@@ -25,7 +25,7 @@
         private pausedColor: Int32Array;
         private unpausedColor: Int32Array;
 
-        constructor(private song: Song) {
+        constructor(private song: ISong) {
             var o = this;
             o.subscribeToParamsChange();
             o.setBackgrColors();
@@ -84,7 +84,7 @@
             var o = this;
             o.canvas.width = window.innerWidth;
             o.canvas.height = window.innerHeight;
-            o.pixelsPerTime = o.canvas.height * 4 / (o.song.noteValuePerBeat * params.s_quartersPerHeight * o.song.timePerBeat);
+            o.pixelsPerTime = o.canvas.height * 4 / (o.song.midi.noteValuePerBeat * params.s_quartersPerHeight * o.song.midi.timePerBeat);
         }
 
         private setupWebGL() {
@@ -113,8 +113,7 @@
                 sustainNotes: o.song.sceneSustainNotes,
                 p_minNote: params.p_minNote,
                 p_maxNote: params.p_maxNote,
-                minPlayedNoteId: o.song.minPlayedNoteId,
-                maxPlayedNoteId: o.song.maxPlayedNoteId
+                playedNoteID: o.song.playedNoteID,
             };
             SceneFns.drawScene(input);
             var bufferData = concat(bag);

@@ -10,7 +10,7 @@
 
         triggerAction() {
             var o = this;
-            var newTime = params.p_elapsedTime - 2 * o.p.song.timePerBeat;
+            var newTime = params.p_elapsedTime - 2 * o.p.song.midi.timePerBeat;
             var truncTime = Math.max(params.p_initTime, newTime);
             Params.setParam("p_elapsedTime", truncTime);
         }

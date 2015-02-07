@@ -21,7 +21,4 @@ module Musicope.Game.Parsers {
         sustainNotes: ISustainNote[];
     }
 
-    export interface IParserNew {
-        new (midi: Uint8Array): IParser;
-    }
 }

@@ -9,8 +9,7 @@
         sustainNotes: ISustainNoteScene[];
         p_minNote: number;
         p_maxNote: number;
-        minPlayedNoteId: number;
-        maxPlayedNoteId: number;
+        playedNoteID: IMinMax;
     }
 
     interface Local {
@@ -78,7 +77,7 @@
 
     function getColorForWhitePianoNotes(id: number, loc: Local) {
         var unPressedColor = [1, 1, 1, 1];
-        var neverPlayedNote = id < loc.input.minPlayedNoteId || id > loc.input.maxPlayedNoteId;
+        var neverPlayedNote = id < loc.input.playedNoteID.min || id > loc.input.playedNoteID.max;
         var outOfReachNote = id < loc.input.p_minNote || id > loc.input.p_maxNote;
         var color;
         if (neverPlayedNote && !outOfReachNote) {

@@ -4,7 +4,7 @@
 
         private actions: KeyboardFns.Actions.IKeyboardAction[] = [];
 
-        constructor(private song: Song) {
+        constructor(private song: ISong) {
             var o = this;
             o.initActions();
             o.checkActionsDuplicates();
