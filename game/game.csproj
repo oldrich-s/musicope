@@ -40,7 +40,6 @@
     <TypeScriptCompile Include="Typescripts\game\controller.ts" />
     <TypeScriptCompile Include="Typescripts\game\devices.declarations.ts" />
     <TypeScriptCompile Include="Typescripts\game\devices.webMidi.ts" />
-    <TypeScriptCompile Include="Typescripts\game\devices.jazz.ts" />
     <TypeScriptCompile Include="Typescripts\game\input.declarations.ts" />
     <TypeScriptCompile Include="Typescripts\game\inputs.keyboardFns.overlay.ts" />
     <TypeScriptCompile Include="Typescripts\game\inputs.keyboardsFns.actions.coverNotes.ts" />

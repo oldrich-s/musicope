@@ -1,6 +1,6 @@
 ﻿module Musicope.Game {
 
-    export class Controller {
+    export class Controller implements IDisposable {
 
         private device: Devices.IDevice;
         private input: IInput;
@@ -17,16 +17,19 @@
             if (!params.c_songUrl) { throw "c_songUrl does not exist!"; }
             else {
                 o.device = new Devices[params.c_device]();
-                o.device.init().done(() => {
-                    if (!o.device.exists()) {
-                        throw "Device does not exist!"
-                    } else {
-                        o.getSong().done((arr: Uint8Array) => {
-                            o.init(arr);
-                        });
-                    }
+                o.device.ready.done(() => {
+                    o.getSong().done((arr: Uint8Array) => {
+                        o.init(arr);
+                    });
                 });
             }
+        }
+
+        dispose = () => {
+            var o = this;
+            o.device.dispose();
+            o.metronome.dispose();
+            o.song.dispose();
         }
 
         private getSong() {

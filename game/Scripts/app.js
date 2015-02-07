@@ -11,6 +11,13 @@ var Musicope;
     (function (Game) {
         var Controller = (function () {
             function Controller() {
+                var _this = this;
+                this.dispose = function () {
+                    var o = _this;
+                    o.device.dispose();
+                    o.metronome.dispose();
+                    o.song.dispose();
+                };
                 this.requestAnimationFrame = window["requestAnimationFrame"] || window["webkitRequestAnimationFrame"] || window["mozRequestAnimationFrame"] || window["oRequestAnimationFrame"] || window["msRequestAnimationFrame"] || function (callback) {
                     window.setTimeout(callback, 1000 / 60);
                 };
@@ -22,15 +29,10 @@ var Musicope;
                 }
                 else {
                     o.device = new Game.Devices[Musicope.params.c_device]();
-                    o.device.init().done(function () {
-                        if (!o.device.exists()) {
-                            throw "Device does not exist!";
-                        }
-                        else {
-                            o.getSong().done(function (arr) {
-                                o.init(arr);
-                            });
-                        }
+                    o.device.ready.done(function () {
+                        o.getSong().done(function (arr) {
+                            o.init(arr);
+                        });
                     });
                 }
             }
@@ -80,88 +82,15 @@ var Musicope;
     (function (Game) {
         var Devices;
         (function (Devices) {
-            var jazz;
-            var Jazz = (function () {
-                function Jazz() {
-                    var _this = this;
-                    this.init = function () {
-                        var o = _this;
-                        if (!o.exists()) {
-                            var jazz1 = document.createElement("object");
-                            var jazz2 = document.createElement("object");
-                            jazz1.setAttribute("classid", "CLSID:1ACE1618-1C7D-4561-AEE1-34842AA85E90");
-                            jazz1.setAttribute("style", "margin-left:-1000px;");
-                            jazz2.setAttribute("type", "audio/x-jazz");
-                            jazz2.setAttribute("style", "visibility:hidden;");
-                            var styleStr = "visibility: visible; display:block; position:absolute; top:0; left:0; width:100%; height:100%; text-align: center; vertical-align:middle; font-size: xx-large; background-color: black; color: #ffe44c;";
-                            jazz2.innerHTML = '<div style="' + styleStr + '"><br />Please install <a style="color:red" href="http://jazz-soft.net/download/Jazz-Plugin/">JAZZ</a> plugin to make the game function. Thank you :-)</div>';
-                            jazz1.appendChild(jazz2);
-                            document.body.appendChild(jazz1);
-                            jazz = jazz1;
-                            if (!jazz || !jazz.isJazz) {
-                                jazz = jazz2;
-                            }
-                        }
-                        return $.Deferred().resolve();
-                    };
-                    var o = this;
-                    window.onbeforeunload = function () {
-                        jazz.MidiInClose();
-                        jazz.MidiOutClose();
-                    };
-                }
-                Jazz.prototype.inOpen = function (callback) {
-                    jazz.MidiInOpen(Musicope.params.p_deviceIn, callback);
-                };
-                Jazz.prototype.inClose = function () {
-                    jazz.MidiInClose();
-                };
-                Jazz.prototype.inList = function () {
-                    return jazz.MidiInList();
-                };
-                Jazz.prototype.exists = function () {
-                    return jazz && jazz.isJazz;
-                };
-                Jazz.prototype.out = function (byte1, byte2, byte3) {
-                    jazz.MidiOut(byte1, byte2, byte3);
-                };
-                Jazz.prototype.outClose = function () {
-                    jazz.MidiOutClose();
-                };
-                Jazz.prototype.outList = function () {
-                    return jazz.MidiOutList();
-                };
-                Jazz.prototype.outOpen = function () {
-                    jazz.MidiOutOpen(Musicope.params.p_deviceOut);
-                };
-                Jazz.prototype.time = function () {
-                    return jazz.Time();
-                };
-                return Jazz;
-            })();
-            Devices.Jazz = Jazz;
-        })(Devices = Game.Devices || (Game.Devices = {}));
-    })(Game = Musicope.Game || (Musicope.Game = {}));
-})(Musicope || (Musicope = {}));
-var Musicope;
-(function (Musicope) {
-    var Game;
-    (function (Game) {
-        var Devices;
-        (function (Devices) {
             var WebMidi = (function () {
                 function WebMidi() {
                     var _this = this;
-                    this.init = function () {
-                        var o = _this;
-                        var def = $.Deferred();
-                        navigator.requestMIDIAccess().then(function (m) {
-                            o.midi = m;
-                            def.resolve();
-                        }, function (msg) {
-                            console.log("Failed to get MIDI access - " + msg);
-                        });
-                        return def;
+                    this.ready = $.Deferred();
+                    this.inList = function () {
+                        return _this.midi.inputs;
+                    };
+                    this.outList = function () {
+                        return _this.midi.outputs;
                     };
                     this.inOpen = function (callback) {
                         var o = _this;
@@ -172,17 +101,12 @@ var Musicope;
                             };
                         }
                     };
-                    this.inClose = function () {
+                    this.outOpen = function () {
                         var o = _this;
-                        if (o.input && o.input.value) {
-                            o.input.value.onmidimessage = null;
+                        o.output = o.midi.outputs.get(Musicope.params.p_deviceOut);
+                        if (!o.output) {
+                            o.output = o.midi.outputs.get(0);
                         }
-                    };
-                    this.inList = function () {
-                        return _this.midi.inputs;
-                    };
-                    this.exists = function () {
-                        return _this.midi;
                     };
                     this.out = function (byte1, byte2, byte3) {
                         var data = [byte1, byte2];
@@ -191,21 +115,19 @@ var Musicope;
                         }
                         _this.output.send(data);
                     };
-                    this.outClose = function () {
-                    };
-                    this.outList = function () {
-                        return _this.midi.outputs;
-                    };
-                    this.outOpen = function () {
+                    this.dispose = function () {
                         var o = _this;
-                        o.output = o.midi.outputs.get(Musicope.params.p_deviceOut);
-                        if (!o.output) {
-                            o.output = o.midi.outputs.get(0);
+                        if (o.input && o.input.value) {
+                            o.input.value.onmidimessage = null;
                         }
                     };
-                    this.time = function () {
-                        return Date.now();
-                    };
+                    var o = this;
+                    navigator.requestMIDIAccess().then(function (m) {
+                        o.midi = m;
+                        o.ready.resolve();
+                    }, function (msg) {
+                        o.ready.reject("Failed to get MIDI access - " + msg);
+                    });
                 }
                 return WebMidi;
             })();
@@ -853,31 +775,36 @@ var Musicope;
     (function (Game) {
         var Metronome = (function () {
             function Metronome(timePerBeat, beatsPerBar, device) {
+                var _this = this;
                 this.timePerBeat = timePerBeat;
                 this.beatsPerBar = beatsPerBar;
                 this.device = device;
                 this.lastPlayedId = -10000;
+                this.play = function (time) {
+                    var o = _this;
+                    if (Musicope.params.m_isOn) {
+                        var id = Math.floor(Musicope.params.m_ticksPerBeat * time / o.timePerBeat);
+                        if (id > o.lastPlayedId) {
+                            var noteId = id % o.beatsPerBar == 0 ? Musicope.params.m_id1 : Musicope.params.m_id2;
+                            var velocity = Math.min(127, Musicope.params.m_velocity);
+                            o.device.out(Musicope.params.m_channel, noteId, velocity);
+                            o.lastPlayedId = id;
+                        }
+                    }
+                };
+                this.reset = function () {
+                    var o = _this;
+                    o.lastPlayedId = -10000;
+                };
+                this.dispose = function () {
+                    Musicope.Params.unsubscribe("metronome");
+                };
                 var o = this;
                 o.subscribe();
             }
-            Metronome.prototype.play = function (time) {
-                var o = this;
-                if (Musicope.params.m_isOn) {
-                    var id = Math.floor(Musicope.params.m_ticksPerBeat * time / o.timePerBeat);
-                    if (id > o.lastPlayedId) {
-                        var noteId = id % o.beatsPerBar == 0 ? Musicope.params.m_id1 : Musicope.params.m_id2;
-                        var velocity = Math.min(127, Musicope.params.m_velocity);
-                        o.device.out(Musicope.params.m_channel, noteId, velocity);
-                        o.lastPlayedId = id;
-                    }
-                }
-            };
-            Metronome.prototype.reset = function () {
-                this.lastPlayedId = -10000;
-            };
             Metronome.prototype.subscribe = function () {
                 var o = this;
-                Musicope.Params.subscribe("metronomes.Basic", "^m_.+$", function (name, value) {
+                Musicope.Params.subscribe("metronome", "^m_.+$", function (name, value) {
                     o.reset();
                 });
             };
@@ -893,187 +820,187 @@ var Musicope;
         var Parsers;
         (function (Parsers) {
             var Midi;
-            (function (_Midi) {
-                var Midi = (function () {
-                    function Midi(midi) {
-                        this.midi = midi;
-                        this.noteValuePerBeat = 4; // denominator in time signature: 2, 4, 8, 16 ...
-                        this.tracks = [];
-                        this.sustainNotes = [];
-                        this.beatsPerBar = 4;
-                        this.lastVals = [undefined, undefined, undefined, undefined];
-                        var o = this;
-                        //var t = new mm.Midi2(midi);
-                        o.parseHeader();
-                        o.parsePlayerTracks();
+            (function (Midi) {
+                ;
+                function processMessage(o, trackId, index, typeChannel, time) {
+                    if (typeChannel >> 4 > 7 && typeChannel >> 4 < 15) {
+                        o.lastVals[trackId] = typeChannel;
                     }
-                    Midi.prototype.parseHeader = function () {
-                        var o = this;
-                        var i0 = Midi.indexOf(o.midi, [77, 84, 104, 100, 0, 0, 0, 6]);
-                        if (i0 == -1 || o.midi[i0 + 9] > 1) {
-                            throw "cannot parse midi";
+                    else if (o.lastVals[trackId]) {
+                        typeChannel = o.lastVals[trackId];
+                        index--;
+                    }
+                    var type = typeChannel >> 4;
+                    var channel = typeChannel - type * 16;
+                    switch (type) {
+                        case 8:
+                        case 9:
+                            var noteId = o.midi[index++];
+                            var velocity = o.midi[index++];
+                            var on = type == 9 && velocity > 0;
+                            o.tracks[trackId].push({ on: on, time: time, id: noteId, velocity: velocity });
+                            break;
+                        case 10:
+                            index = index + 2;
+                            break;
+                        case 11:
+                            var id = o.midi[index++];
+                            var value = o.midi[index++];
+                            if (id == 64) {
+                                o.sustainNotes.push({ on: value > 63, time: time });
+                            }
+                            break;
+                        case 12:
+                            index = index + 1;
+                            break;
+                        case 13:
+                            index = index + 1;
+                            break;
+                        case 14:
+                            index = index + 2;
+                            break;
+                        default:
+                            alert("Event not implemented");
+                            break;
+                    }
+                    return index;
+                }
+                function readVarLength(midi, index) {
+                    var value = midi[index++];
+                    if (value & 0x80) {
+                        value = value & 0x7F;
+                        do {
+                            var c = midi[index++];
+                            value = (value << 7) + (c & 0x7F);
+                        } while (c & 0x80);
+                    }
+                    return { value: value, newIndex: index };
+                }
+                function processMeta(o, index, isBegining) {
+                    var kind = o.midi[index++];
+                    var ob = readVarLength(o.midi, index);
+                    index = ob.newIndex;
+                    switch (kind) {
+                        case 81:
+                            if (isBegining) {
+                                o.timePerQuarter = (256 * 256 * o.midi[index] + 256 * o.midi[index + 1] + o.midi[index + 2]) / 1000;
+                            }
+                            break;
+                        case 88:
+                            if (isBegining) {
+                                o.beatsPerBar = o.midi[index];
+                                o.noteValuePerBeat = Math.pow(2, o.midi[index + 1]);
+                                var midiClocksPerMetronomeClick = o.midi[index + 2];
+                                var thirtySecondsPer24Clocks = o.midi[index + 3];
+                            }
+                            break;
+                        case 0:
+                        case 1:
+                        case 2:
+                        case 3:
+                        case 4:
+                        case 5:
+                        case 6:
+                        case 7:
+                        case 32:
+                        case 33:
+                        case 47:
+                        case 84:
+                        case 89:
+                        case 127:
+                        default:
+                            break;
+                    }
+                    return index + ob.value;
+                }
+                function parsePlayerTrack(o, trackId, index) {
+                    var ticks = 0;
+                    o.tracks.push([]);
+                    var trackLength = o.midi[index++] * 256 * 256 * 256 + o.midi[index++] * 256 * 256 + o.midi[index++] * 256 + o.midi[index++];
+                    var end = index + trackLength;
+                    while (index < end) {
+                        var ob = readVarLength(o.midi, index);
+                        index = ob.newIndex, ticks = ticks + ob.value;
+                        var typeChannel = o.midi[index++];
+                        if (typeChannel === 240) {
+                            var ob1 = readVarLength(o.midi, index);
+                            index = ob1.newIndex + ob1.value;
                         }
-                        o.ticksPerQuarter = o.midi[i0 + 12] * 256 + o.midi[i0 + 13];
-                        if (o.ticksPerQuarter & 0x8000) {
-                            alert("ticksPerBeat not implemented");
+                        else if (typeChannel === 255) {
+                            index = processMeta(o, index, trackId == 0 && ticks == 0);
                         }
-                    };
-                    Midi.prototype.parsePlayerTracks = function () {
-                        var o = this;
-                        var trackIndexes = Midi.indexesOf(o.midi, [77, 84, 114, 107]);
-                        trackIndexes.forEach(function (index, i) {
-                            o.parsePlayerTrack(i, index + 4);
+                        else {
+                            var time = ticks * o.timePerTick;
+                            index = processMessage(o, trackId, index, typeChannel, time);
+                        }
+                    }
+                    if (trackId == 0) {
+                        o.timePerBeat = o.timePerQuarter * 4 / o.noteValuePerBeat;
+                        o.timePerTick = o.timePerQuarter / o.ticksPerQuarter;
+                        o.timePerBar = o.timePerBeat * o.beatsPerBar;
+                    }
+                }
+                function indexesOf(where, what) {
+                    var result = [];
+                    for (var i = 0; i < where.length; i++) {
+                        var found = what.every(function (whati, j) {
+                            return whati == where[i + j];
                         });
-                        if (o.tracks[0].length == 0) {
-                            o.tracks.shift();
+                        if (found) {
+                            result.push(i);
                         }
+                    }
+                    return result;
+                }
+                function parsePlayerTracks(o) {
+                    var trackIndexes = indexesOf(o.midi, [77, 84, 114, 107]);
+                    trackIndexes.forEach(function (index, i) {
+                        parsePlayerTrack(o, i, index + 4);
+                    });
+                    if (o.tracks[0].length == 0) {
+                        o.tracks.shift();
+                    }
+                }
+                function indexOf(where, what) {
+                    for (var i = 0; i < where.length; i++) {
+                        var found = what.every(function (whati, j) {
+                            return whati == where[i + j];
+                        });
+                        if (found) {
+                            return i;
+                        }
+                    }
+                    return -1;
+                }
+                function parseHeader(o) {
+                    var i0 = indexOf(o.midi, [77, 84, 104, 100, 0, 0, 0, 6]);
+                    if (i0 == -1 || o.midi[i0 + 9] > 1) {
+                        throw "cannot parse midi";
+                    }
+                    o.ticksPerQuarter = o.midi[i0 + 12] * 256 + o.midi[i0 + 13];
+                    if (o.ticksPerQuarter & 0x8000) {
+                        alert("ticksPerBeat not implemented");
+                    }
+                }
+                function parseMidi(midi) {
+                    var parser = {
+                        timePerBeat: 0,
+                        timePerBar: 0,
+                        noteValuePerBeat: 4,
+                        tracks: [],
+                        sustainNotes: [],
+                        ticksPerQuarter: 0,
+                        timePerQuarter: 0,
+                        timePerTick: 0,
+                        beatsPerBar: 4,
+                        midi: midi,
+                        lastVals: []
                     };
-                    Midi.prototype.parsePlayerTrack = function (trackId, index) {
-                        var o = this, ticks = 0;
-                        o.tracks.push([]);
-                        var trackLength = o.midi[index++] * 256 * 256 * 256 + o.midi[index++] * 256 * 256 + o.midi[index++] * 256 + o.midi[index++];
-                        var end = index + trackLength;
-                        while (index < end) {
-                            var ob = o.readVarLength(index);
-                            index = ob.newIndex, ticks = ticks + ob.value;
-                            var typeChannel = o.midi[index++];
-                            if (typeChannel === 240) {
-                                var ob1 = o.readVarLength(index);
-                                index = ob1.newIndex + ob1.value;
-                            }
-                            else if (typeChannel === 255) {
-                                index = o.processMeta(index, trackId == 0 && ticks == 0);
-                            }
-                            else {
-                                var time = ticks * o.timePerTick;
-                                index = o.processMessage(trackId, index, typeChannel, time);
-                            }
-                        }
-                        if (trackId == 0) {
-                            o.timePerBeat = o.timePerQuarter * 4 / o.noteValuePerBeat;
-                            o.timePerTick = o.timePerQuarter / o.ticksPerQuarter;
-                            o.timePerBar = o.timePerBeat * o.beatsPerBar;
-                        }
-                    };
-                    Midi.prototype.processMeta = function (index, isBegining) {
-                        var o = this;
-                        var type = o.midi[index++];
-                        var ob = o.readVarLength(index);
-                        index = ob.newIndex;
-                        switch (type) {
-                            case 81:
-                                if (isBegining) {
-                                    o.timePerQuarter = (256 * 256 * o.midi[index] + 256 * o.midi[index + 1] + o.midi[index + 2]) / 1000;
-                                }
-                                break;
-                            case 88:
-                                if (isBegining) {
-                                    o.beatsPerBar = o.midi[index];
-                                    o.noteValuePerBeat = Math.pow(2, o.midi[index + 1]);
-                                    var midiClocksPerMetronomeClick = o.midi[index + 2];
-                                    var thirtySecondsPer24Clocks = o.midi[index + 3];
-                                }
-                                break;
-                            case 0:
-                            case 1:
-                            case 2:
-                            case 3:
-                            case 4:
-                            case 5:
-                            case 6:
-                            case 7:
-                            case 32:
-                            case 33:
-                            case 47:
-                            case 84:
-                            case 89:
-                            case 127:
-                            default:
-                                break;
-                        }
-                        return index + ob.value;
-                    };
-                    Midi.prototype.processMessage = function (trackId, index, typeChannel, time) {
-                        var o = this;
-                        if (typeChannel >> 4 > 7 && typeChannel >> 4 < 15) {
-                            o.lastVals[trackId] = typeChannel;
-                        }
-                        else if (o.lastVals[trackId]) {
-                            typeChannel = o.lastVals[trackId];
-                            index--;
-                        }
-                        var type = typeChannel >> 4;
-                        var channel = typeChannel - type * 16;
-                        switch (type) {
-                            case 8:
-                            case 9:
-                                var noteId = o.midi[index++];
-                                var velocity = o.midi[index++];
-                                var on = type == 9 && velocity > 0;
-                                o.tracks[trackId].push({ on: on, time: time, id: noteId, velocity: velocity });
-                                break;
-                            case 10:
-                                index = index + 2;
-                                break;
-                            case 11:
-                                var id = o.midi[index++];
-                                var value = o.midi[index++];
-                                if (id == 64) {
-                                    o.sustainNotes.push({ on: value > 63, time: time });
-                                }
-                                break;
-                            case 12:
-                                index = index + 1;
-                                break;
-                            case 13:
-                                index = index + 1;
-                                break;
-                            case 14:
-                                index = index + 2;
-                                break;
-                            default:
-                                alert("Event not implemented");
-                                break;
-                        }
-                        return index;
-                    };
-                    Midi.prototype.readVarLength = function (index) {
-                        var value = this.midi[index++];
-                        if (value & 0x80) {
-                            value = value & 0x7F;
-                            do {
-                                var c = this.midi[index++];
-                                value = (value << 7) + (c & 0x7F);
-                            } while (c & 0x80);
-                        }
-                        return { value: value, newIndex: index };
-                    };
-                    Midi.indexOf = function (where, what) {
-                        for (var i = 0; i < where.length; i++) {
-                            var found = what.every(function (whati, j) {
-                                return whati == where[i + j];
-                            });
-                            if (found) {
-                                return i;
-                            }
-                        }
-                        return -1;
-                    };
-                    Midi.indexesOf = function (where, what) {
-                        var result = [];
-                        for (var i = 0; i < where.length; i++) {
-                            var found = what.every(function (whati, j) {
-                                return whati == where[i + j];
-                            });
-                            if (found) {
-                                result.push(i);
-                            }
-                        }
-                        return result;
-                    };
-                    return Midi;
-                })();
-                _Midi.Midi = Midi;
+                    parseHeader(parser);
+                    parsePlayerTracks(parser);
+                    return parser;
+                }
+                Midi.parseMidi = parseMidi;
             })(Midi = Parsers.Midi || (Parsers.Midi = {}));
         })(Parsers = Game.Parsers || (Game.Parsers = {}));
     })(Game = Musicope.Game || (Musicope.Game = {}));
@@ -1152,7 +1079,7 @@ var Musicope;
                 };
                 this.updateTime = function (isFreeze) {
                     var o = _this;
-                    var currentTime = o.device.time();
+                    var currentTime = Date.now();
                     if (!o.previousTime) {
                         o.previousTime = currentTime;
                     }
@@ -2076,8 +2003,10 @@ var Musicope;
             function Song(midi) {
                 this.minPlayedNoteId = 200;
                 this.maxPlayedNoteId = 0;
+                this.dispose = function () {
+                };
                 var o = this;
-                o.setParamsFromParser(new Game.Parsers.Midi.Midi(midi));
+                o.setParamsFromParser(Game.Parsers.Midi.parseMidi(midi));
                 o.sortPlayerTracksByHands();
                 o.normalizeVolumeOfPlayerTracks();
                 o.filterSustainNotes();

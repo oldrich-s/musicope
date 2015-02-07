@@ -87,7 +87,7 @@
 
         private updateTime = (isFreeze: boolean) => {
             var o = this;
-            var currentTime = o.device.time();
+            var currentTime = Date.now();
             if (!o.previousTime) { o.previousTime = currentTime; }
             var duration = currentTime - o.previousTime;
             o.previousTime = currentTime;

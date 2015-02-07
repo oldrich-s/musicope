@@ -1,6 +1,6 @@
 ﻿module Musicope.Game {
 
-    export class Song {
+    export class Song implements IDisposable {
 
         timePerBeat: number;
         timePerBar: number;
@@ -16,7 +16,7 @@
 
         constructor(midi: Uint8Array) {
             var o = this;
-            o.setParamsFromParser(new Parsers.Midi.Midi(midi));
+            o.setParamsFromParser(Parsers.Midi.parseMidi(midi));
             o.sortPlayerTracksByHands();
             o.normalizeVolumeOfPlayerTracks();
             o.filterSustainNotes();
@@ -25,6 +25,9 @@
             o.setMinMaxNoteId();
             o.computeCleanedPlayerTracks();
             o.computeTimePerSong();
+        }
+
+        dispose = () => {
         }
 
         private setParamsFromParser(parser: Parsers.IParser) {

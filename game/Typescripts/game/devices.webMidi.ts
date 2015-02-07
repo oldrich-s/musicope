@@ -2,22 +2,28 @@
 
     export class WebMidi implements IDevice {
 
+        ready = $.Deferred<void>();
+
         private midi;
         private output;
         private input;
 
-        constructor() { }
-
-        init = () => {
+        constructor() {
             var o = this;
-            var def = $.Deferred<void>();
             (<any>navigator).requestMIDIAccess().then((m) => {
                 o.midi = m;
-                def.resolve();
+                o.ready.resolve();
             },(msg) => {
-                console.log("Failed to get MIDI access - " + msg);
+                o.ready.reject("Failed to get MIDI access - " + msg);
             });
-            return def;
+        }
+
+        inList = () => {
+            return this.midi.inputs;
+        }
+
+        outList = () => {
+            return this.midi.outputs;
         }
 
         inOpen = (callback) => {
@@ -30,19 +36,12 @@
             }
         }
 
-        inClose = () => {
+        outOpen = () => {
             var o = this;
-            if (o.input && o.input.value) {
-                o.input.value.onmidimessage = null;
+            o.output = o.midi.outputs.get(params.p_deviceOut);
+            if (!o.output) {
+                o.output = o.midi.outputs.get(0);
             }
-        }
-
-        inList = () => {
-            return this.midi.inputs;
-        }
-
-        exists = () => {
-            return this.midi;
         }
 
         out = (byte1: number, byte2: number, byte3: number) => {
@@ -53,23 +52,11 @@
             this.output.send(data);
         }
 
-        outClose = () => {
-        }
-
-        outList = () => {
-            return this.midi.outputs;
-        }
-
-        outOpen = () => {
+        dispose = () => {
             var o = this;
-            o.output = o.midi.outputs.get(params.p_deviceOut);
-            if (!o.output) {
-                o.output = o.midi.outputs.get(0);
+            if (o.input && o.input.value) {
+                o.input.value.onmidimessage = null;
             }
-        }
-
-        time = () => {
-            return Date.now();
         }
 
     }

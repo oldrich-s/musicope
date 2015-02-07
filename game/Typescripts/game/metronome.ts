@@ -1,6 +1,6 @@
 ﻿module Musicope.Game {
 
-    export class Metronome {
+    export class Metronome implements IDisposable {
 
         private lastPlayedId: number = -10000;
 
@@ -9,7 +9,7 @@
             o.subscribe();
         }
 
-        play(time: number) {
+        play = (time: number) => {
             var o = this;
             if (params.m_isOn) {
                 var id = Math.floor(params.m_ticksPerBeat * time / o.timePerBeat);
@@ -22,11 +22,18 @@
             }
         }
 
-        reset() { this.lastPlayedId = -10000; }
+        reset = () => {
+            var o = this;
+            o.lastPlayedId = -10000;
+        }
+
+        dispose = () => {
+            Params.unsubscribe("metronome");
+        }
 
         private subscribe() {
             var o = this;
-            Params.subscribe("metronomes.Basic", "^m_.+$",(name, value) => {
+            Params.subscribe("metronome", "^m_.+$",(name, value) => {
                 o.reset();
             });
         }
