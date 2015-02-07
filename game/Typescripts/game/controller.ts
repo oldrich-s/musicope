@@ -34,6 +34,9 @@
             var out = $.Deferred();
             dropbox.readFile(params.c_songUrl, { arrayBuffer: true }, function (error, data) {
                 var arr = new Uint8Array(data);
+                if (error || arr.length == 0) {
+                    throw "error loading midi file";
+                }
                 out.resolve(arr);
             });
             return out.promise();

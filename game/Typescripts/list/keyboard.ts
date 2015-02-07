@@ -15,6 +15,7 @@
     function enter() {
         Mousetrap.bind('enter',(e) => {
             params.c_songUrl = $('.el').filter('.elFocus').find('.elURL').text().trim();
+            Mousetrap.reset();
             var c = new Musicope.Game.Controller();
             e.preventDefault();
         });
@@ -53,7 +54,6 @@
     }
 
     export function bindKeyboard() {
-        $('.el:visible:first').addClass('elFocus');
         down();
         up();
         enter();

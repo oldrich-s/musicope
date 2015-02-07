@@ -15,6 +15,7 @@
             $('#query').focus();
             var top = $('.elFocus').offset().top - 0.5 * $(window).height();
             $(window).scrollTop(top);
+            Mousetrap.reset();
             Musicope.List.Keyboard.bindKeyboard();
         }
 

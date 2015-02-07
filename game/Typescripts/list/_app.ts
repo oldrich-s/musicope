@@ -92,6 +92,7 @@
             initScores().done(() => {
                 getAllMidiFiles(client).done((items) => {
                     populateDOM(items, scores);
+                    $('.el:visible:first').addClass('elFocus');
                     Keyboard.bindKeyboard();
                 });
             });
@@ -101,7 +102,12 @@
         $(document).on('click', '.vote-down', voteDown);
 
         $(document).on('click', '.elLink', function () {
-            params.c_songUrl = $(this).siblings('.elURL').text().trim();
+            var el = $(this).siblings('.elURL');
+            if (el.length > 1) {
+                throw "wtf";
+            }
+            params.c_songUrl = $(el[0]).text().trim();
+            Mousetrap.reset();
             var c = new Musicope.Game.Controller();
         });
 

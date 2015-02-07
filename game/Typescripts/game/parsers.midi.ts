@@ -23,7 +23,9 @@
     private parseHeader() {
       var o = this;
       var i0 = Midi.indexOf(o.midi, [77, 84, 104, 100, 0, 0, 0, 6]);
-      if (i0 == -1 || o.midi[i0 + 9] > 1) { alert("cannot parse midi"); }
+      if (i0 == -1 || o.midi[i0 + 9] > 1) {
+          throw "cannot parse midi";
+      }
 
       o.ticksPerQuarter = o.midi[i0 + 12] * 256 + o.midi[i0 + 13];
       if (o.ticksPerQuarter & 0x8000) { alert("ticksPerBeat not implemented"); }
