@@ -59,6 +59,9 @@
     <TypeScriptCompile Include="Typescripts\game\inputs.keyboardsFns.actions.waitOn.ts" />
     <TypeScriptCompile Include="Typescripts\game\inputs.ts" />
     <TypeScriptCompile Include="Typescripts\game\metronome.ts" />
+    <TypeScriptCompile Include="Typescripts\model\_decl.game.userParams.ts" />
+    <TypeScriptCompile Include="Typescripts\model\_decl.ts" />
+    <TypeScriptCompile Include="Typescripts\model\_decl.game.ts" />
     <TypeScriptCompile Include="Typescripts\params.declarations.ts" />
     <TypeScriptCompile Include="Typescripts\params.functions.ts" />
     <TypeScriptCompile Include="Typescripts\game\parsers.declarations.ts" />
