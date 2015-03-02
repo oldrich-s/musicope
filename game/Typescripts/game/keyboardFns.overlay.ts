@@ -1,4 +1,4 @@
-﻿module Musicope.Game.Inputs.KeyboardFns.Overlay {
+﻿module Musicope.Game.KeyboardFns.Overlay {
 
     var displayDescription: JQuery;
     var displayValue: JQuery;

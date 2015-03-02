@@ -1,14 +1,19 @@
-﻿module Musicope.Game.Inputs {
+﻿module Musicope.Game {
 
-    export class Keyboard implements IInput {
+    export class Keyboard implements IDisposable {
 
         private actions: KeyboardFns.Actions.IKeyboardAction[] = [];
 
-        constructor(private song: ISong) {
+        constructor(private song: Song) {
             var o = this;
             o.initActions();
             o.checkActionsDuplicates();
-            o.signupActions();
+            o.subscribeActions();
+        }
+
+        dispose = () => {
+            var o = this;
+            o.unsubscribeActions();
         }
 
         private initActions() {
@@ -37,13 +42,20 @@
             });
         }
 
-        private signupActions() {
+        private subscribeActions() {
             var o = this;
             o.actions.forEach((action) => {
                 Mousetrap.bind(action.key,() => {
                     action.triggerAction();
                     KeyboardFns.Overlay.display(action.id, action.getCurrentState());
                 });
+            });
+        }
+
+        private unsubscribeActions() {
+            var o = this;
+            o.actions.forEach((action) => {
+                Mousetrap.unbind(action.key);
             });
         }
 

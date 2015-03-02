@@ -4,7 +4,7 @@
 
         private lastPlayedId: number = -10000;
 
-        constructor(private timePerBeat: number, private beatsPerBar: number, private device: Devices.IDevice) {
+        constructor(private timePerBeat: number, private beatsPerBar: number, private device: IDriver) {
             var o = this;
             o.subscribe();
         }

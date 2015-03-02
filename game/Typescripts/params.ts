@@ -4,24 +4,24 @@
 
         // controllers
         c_songUrl: undefined,
-        c_device: "WebMidi",
+        c_driver: "WebMidi",
         c_callbackUrl: undefined,
 
         // players
         p_deviceIn: "0",
-        p_deviceOut: "1",
+        p_deviceOut: "2",
         p_elapsedTime: undefined,
         p_initTime: undefined,
         p_isPaused: false,
         p_minNote: 36,
         p_maxNote: 96,
-        p_playOutOfReachNotes: false,
+        p_playOutOfReachNotes: true,
         p_waitForOutOfReachNotes: true,
         p_radiuses: [200, 200],
         p_speed: 1,
         p_sustain: true,
         p_userHands: [false, false],
-        p_volumes: [1, 1],
+        p_volumes: [0.75, 1],
         p_waits: [true, true],
         p_maxVelocity: [90, 90],
 
@@ -31,7 +31,7 @@
         m_id2: 56,
         m_isOn: true,
         m_ticksPerBeat: 1,
-        m_velocity: 15,
+        m_velocity: 12,
 
         // parsers
         f_normalize: 60,

@@ -4,11 +4,8 @@
 
         private ids: number[];
 
-        constructor(private device: Devices.IDevice,
-            private scene: Scene,
-            private notes: Parsers.INote[][]) {
+        constructor(private driver: IDriver, private scene: Scene, private notes: Parsers.INote[][]) {
             var o = this;
-            o = this;
             o.assignIds();
         }
 
@@ -46,10 +43,10 @@
             var playsUser = params.p_userHands[trackId];
             if (!playsUser || o.playOutOfReach(note)) {
                 if (note.on) {
-                    o.device.out(144, note.id, Math.min(127, o.getVelocity(trackId, note)));
+                    o.driver.out(144, note.id, Math.min(127, o.getVelocity(trackId, note)));
                     o.scene.setActiveId(note.id);
                 } else {
-                    o.device.out(144, note.id, 0);
+                    o.driver.out(144, note.id, 0);
                     o.scene.unsetActiveId(note.id);
                 }
             }

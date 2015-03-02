@@ -1,4 +1,4 @@
-﻿module Musicope.Game.Inputs.KeyboardFns.Actions.Tools {
+﻿module Musicope.Game.KeyboardFns.Actions.Tools {
 
     export function areEqual(param1: any, param2: any) {
         if (typeof param1 === "object" && typeof param2 === "object" &&

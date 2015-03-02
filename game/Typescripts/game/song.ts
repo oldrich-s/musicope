@@ -1,13 +1,5 @@
 ﻿module Musicope.Game {
 
-    export interface ISong {
-        midi: Parsers.IParser;
-        timePerSong: number;
-        playedNoteID: IMinMax;
-        sceneTracks: INoteScene[][];
-        sceneSustainNotes: ISustainNoteScene[];
-    }
-
     function computeTimePerSong(playerTracks: Parsers.INote[][]) {
         var timePerSong = 0;
         playerTracks.forEach((notes) => {
@@ -145,24 +137,25 @@
         });
     }
 
-    export function parseSong(data: Uint8Array) {
-        var midi = Parsers.Midi.parseMidi(data);
-        midi.tracks = sortPlayerTracksByHands(midi.tracks);
-        normalizeVolumeOfPlayerTracks(midi.tracks);
-        midi.sustainNotes = filterSustainNotes(midi.sustainNotes);
-        var sceneSustainNotes = computeSceneSustainNotes(midi.sustainNotes);
-        var sceneTracks = computeSceneTracks(midi.tracks);
-        var playedNoteID = getMinMaxNoteId(sceneTracks);
-        midi.tracks = computeCleanedPlayerTracks(sceneTracks);
-        var timePerSong = computeTimePerSong(midi.tracks);
-        var song: ISong = {
-            midi: midi,
-            timePerSong: timePerSong,
-            playedNoteID: playedNoteID,
-            sceneTracks: sceneTracks,
-            sceneSustainNotes: sceneSustainNotes,
-        };
-        return song;
+    export class Song {
+        midi: Parsers.IParser;
+        timePerSong: number;
+        playedNoteID: IMinMax;
+        sceneTracks: INoteScene[][];
+        sceneSustainNotes: ISustainNoteScene[];
+
+        constructor(data: Uint8Array) {
+            var o = this;
+            o.midi = Parsers.Midi.parseMidi(data);
+            o.midi.tracks = sortPlayerTracksByHands(o.midi.tracks);
+            normalizeVolumeOfPlayerTracks(o.midi.tracks);
+            o.midi.sustainNotes = filterSustainNotes(o.midi.sustainNotes);
+            o.sceneSustainNotes = computeSceneSustainNotes(o.midi.sustainNotes);
+            o.sceneTracks = computeSceneTracks(o.midi.tracks);
+            o.playedNoteID = getMinMaxNoteId(o.sceneTracks);
+            o.midi.tracks = computeCleanedPlayerTracks(o.sceneTracks);
+            o.timePerSong = computeTimePerSong(o.midi.tracks);
+        }
     }
 
 } 

@@ -1,6 +1,45 @@
 ﻿module Musicope.Game {
 
-    export class Player {
+    function hideTimeBarIfStops(scene: Scene, isFreeze: boolean) {
+        if (isFreeze) {
+            scene.setActiveId(2);
+            scene.setActiveId(1);
+        } else {
+            scene.unsetActiveId(2);
+            scene.unsetActiveId(1);
+        }
+    }
+
+    function driverOnNotesToOff(driver: IDriver) {
+        for (var i = 0; i < 128; i++) {
+            driver.out(144, i, 0);
+        }
+    }
+
+    function getIdBelowCurrentTime(notes: Parsers.INote[]) {
+        if (notes.length > 0) {
+            var id = notes.length - 1;
+            while (id >= 0 && notes[id] && notes[id].time > params.p_elapsedTime) {
+                id--;
+            }
+            return id;
+        }
+    }
+
+    function getIdsBelowCurrentTime(playerTracks: Parsers.INote[][]) {
+        return playerTracks.map(getIdBelowCurrentTime);
+    }
+
+    function correctTimesInParams(timePerBar: number) {
+        if (typeof params.p_initTime == 'undefined') {
+            Params.setParam("p_initTime", -2 * timePerBar);
+        }
+        if (typeof params.p_elapsedTime == 'undefined') {
+            Params.setParam("p_elapsedTime", params.p_initTime);
+        }
+    }
+
+    export class Player implements IDisposable {
 
         private previousTime: number;
         private playNotes: PlayerFns.PlayNotes;
@@ -8,10 +47,10 @@
         private waitForNote: PlayerFns.WaitForNote;
         private fromDevice: PlayerFns.FromDevice;
 
-        constructor(private device: Devices.IDevice, private song: ISong, private metronome: Metronome, private scene: Scene) {
+        constructor(private driver: IDriver, private song: Song, private metronome: Metronome, private scene: Scene) {
             var o = this;
             o = this;
-            o.correctTimesInParams();
+            correctTimesInParams(o.song.midi.timePerBar);
             o.subscribeToParamsChange();
             o.assignClasses();
         }
@@ -23,18 +62,14 @@
             o.metronome.play(params.p_elapsedTime);
             o.scene.redraw(params.p_elapsedTime, params.p_isPaused);
             var isFreeze = o.waitForNote.isFreeze();
-            o.hideTimeBarIfStops(isFreeze);
+            hideTimeBarIfStops(o.scene, isFreeze);
             return o.updateTime(isFreeze);
         }
 
-        private correctTimesInParams = () => {
+        dispose = () => {
             var o = this;
-            if (typeof params.p_initTime == 'undefined') {
-                Params.setParam("p_initTime", -2 * o.song.midi.timePerBar);
-            }
-            if (typeof params.p_elapsedTime == 'undefined') {
-                Params.setParam("p_elapsedTime", params.p_initTime);
-            }
+            o.fromDevice.dispose();
+            Params.unsubscribe("players.Basic");
         }
 
         private subscribeToParamsChange = () => {
@@ -48,41 +83,18 @@
             var o = this;
             o.scene.unsetAllActiveIds();
             o.metronome.reset();
-            var idsBelowCurrentTime = o.getIdsBelowCurrentTime();
+            var idsBelowCurrentTime = getIdsBelowCurrentTime(o.song.midi.tracks);
             o.waitForNote.reset(idsBelowCurrentTime);
             o.playNotes.reset(idsBelowCurrentTime);
-            o.deviceOnNotesToOff();
-        }
-
-        private deviceOnNotesToOff = () => {
-            var o = this;
-            for (var i = 0; i < 128; i++) {
-                o.device.out(144, i, 0);
-            }
-        }
-
-        private getIdsBelowCurrentTime = (): number[]=> {
-            var o = this;
-            return o.song.midi.tracks.map(o.getIdBelowCurrentTime);
-        }
-
-        private getIdBelowCurrentTime = (notes: Parsers.INote[]) => {
-            var o = this;
-            if (notes.length > 0) {
-                var id = notes.length - 1;
-                while (id >= 0 && notes[id] && notes[id].time > params.p_elapsedTime) {
-                    id--;
-                }
-                return id;
-            }
+            driverOnNotesToOff(o.driver);
         }
 
         private assignClasses = () => {
             var o = this;
-            o.fromDevice = new PlayerFns.FromDevice(o.device, o.scene, o.song.midi.tracks);
-            o.playNotes = new PlayerFns.PlayNotes(o.device, o.scene, o.song.midi.tracks);
-            o.playSustains = new PlayerFns.PlaySustains(o.device, o.song.midi.sustainNotes);
-            o.waitForNote = new PlayerFns.WaitForNote(o.device, o.song.midi.tracks, o.fromDevice.onNoteOn);
+            o.fromDevice = new PlayerFns.FromDevice(o.driver, o.scene, o.song.midi.tracks);
+            o.playNotes = new PlayerFns.PlayNotes(o.driver, o.scene, o.song.midi.tracks);
+            o.playSustains = new PlayerFns.PlaySustains(o.driver, o.song.midi.sustainNotes);
+            o.waitForNote = new PlayerFns.WaitForNote(o.driver, o.song.midi.tracks, o.fromDevice.onNoteOn);
         }
 
         private updateTime = (isFreeze: boolean) => {
@@ -106,17 +118,6 @@
             }
 
             return isSongEnd;
-        }
-
-        private hideTimeBarIfStops = (isFreeze: boolean) => {
-            var o = this;
-            if (isFreeze) {
-                o.scene.setActiveId(2);
-                o.scene.setActiveId(1);
-            } else {
-                o.scene.unsetActiveId(2);
-                o.scene.unsetActiveId(1);
-            }
         }
 
     }

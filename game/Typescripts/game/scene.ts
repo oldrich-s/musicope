@@ -14,7 +14,7 @@
         return result;
     }
 
-    export class Scene {
+    export class Scene implements IDisposable {
 
         private pixelsPerTime: number;
         private activeIds = new Int32Array(127);
@@ -25,7 +25,7 @@
         private pausedColor: Int32Array;
         private unpausedColor: Int32Array;
 
-        constructor(private song: ISong) {
+        constructor(private song: Song) {
             var o = this;
             o.subscribeToParamsChange();
             o.setBackgrColors();
@@ -34,7 +34,6 @@
             o.setupWebGL();
             o.setupScene();
         }
-
 
         setActiveId(id: number) {
             this.activeIds[id] = 1;
@@ -56,6 +55,10 @@
             var dx = 2 * time / o.song.timePerSong;
             var dy = -time * o.pixelsPerTime / o.canvas.height * 2;
             o.webgl.redraw(dx, dy, o.activeIds);
+        }
+
+        dispose = () => {
+            Params.unsubscribe("scene.Basic");
         }
 
         private subscribeToParamsChange() {

@@ -5,7 +5,7 @@
         private ids: number[];
         private notesPressedTime: number[][];
 
-        constructor(private device: Devices.IDevice,
+        constructor(private device: IDriver,
             private notes: Parsers.INote[][],
             private onNoteOn: (func: (noteId: number) => void) => void) {
             var o = this;
@@ -34,7 +34,6 @@
             o.resetNotesPressedTime(idsBelowCurrentTime);
             idsBelowCurrentTime.forEach(o.setId);
         }
-
 
         private assignIds = () => {
             var o = this;

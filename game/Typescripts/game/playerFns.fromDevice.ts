@@ -1,6 +1,18 @@
 ﻿module Musicope.Game.PlayerFns {
 
-    export class FromDevice {
+    function sendBackToDevice(driver: IDriver, kind, noteId, velocity) {
+        if (kind < 242 && (kind < 127 || kind > 160)) {
+            driver.out(kind, noteId, velocity);
+        }
+    }
+
+    function execNoteOnFuncs(noteOnFuncs: any[], noteId: number) {
+        for (var i = 0; i < noteOnFuncs.length; i++) {
+            noteOnFuncs[i](noteId);
+        }
+    }
+
+    export class FromDevice implements IDisposable {
 
         private noteOnFuncs = [];
 
@@ -8,18 +20,11 @@
         private oldVelocity = -1;
         private oldId = -1;
 
-        constructor(private device: Devices.IDevice,
-            private scene: Scene,
-            private notes: Parsers.INote[][]) {
+        constructor(private driver: IDriver, private scene: Scene, private notes: Parsers.INote[][]) {
             var o = this;
-            o.initDevice();
-        }
-
-        private initDevice = () => {
-            var o = this;
-            o.device.outOpen();
-            o.device.out(0x80, 0, 0);
-            o.device.inOpen(o.deviceIn);
+            o.driver.outOpen();
+            o.driver.out(0x80, 0, 0);
+            o.driver.inOpen(o.deviceIn);
         }
 
         onNoteOn = (func: (noteId: number) => void) => {
@@ -27,24 +32,23 @@
             o.noteOnFuncs.push(func);
         }
 
+        dispose = () => {
+            var o = this;
+            o.driver.inClose();
+            o.driver.outClose();
+        }
+
         private deviceIn = (timeStamp, kind, noteId, velocity) => {
             var o = this;
-            o.sendBackToDevice(kind, noteId, velocity);
+            sendBackToDevice(o.driver, kind, noteId, velocity);
             var isNoteOn = kind === 144 && velocity > 0;
             var isNoteOff = kind === 128 || (kind === 144 && velocity == 0);
             if (isNoteOn && !o.isDoubleNote(timeStamp, isNoteOn, noteId, velocity)) {
                 console.log(timeStamp + " " + kind + " " + noteId + " " + velocity);
                 o.scene.setActiveId(noteId);
-                o.execNoteOnFuncs(noteId);
+                execNoteOnFuncs(o.noteOnFuncs, noteId);
             } else if (isNoteOff) {
                 o.scene.unsetActiveId(noteId);
-            }
-        }
-
-        private sendBackToDevice = (kind, noteId, velocity) => {
-            var o = this;
-            if (kind < 242 && (kind < 127 || kind > 160)) {
-                o.device.out(kind, noteId, velocity);
             }
         }
 
@@ -59,12 +63,7 @@
             return isDoubleNote;
         }
 
-        private execNoteOnFuncs = (noteId: number) => {
-            var o = this;
-            for (var i = 0; i < o.noteOnFuncs.length; i++) {
-                o.noteOnFuncs[i](noteId);
-            }
-        }
+        
 
     }
 

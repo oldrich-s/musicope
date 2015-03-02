@@ -1,6 +1,6 @@
-﻿module Musicope.Game.Devices {
+﻿module Musicope.Game.Drivers {
 
-    export class WebMidi implements IDevice {
+    export class WebMidi implements IDriver {
 
         ready = $.Deferred<void>();
 
@@ -44,6 +44,15 @@
             }
         }
 
+        inClose = () => {
+            var o = this;
+            if (o.input && o.input.value) {
+                o.input.value.onmidimessage = null;
+            }
+        }
+
+        outClose = () => { }
+
         out = (byte1: number, byte2: number, byte3: number) => {
             var data = [byte1, byte2];
             if (typeof byte3 === "number") {
@@ -54,9 +63,7 @@
 
         dispose = () => {
             var o = this;
-            if (o.input && o.input.value) {
-                o.input.value.onmidimessage = null;
-            }
+            o.inClose();
         }
 
     }

@@ -4,7 +4,7 @@
 
         // controllers
         c_songUrl: string;
-        c_device: string;
+        c_driver: string;
         c_callbackUrl: string;
 
         // players

@@ -108,7 +108,7 @@
             }
             params.c_songUrl = $(el[0]).text().trim();
             Mousetrap.reset();
-            var c = new Musicope.Game.Controller();
+            game = new Musicope.Game.Game();
         });
 
         var lastQuery = "";

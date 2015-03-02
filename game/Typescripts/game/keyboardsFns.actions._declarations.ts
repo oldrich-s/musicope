@@ -1,4 +1,4 @@
-﻿module Musicope.Game.Inputs.KeyboardFns.Actions {
+﻿module Musicope.Game.KeyboardFns.Actions {
 
     export interface IKeyboardAction {
         id: string;
@@ -9,7 +9,7 @@
     }
 
     export interface IKeyboardParams {
-        song: ISong;
+        song: Song;
         actions: JQueryPromise<IKeyboardAction[]>;
     }
 

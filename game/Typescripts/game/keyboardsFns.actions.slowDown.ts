@@ -1,4 +1,4 @@
-﻿module Musicope.Game.Inputs.KeyboardFns.Actions.List {
+﻿module Musicope.Game.KeyboardFns.Actions.List {
 
     export class SlowDown implements IKeyboardAction {
 

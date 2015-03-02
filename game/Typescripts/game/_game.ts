@@ -1,11 +1,11 @@
 ﻿module Musicope.Game {
 
-    export class Controller implements IDisposable {
+    export class Game implements IDisposable {
 
-        private device: Devices.IDevice;
-        private input: IInput;
+        private driver: IDriver;
+        private keyboard: Keyboard;
         private metronome: Metronome;
-        private song: ISong;
+        private song: Song;
         private player: Player;
         private scene: Scene;
 
@@ -16,8 +16,8 @@
             $('#gameView').show();
             if (!params.c_songUrl) { throw "c_songUrl does not exist!"; }
             else {
-                o.device = new Devices[params.c_device]();
-                o.device.ready.done(() => {
+                o.driver = new Drivers[params.c_driver]();
+                o.driver.ready.done(() => {
                     o.getSong().done((arr: Uint8Array) => {
                         o.init(arr);
                     });
@@ -27,8 +27,11 @@
 
         dispose = () => {
             var o = this;
-            o.device.dispose();
+            o.driver.dispose();
             o.metronome.dispose();
+            o.player.dispose();
+            o.scene.dispose();
+            o.keyboard.dispose();
         }
 
         private getSong() {
@@ -46,15 +49,11 @@
 
         private init(arr: Uint8Array): void {
             var o = this;
-            o.song = parseSong(arr);
+            o.song = new Song(arr);
             o.scene = new Scene(o.song);
-            o.metronome = new Metronome(o.song.midi.timePerBeat, o.song.midi.timePerBar / o.song.midi.timePerBeat, o.device);
-            o.player = new Player(o.device, o.song, o.metronome, o.scene);
-            for (var prop in Inputs) {
-                if ((<string>prop).indexOf("Fns") < 0) {
-                    new (<IInputNew> (<any>Inputs)[prop])(o.song);
-                }
-            }
+            o.metronome = new Metronome(o.song.midi.timePerBeat, o.song.midi.timePerBar / o.song.midi.timePerBeat, o.driver);
+            o.player = new Player(o.driver, o.song, o.metronome, o.scene);
+            o.keyboard = new Keyboard(o.song);
             o.step();
         }
 
