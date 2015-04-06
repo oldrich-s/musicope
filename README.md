@@ -1,76 +1,12 @@
 # Introduction
 
-Musicope is an open-source online piano game similar to [Synthesia][25] or [PianoCrumbs][26]. Notice, that you must have [Jazz plug-in][9] installed in order to be able to play the game! The game uses WebGL so please use a [web browser][29] that supports WebGL.
+Musicope is an open-source online piano game similar to [Synthesia][1] or [PianoCrumbs][2]. Notice, that you must have [Jazz plug-in][3] installed or Web Midi API enabled in order to be able to play the game! The game uses WebGL so please use a [web browser][4] that supports WebGL.
 
-Musicope is in its **alpha** phase with a lot of bugs, lack of features and lack of documentation. You are therefore more than welcome to contribute! You can either enhance the [source code][24] or you can [file a bug][7]. Any type of contribution is welcome!
-
-## Installation
-
-Follow these steps to install the game:
-
-* download the game from this github page ( https://github.com/musicope/game/archive/master.zip )
-* unpack it
-* go to `game-master/Musicope`
-* execute `mongoose-3.4.exe` to start the web server
-* in e.g. `Chrome` go to `http://localhost:8080/`
-
-To change the songs you can
-* change contents of the `songs/songs.json` to fit your needs
-* alternatively you can point the game to an alternative json file e.g.: `localhost:8080/list/?l_songsUrl=../songs/private.json`
-
-Good luck! ;)
-
-# Technical description
-
-Logic and source structure of the game will be given in the following brief overview of the game. The game consists of two separate views, [Game view][1] and [List view][2].
-
-## Game View
-
-[Game View][1] is the core of the game. It behaves as a completely separate web-page. You can therefore start the Game View separately by calling a single URL link such as [this one][4]. 
-
-All the input parameters of the game are served by means of the *GET* parameters. The current list of all the possible parameters of the Game View can be found [here][3]. The only required parameter is *c_songUrl*. All the other parameters have their respective default [values][5]. The Game View does not store any data. Everything goes in and out by means of the *GET* parameters.
-
-All the input *GET* parameters can be theoretically modified during the game play. An example of the modification of the input parameters during the game play are the different [keyboard actions][10] currently implemented. You can hit *enter* key during the game play to see all the available hotkeys. Or you can study all the keyboard options in the [source][10].
-
-## List View
-
-[List View][2] is a supporting view for the Game View. This view isn't in fact necessary at all and can be replaced by any other web-page. The main task of the List View is to parse a *json* list of available *midi* files, and provide it to the user. The user chooses the song of interest together with input parameters and plays the game. Simple as that :). Currently, there is only one input *GET* [parameter][11] of the List view, namely *l_songsUrl* which should point to the *json* url.
-
-## Source Code description
-
-The source of the Musicope is written in [TypeScript][13]. TypeScript is simply JavaScript with types. You can use e.g. free [Microsoft Visual Studio Express for Web][14] to edit the TypeScript files. I use [nodejs][27] to run the [requirejs][28] optimizer.
-
-As mentioned, the game consist of two separate views (Game View and List View). Each view consists of the main [index.html][12], [index.css][17] and [_index.ts][15] file. All the TypeScript files are loaded dynamically by [RequireJS][16]. The interface of the input *GET* parameters is contained in [_interfaces.ts][3] whereas their respective default values can be found in [defaults.ts][5]. All the interfaces are loaded by [_references.ts][23].
-
-All the views consist of plugins. Each plugin is contained in separate folder. Let's take [scenes][20] plugin as an example. Each plugin consists of [_interfaces.ts][21] which defines the interface of the plugin Class. Each plugin further contains [_load.ts][22] file which loads all the plugins of the specified interface. Whenever you create a plugin for a specified interface, place your plugin reference into the respective *_load.ts*.
-
-Others than that it is about studying the code :).
+You can play the game [here][5]. It requires Dropbox login as it is where it takes the songs from and stores them. All the songs that you place in `Dropbox/Apps/Musicope/songs/` should show up in the game.
 
 
-
-[1]: https://github.com/musicope/game/tree/master/src/Musicope/website/game
-[2]: https://github.com/musicope/game/tree/master/src/Musicope/website/list
-[3]: https://github.com/musicope/game/blob/master/src/Musicope/website/game/_params/_interfaces.ts
-[4]: localhost:8080/game/index.html?c_songUrl=../songs/sample/Unknown%20Artist%20-%20Korobeiniki-Tetris%20Theme%20Song.mid&
-[5]: https://github.com/musicope/game/blob/master/src/Musicope/website/game/_params/basic/defaults.ts
-[7]: https://github.com/musicope/game/issues
-[9]: http://jazz-soft.net/
-[10]: https://github.com/musicope/game/tree/master/src/Musicope/website/game/inputs/keyboard/actions
-[11]: https://github.com/musicope/game/blob/master/src/Musicope/website/list/_params/_interfaces.ts
-[12]: https://github.com/musicope/game/tree/master/src/Musicope/website/game/index.html
-[13]: http://www.typescriptlang.org/
-[14]: http://www.microsoft.com/visualstudio/eng/products/visual-studio-express-for-web
-[15]: https://github.com/musicope/game/tree/master/src/Musicope/website/game/_index.ts
-[16]: http://requirejs.org/
-[17]: https://github.com/musicope/game/tree/master/src/Musicope/website/game/index.css
-
-[20]: https://github.com/musicope/game/tree/master/src/Musicope/website/game/scenes
-[21]: https://github.com/musicope/game/tree/master/src/Musicope/website/game/scenes/_interfaces.ts
-[22]: https://github.com/musicope/game/tree/master/src/Musicope/website/game/scenes/_load.ts
-[23]: https://github.com/musicope/game/tree/master/src/Musicope/website/game/_references.ts
-[24]: https://github.com/musicope/game/tree/master/src/Musicope/website
-[25]: http://synthesiagame.com/
-[26]: http://www.pianocrumbs.com/piano/
-[27]: http://nodejs.org/
-[28]: http://requirejs.org/docs/optimization.html
-[29]: http://caniuse.com/webgl
+[1]: http://synthesiagame.com/
+[2]: http://www.pianocrumbs.com/piano/
+[3]: http://jazz-soft.net/
+[4]: http://caniuse.com/webgl
+[5]: https://musicope.github.io/game/
