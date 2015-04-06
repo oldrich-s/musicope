@@ -20,6 +20,7 @@
   <ItemGroup>
     <Content Include="Content\app.css" />
     <Content Include="Content\framework7.css" />
+    <Content Include="Content\framework7.themes.css" />
     <Content Include="Content\icon.ico" />
     <Content Include="index.html" />
     <Content Include="packages.config" />

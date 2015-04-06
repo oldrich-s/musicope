@@ -25,7 +25,7 @@
     function up() {
         Mousetrap.bind('up',(e) => {
             var oldEl = $('.song-list-el-focus');
-            var newEl = oldEl.prev(':visible');
+            var newEl = oldEl.prevAll(':visible').first();
             if (newEl.length > 0) {
                 oldEl.removeClass('song-list-el-focus');
                 newEl.addClass('song-list-el-focus');
@@ -38,7 +38,7 @@
     function down() {
         Mousetrap.bind('down',(e) => {
             var oldEl = $('.song-list-el-focus');
-            var newEl = oldEl.next(':visible');
+            var newEl = oldEl.nextAll(':visible').first();
             if (newEl.length > 0) {
                 oldEl.removeClass('song-list-el-focus');
                 newEl.addClass('song-list-el-focus');
@@ -75,12 +75,6 @@
             e.preventDefault();
         });
     }
-
-    //export function resetIndex() {
-    //    $('.elFocus').removeClass('elFocus');
-    //    $('.el:visible:first').addClass('elFocus');
-    //    $(window).scrollTop(0);
-    //}
 
     export function bindKeyboard() {
         down();

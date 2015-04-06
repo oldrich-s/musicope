@@ -23,18 +23,28 @@ var Musicope;
             searchList: '.list-block-search',
             searchIn: '.item-title, .item-text'
         });
+        $('.list-block-search').on('search', function (a, b, c) {
+            $('.song-list-el-focus').removeClass('song-list-el-focus');
+            $('.list-scroll li:visible:first').addClass('song-list-el-focus');
+            $('.list-scroll').scrollTop(0);
+        });
         Musicope.app.onPageBeforeAnimation('play', function (page) {
-            Mousetrap.reset();
-            Musicope.config = jQuery.extend(true, {}, Musicope.defaultConfig);
-            Musicope.config.c_songUrl = decodeURIComponent(page.query.url);
-            Musicope.game = new Musicope.Game.Game();
-            $('.playTitle').text(decodeURIComponent(page.query.title));
-            Musicope.app.sizeNavbars();
+            if ('url' in page.query) {
+                Mousetrap.reset();
+                Musicope.config = jQuery.extend(true, {}, Musicope.defaultConfig);
+                Musicope.config.c_songUrl = decodeURIComponent(page.query.url);
+                Musicope.game = new Musicope.Game.Game();
+                $('.playTitle').text(decodeURIComponent(page.query.title));
+                Musicope.app.sizeNavbars();
+            }
         });
         Musicope.app.onPageAfterAnimation('index', function (page) {
             Mousetrap.reset();
             Musicope.Params.reset();
             Musicope.List.Keyboard.bindKeyboard();
+        });
+        Musicope.app.onPageAfterAnimation('help', function (page) {
+            Musicope.config.p_isPaused = true;
         });
         Musicope.List.init();
         Musicope.Setup.init();
@@ -1785,7 +1795,7 @@ var Musicope;
             function up() {
                 Mousetrap.bind('up', function (e) {
                     var oldEl = $('.song-list-el-focus');
-                    var newEl = oldEl.prev(':visible');
+                    var newEl = oldEl.prevAll(':visible').first();
                     if (newEl.length > 0) {
                         oldEl.removeClass('song-list-el-focus');
                         newEl.addClass('song-list-el-focus');
@@ -1797,7 +1807,7 @@ var Musicope;
             function down() {
                 Mousetrap.bind('down', function (e) {
                     var oldEl = $('.song-list-el-focus');
-                    var newEl = oldEl.next(':visible');
+                    var newEl = oldEl.nextAll(':visible').first();
                     if (newEl.length > 0) {
                         oldEl.removeClass('song-list-el-focus');
                         newEl.addClass('song-list-el-focus');
@@ -1828,11 +1838,6 @@ var Musicope;
                     e.preventDefault();
                 });
             }
-            //export function resetIndex() {
-            //    $('.elFocus').removeClass('elFocus');
-            //    $('.el:visible:first').addClass('elFocus');
-            //    $(window).scrollTop(0);
-            //}
             function bindKeyboard() {
                 down();
                 up();

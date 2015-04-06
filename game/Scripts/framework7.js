@@ -1068,7 +1068,7 @@
                 }, 0);
             };
         
-            var previousQuery;
+            var previousQuery = '';
             var virtualList;
             s.search = function (query, internal) {
                 if (query.trim() === previousQuery) return;

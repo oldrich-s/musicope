@@ -32,19 +32,32 @@ module Musicope {
             searchIn: '.item-title, .item-text'
         });
 
+        $('.list-block-search').on('search',(a,b,c) => {
+            $('.song-list-el-focus').removeClass('song-list-el-focus');
+            $('.list-scroll li:visible:first').addClass('song-list-el-focus');
+            $('.list-scroll').scrollTop(0);
+        });
+
+
         app.onPageBeforeAnimation('play',(page) => {
-            Mousetrap.reset();
-            config = jQuery.extend(true, {}, defaultConfig);
-            config.c_songUrl = decodeURIComponent(page.query.url);
-            game = new Musicope.Game.Game();
-            $('.playTitle').text(decodeURIComponent(page.query.title));
-            app.sizeNavbars();
+            if ('url' in page.query) {
+                Mousetrap.reset();
+                config = jQuery.extend(true, {}, defaultConfig);
+                config.c_songUrl = decodeURIComponent(page.query.url);
+                game = new Musicope.Game.Game();
+                $('.playTitle').text(decodeURIComponent(page.query.title));
+                app.sizeNavbars();
+            }
         });
 
         app.onPageAfterAnimation('index',(page) => {
             Mousetrap.reset();
             Params.reset();
             List.Keyboard.bindKeyboard();
+        });
+
+        app.onPageAfterAnimation('help',(page) => {
+            config.p_isPaused = true;
         });
 
         List.init();
