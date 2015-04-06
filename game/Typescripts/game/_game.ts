@@ -1,8 +1,7 @@
 ﻿module Musicope.Game {
 
-    export class Game implements IDisposable {
+    export class Game {
 
-        private driver: IDriver;
         private keyboard: Keyboard;
         private metronome: Metronome;
         private song: Song;
@@ -14,45 +13,30 @@
 
             $('#listView').hide();
             $('#gameView').show();
-            if (!params.c_songUrl) { throw "c_songUrl does not exist!"; }
+            if (!config.c_songUrl) { throw "c_songUrl does not exist!"; }
             else {
-                o.driver = new Drivers[params.c_driver]();
-                o.driver.ready.done(() => {
-                    o.getSong().done((arr: Uint8Array) => {
-                        o.init(arr);
-                    });
+                webMidi.ready.done(() => {
+                    o.init(o.getSong());
                 });
             }
         }
 
-        dispose = () => {
-            var o = this;
-            o.driver.dispose();
-            o.metronome.dispose();
-            o.player.dispose();
-            o.scene.dispose();
-            o.keyboard.dispose();
-        }
-
         private getSong() {
             var o = this;
-            var out = $.Deferred();
-            dropbox.readFile(params.c_songUrl, { arrayBuffer: true }, function (error, data) {
-                var arr = new Uint8Array(data);
-                if (error || arr.length == 0) {
-                    throw "error loading midi file";
-                }
-                out.resolve(arr);
-            });
-            return out.promise();
+            var data = fs.readFileSync(config.c_songUrl);
+            var arr = new Uint8Array(data);
+            if (arr.length == 0) {
+                throw "error loading midi file";
+            }
+            return arr;
         }
 
         private init(arr: Uint8Array): void {
             var o = this;
             o.song = new Song(arr);
             o.scene = new Scene(o.song);
-            o.metronome = new Metronome(o.song.midi.timePerBeat, o.song.midi.timePerBar / o.song.midi.timePerBeat, o.driver);
-            o.player = new Player(o.driver, o.song, o.metronome, o.scene);
+            o.metronome = new Metronome(o.song.midi.timePerBeat, o.song.midi.timePerBar / o.song.midi.timePerBeat);
+            o.player = new Player(o.song, o.metronome, o.scene);
             o.keyboard = new Keyboard(o.song);
             o.step();
         }
@@ -63,6 +47,8 @@
                 if ($('.canvas').is(':visible')) {
                     o.requestAnimationFrame.call(window, _step);
                     o.player.step();
+                } else {
+                    webMidi.inClose();
                 }
             }
             _step();

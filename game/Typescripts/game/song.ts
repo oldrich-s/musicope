@@ -117,9 +117,9 @@
     }
 
     function normalizeVolumeOfPlayerTracks(playerTracks: Parsers.INote[][]) {
-        if (params.f_normalize) {
+        if (config.f_normalize) {
             var meanVel = getMeanVelocity(playerTracks);
-            var scaleVel = params.f_normalize / meanVel;
+            var scaleVel = config.f_normalize / meanVel;
             if (scaleVel < 1.0) {
                 playerTracks.forEach((notes) => {
                     notes.forEach((note) => {
@@ -132,7 +132,7 @@
     }
 
     function sortPlayerTracksByHands(playerTracks: Parsers.INote[][]) {
-        return params.f_trackIds.map((trackId) => {
+        return config.f_trackIds.map((trackId) => {
             return playerTracks[trackId] || [];
         });
     }

@@ -1,87 +1,20 @@
 ﻿.canvas {
-    position: absolute;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
+    width:100%;
+    height: 100%;
     background-color: black;
 }
 
-#gameView {
-    display: none;
+.canvasInfo {
+    position:absolute;
+    top:0;
+    left:0;
+    color:white;
+    font-size:xx-large;
+    text-align:left;
 }
 
-#listView {
-}
-
-body {
-  background-color: #dee5d9;
-  text-align: center;
-  margin:auto;
-}
-
-#header {
-  position: fixed;
-  z-index: 999;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 60px;
-  background-color: #3b2c46;
-  padding: 0.5%;
-  text-align: left;
-}
-
-#query {
-  font-size: x-large;
-  width: 50%;
-  padding: 1%;
-  border: 0;
-  border-radius: 20px;
-  background-color: #dee5d9;
-  outline: none;
-}
-
-#query:focus {
-  background-color: #fbeea5;
-}
-
-.midContainer {
-  background-color: #493657;
-  width: 70%;
-  padding: 10px;
-  padding-bottom: 50px;
-  padding-top: 40px;
-  margin:auto;
-  margin-top: 80px;
-}
-
-.search-match {
-  background-color: #0068b2;
-}
-
-.el {
-  display: block;
-  width: 80%;
-  border-bottom: 1px solid #ffe035;
-  padding: 10px;
-}
-
-.elFocus {
-  color: #e2c730;
-  background-color: #422557;
-  border-left: 1px solid #ffe035;
-  border-right: 1px solid #ffe035;
-  border-top: 1px solid #ffe035;
-}
-
-.elFocusFirst {
-  
-}
-
-
-.vote {
-  float:left;
+.song-list-el-focus {
+    background-color: lightblue;
 }
 
 .vote-up {
@@ -114,32 +47,6 @@ body {
 
 .vote-down:hover {
   border-top-color: #e2c730;
-}
-
-
-.elLink {
-  font-size: xx-large;
-  font-family: Century Gothic, sans-serif;
-  outline: none;
-}
-
-.elLink:link, .elLink:visited {
-  text-decoration:none;
-  color:#dee5d9;
-}
-
-.elLink:hover {
-  color: #e2c730;
-}
-
-.elLinkName {
-  display: block;
-}
-
-.elLinkPath {
-  display: block;
-  font-size: small;
-  color:#cbb645;
 }
 
 #displayHelpOverlay {

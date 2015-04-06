@@ -14,7 +14,7 @@
         return result;
     }
 
-    export class Scene implements IDisposable {
+    export class Scene {
 
         private pixelsPerTime: number;
         private activeIds = new Int32Array(127);
@@ -57,10 +57,6 @@
             o.webgl.redraw(dx, dy, o.activeIds);
         }
 
-        dispose = () => {
-            Params.unsubscribe("scene.Basic");
-        }
-
         private subscribeToParamsChange() {
             var o = this;
             Params.subscribe("scene.Basic", "^s_noteCoverRelHeight$",(name, value) => {
@@ -70,8 +66,8 @@
 
         private setBackgrColors() {
             var o = this;
-            o.pausedColor = new Int32Array(SceneFns.hexToRgb(params.s_colPaused));
-            o.unpausedColor = new Int32Array(SceneFns.hexToRgb(params.s_colUnPaused));
+            o.pausedColor = new Int32Array(SceneFns.hexToRgb(config.s_colPaused));
+            o.unpausedColor = new Int32Array(SceneFns.hexToRgb(config.s_colUnPaused));
         }
 
         private setPausedState(isPaused: boolean) {
@@ -87,7 +83,7 @@
             var o = this;
             o.canvas.width = window.innerWidth;
             o.canvas.height = window.innerHeight;
-            o.pixelsPerTime = o.canvas.height * 4 / (o.song.midi.noteValuePerBeat * params.s_quartersPerHeight * o.song.midi.timePerBeat);
+            o.pixelsPerTime = o.canvas.height * 4 / (o.song.midi.noteValuePerBeat * config.s_quartersPerHeight * o.song.midi.timePerBeat);
         }
 
         private setupWebGL() {
@@ -114,8 +110,8 @@
                 sceneHeight: o.canvas.height,
                 tracks: o.song.sceneTracks,
                 sustainNotes: o.song.sceneSustainNotes,
-                p_minNote: params.p_minNote,
-                p_maxNote: params.p_maxNote,
+                p_minNote: config.p_minNote,
+                p_maxNote: config.p_maxNote,
                 playedNoteID: o.song.playedNoteID,
             };
             SceneFns.drawScene(input);

@@ -13,7 +13,6 @@
 
     export function reset() {
         subscriptions = {};
-        params = jQuery.extend(true, {}, defaultParams);
     }
 
     export function subscribe(id: string, regex: string, callback: (param: string, value: any) => void) {
@@ -23,12 +22,8 @@
         };
     }
 
-    export function unsubscribe(id: string) {
-        delete subscriptions[id];
-    }
-
     export function setParam(name: string, value: any, dontNotifyOthers?: boolean) {
-        params[name] = value;
+        config[name] = value;
         if (!dontNotifyOthers) {
             call(name, value);
         }

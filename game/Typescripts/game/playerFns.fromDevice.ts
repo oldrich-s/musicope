@@ -1,8 +1,8 @@
 ﻿module Musicope.Game.PlayerFns {
 
-    function sendBackToDevice(driver: IDriver, kind, noteId, velocity) {
+    function sendBackToDevice(kind, noteId, velocity) {
         if (kind < 242 && (kind < 127 || kind > 160)) {
-            driver.out(kind, noteId, velocity);
+            webMidi.out(kind, noteId, velocity);
         }
     }
 
@@ -12,7 +12,7 @@
         }
     }
 
-    export class FromDevice implements IDisposable {
+    export class FromDevice {
 
         private noteOnFuncs = [];
 
@@ -20,11 +20,11 @@
         private oldVelocity = -1;
         private oldId = -1;
 
-        constructor(private driver: IDriver, private scene: Scene, private notes: Parsers.INote[][]) {
+        constructor(private scene: Scene, private notes: Parsers.INote[][]) {
             var o = this;
-            o.driver.outOpen();
-            o.driver.out(0x80, 0, 0);
-            o.driver.inOpen(o.deviceIn);
+            webMidi.outOpen();
+            webMidi.out(0x80, 0, 0);
+            webMidi.inOpen(o.deviceIn);
         }
 
         onNoteOn = (func: (noteId: number) => void) => {
@@ -32,15 +32,9 @@
             o.noteOnFuncs.push(func);
         }
 
-        dispose = () => {
-            var o = this;
-            o.driver.inClose();
-            o.driver.outClose();
-        }
-
         private deviceIn = (timeStamp, kind, noteId, velocity) => {
             var o = this;
-            sendBackToDevice(o.driver, kind, noteId, velocity);
+            sendBackToDevice(kind, noteId, velocity);
             var isNoteOn = kind === 144 && velocity > 0;
             var isNoteOff = kind === 128 || (kind === 144 && velocity == 0);
             if (isNoteOn && !o.isDoubleNote(timeStamp, isNoteOn, noteId, velocity)) {

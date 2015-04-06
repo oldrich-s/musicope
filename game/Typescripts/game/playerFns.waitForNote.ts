@@ -5,7 +5,7 @@
         private ids: number[];
         private notesPressedTime: number[][];
 
-        constructor(private device: IDriver,
+        constructor(
             private notes: Parsers.INote[][],
             private onNoteOn: (func: (noteId: number) => void) => void) {
             var o = this;
@@ -18,7 +18,7 @@
             var o = this;
             var freeze = false;
             for (var trackId = 0; trackId < o.notes.length; trackId++) {
-                var isWait = params.p_userHands[trackId] && params.p_waits[trackId];
+                var isWait = config.p_userHands[trackId] && config.p_waits[trackId];
                 if (isWait) {
                     while (!freeze && o.isIdBelowCurrentTimeMinusRadius(trackId, o.ids[trackId])) {
                         freeze = o.isNoteUnpressed(trackId, o.ids[trackId]);
@@ -51,15 +51,15 @@
 
         private addNoteOnToKnownNotes = (noteId: number) => {
             var o = this;
-            for (var i = 0; i < params.p_userHands.length; i++) {
-                if (params.p_userHands[i]) {
+            for (var i = 0; i < config.p_userHands.length; i++) {
+                if (config.p_userHands[i]) {
                     var id = o.ids[i];
                     while (o.isIdBelowCurrentTimePlusRadius(i, id)) {
                         var note = o.notes[i][id];
                         if (note.on && !o.notesPressedTime[i][id] && note.id === noteId) {
-                            var radius = Math.abs(o.notes[i][id].time - params.p_elapsedTime) - 50;
-                            if (radius < params.p_radiuses[i]) {
-                                o.notesPressedTime[i][id] = params.p_elapsedTime;
+                            var radius = Math.abs(o.notes[i][id].time - config.p_elapsedTime) - 50;
+                            if (radius < config.p_radiuses[i]) {
+                                o.notesPressedTime[i][id] = config.p_elapsedTime;
                                 return;
                             }
                         }
@@ -72,7 +72,7 @@
         private isIdBelowCurrentTimePlusRadius = (trackId: number, noteId: number) => {
             var o = this;
             return o.notes[trackId][noteId] &&
-                o.notes[trackId][noteId].time < params.p_elapsedTime + params.p_radiuses[trackId];
+                o.notes[trackId][noteId].time < config.p_elapsedTime + config.p_radiuses[trackId];
         }
 
         private resetNotesPressedTime = (idsBelowCurrentTime: number[]) => {
@@ -94,7 +94,7 @@
         private isIdBelowCurrentTimeMinusRadius = (trackId: number, noteId: number) => {
             var o = this;
             return o.notes[trackId][noteId] &&
-                o.notes[trackId][noteId].time < params.p_elapsedTime - params.p_radiuses[trackId];
+                o.notes[trackId][noteId].time < config.p_elapsedTime - config.p_radiuses[trackId];
         }
 
         private isNoteUnpressed = (trackId: number, noteId: number) => {
@@ -102,9 +102,9 @@
             var note = o.notes[trackId][noteId];
             var wasPlayedByUser = o.notesPressedTime[trackId][noteId];
             var waitForOutOfReach = true;
-            if (!params.p_waitForOutOfReachNotes) {
-                var isNoteAboveMin = note.id >= params.p_minNote;
-                var isNoteBelowMax = note.id <= params.p_maxNote;
+            if (!config.p_waitForOutOfReachNotes) {
+                var isNoteAboveMin = note.id >= config.p_minNote;
+                var isNoteBelowMax = note.id <= config.p_maxNote;
                 waitForOutOfReach = isNoteAboveMin && isNoteBelowMax;
             }
             return note.on && !wasPlayedByUser && waitForOutOfReach;

@@ -1,17 +1,14 @@
 ﻿module Musicope {
 
-    export interface IParams {
+    export interface IConfig {
 
         // controllers
         c_songUrl: string;
-        c_driver: string;
-        c_callbackUrl: string;
-
-        // players
-        p_deviceIn: string;
-        p_deviceOut: string;
         p_elapsedTime: number;
         p_initTime: number;
+
+        p_deviceIn: string;
+        p_deviceOut: string;
         p_isPaused: boolean;
         p_minNote: number;
         p_maxNote: number;

@@ -19,14 +19,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="Content\app.css" />
+    <Content Include="Content\framework7.css" />
     <Content Include="Content\icon.ico" />
     <Content Include="index.html" />
     <Content Include="packages.config" />
     <None Include="Scripts\jquery-2.1.3.intellisense.js" />
+    <Content Include="Scripts\framework7.js" />
     <Content Include="Scripts\jquery-2.1.3.js" />
     <Content Include="Scripts\jquery-2.1.3.min.js" />
-    <Content Include="Scripts\knockout-3.2.0.debug.js" />
-    <Content Include="Scripts\knockout-3.2.0.js" />
     <Content Include="Scripts\midifile.js" />
     <Content Include="Scripts\mousetrap.js" />
     <Content Include="Scripts\mousetrap.min.js" />
@@ -35,32 +35,28 @@
     <Content Include="Scripts\jquery-2.1.3.min.map" />
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="Scripts\typings\knockout\knockout.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\framework7.ts" />
     <TypeScriptCompile Include="Scripts\typings\purl\purl-jquery.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\purl\purl.d.ts" />
+    <TypeScriptCompile Include="Typescripts\game\keyboardActions.backspace.ts" />
+    <TypeScriptCompile Include="Typescripts\game\keyboardActions.esc.ts" />
     <TypeScriptCompile Include="Typescripts\game\_game.ts" />
-    <TypeScriptCompile Include="Typescripts\game\drivers._decl.ts" />
-    <TypeScriptCompile Include="Typescripts\game\drivers.webMidi.ts" />
-    <TypeScriptCompile Include="Typescripts\game\keyboardFns.overlay.ts" />
-    <TypeScriptCompile Include="Typescripts\game\keyboardsFns.actions.coverNotes.ts" />
-    <TypeScriptCompile Include="Typescripts\game\keyboardsFns.actions.displayHelp.ts" />
-    <TypeScriptCompile Include="Typescripts\game\keyboardsFns.actions.metronomeOn.ts" />
-    <TypeScriptCompile Include="Typescripts\game\keyboardsFns.actions.moveBack.ts" />
-    <TypeScriptCompile Include="Typescripts\game\keyboardsFns.actions.moveHome.ts" />
-    <TypeScriptCompile Include="Typescripts\game\keyboardsFns.actions.pauseOn.ts" />
-    <TypeScriptCompile Include="Typescripts\game\keyboardsFns.actions.slowDown.ts" />
-    <TypeScriptCompile Include="Typescripts\game\keyboardsFns.actions.speedUp.ts" />
-    <TypeScriptCompile Include="Typescripts\game\keyboardsFns.actions.exit.ts" />
-    <TypeScriptCompile Include="Typescripts\game\keyboardsFns.actions._declarations.ts" />
-    <TypeScriptCompile Include="Typescripts\game\keyboardsFns.actions._tools.ts" />
-    <TypeScriptCompile Include="Typescripts\game\keyboardsFns.actions.userHands.ts" />
-    <TypeScriptCompile Include="Typescripts\game\keyboardsFns.actions.moveForward.ts" />
-    <TypeScriptCompile Include="Typescripts\game\keyboardsFns.actions.waitOn.ts" />
+    <TypeScriptCompile Include="Typescripts\setup.ts" />
+    <TypeScriptCompile Include="Typescripts\webMidi.ts" />
+    <TypeScriptCompile Include="Typescripts\game\keyboardOverlay.ts" />
+    <TypeScriptCompile Include="Typescripts\game\keyboardActions.c.ts" />
+    <TypeScriptCompile Include="Typescripts\game\keyboardActions.m.ts" />
+    <TypeScriptCompile Include="Typescripts\game\keyboardActions.left.ts" />
+    <TypeScriptCompile Include="Typescripts\game\keyboardActions.home.ts" />
+    <TypeScriptCompile Include="Typescripts\game\keyboardActions.space.ts" />
+    <TypeScriptCompile Include="Typescripts\game\keyboardActions.down.ts" />
+    <TypeScriptCompile Include="Typescripts\game\keyboardActions.up.ts" />
+    <TypeScriptCompile Include="Typescripts\game\keyboardTools.ts" />
+    <TypeScriptCompile Include="Typescripts\game\keyboardActions.h.ts" />
+    <TypeScriptCompile Include="Typescripts\game\keyboardActions.right.ts" />
+    <TypeScriptCompile Include="Typescripts\game\keyboardActions.w.ts" />
     <TypeScriptCompile Include="Typescripts\game\keyboard.ts" />
     <TypeScriptCompile Include="Typescripts\game\metronome.ts" />
-    <TypeScriptCompile Include="Typescripts\model\_decl.game.userParams.ts" />
-    <TypeScriptCompile Include="Typescripts\model\_decl.ts" />
-    <TypeScriptCompile Include="Typescripts\model\_decl.game.ts" />
     <TypeScriptCompile Include="Typescripts\params.declarations.ts" />
     <TypeScriptCompile Include="Typescripts\params.functions.ts" />
     <TypeScriptCompile Include="Typescripts\game\parsers.declarations.ts" />
@@ -78,10 +74,8 @@
     <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\mousetrap\mousetrap-global-bind.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\mousetrap\mousetrap.d.ts" />
-    <TypeScriptCompile Include="Typescripts\list\filterSongs.ts" />
     <TypeScriptCompile Include="Typescripts\list\keyboard.ts" />
-    <TypeScriptCompile Include="Typescripts\list\options.ts" />
-    <TypeScriptCompile Include="Typescripts\list\_app.ts" />
+    <TypeScriptCompile Include="Typescripts\list\_list.ts" />
     <TypeScriptCompile Include="Typescripts\params.ts" />
     <TypeScriptCompile Include="Typescripts\_declarations.ts" />
     <TypeScriptCompile Include="Typescripts\_app.ts" />
@@ -124,6 +118,7 @@
     <TypeScriptRemoveComments>false</TypeScriptRemoveComments>
     <TypeScriptSourceMap>true</TypeScriptSourceMap>
     <TypeScriptOutFile>Scripts/app.js</TypeScriptOutFile>
+    <TypeScriptModuleKind>none</TypeScriptModuleKind>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <TypeScriptRemoveComments>true</TypeScriptRemoveComments>

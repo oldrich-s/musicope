@@ -1,9 +1,44 @@
+;
+var fs = require("fs");
+var p = require('path');
+var gui = require('nw.gui');
 var Musicope;
 (function (Musicope) {
-    Musicope.dropbox = new Dropbox.Client({ key: "ckt9l58i8fpcq6d" });
     Musicope.game;
+    Musicope.app;
+    Musicope.mainView;
+    Musicope.webMidi;
+    Musicope.songsJsonPath = "songs.json";
+    Musicope.setupJsonPath = "setup.json";
+    var win = gui.Window.get();
+    //win.maximize();
     $(document).ready(function () {
+        Musicope.app = new Framework7({
+            swipeBackPage: false
+        });
+        Musicope.mainView = Musicope.app.addView('.view-main', {
+            domCache: true
+        });
+        var mySearchbar = Musicope.app.searchbar('.searchbar', {
+            searchList: '.list-block-search',
+            searchIn: '.item-title, .item-text'
+        });
+        Musicope.app.onPageBeforeAnimation('play', function (page) {
+            Mousetrap.reset();
+            Musicope.config = jQuery.extend(true, {}, Musicope.defaultConfig);
+            Musicope.config.c_songUrl = decodeURIComponent(page.query.url);
+            Musicope.game = new Musicope.Game.Game();
+            $('.playTitle').text(decodeURIComponent(page.query.title));
+            Musicope.app.sizeNavbars();
+        });
+        Musicope.app.onPageAfterAnimation('index', function (page) {
+            Mousetrap.reset();
+            Musicope.Params.reset();
+            Musicope.List.Keyboard.bindKeyboard();
+        });
         Musicope.List.init();
+        Musicope.Setup.init();
+        Musicope.webMidi = new Musicope.WebMidi();
     });
 })(Musicope || (Musicope = {}));
 var Musicope;
@@ -12,51 +47,36 @@ var Musicope;
     (function (_Game) {
         var Game = (function () {
             function Game() {
-                var _this = this;
-                this.dispose = function () {
-                    var o = _this;
-                    o.driver.dispose();
-                    o.metronome.dispose();
-                    o.player.dispose();
-                    o.scene.dispose();
-                    o.keyboard.dispose();
-                };
                 this.requestAnimationFrame = window["requestAnimationFrame"] || window["webkitRequestAnimationFrame"] || window["mozRequestAnimationFrame"] || window["oRequestAnimationFrame"] || window["msRequestAnimationFrame"] || function (callback) {
                     window.setTimeout(callback, 1000 / 60);
                 };
                 var o = this;
                 $('#listView').hide();
                 $('#gameView').show();
-                if (!Musicope.params.c_songUrl) {
+                if (!Musicope.config.c_songUrl) {
                     throw "c_songUrl does not exist!";
                 }
                 else {
-                    o.driver = new _Game.Drivers[Musicope.params.c_driver]();
-                    o.driver.ready.done(function () {
-                        o.getSong().done(function (arr) {
-                            o.init(arr);
-                        });
+                    Musicope.webMidi.ready.done(function () {
+                        o.init(o.getSong());
                     });
                 }
             }
             Game.prototype.getSong = function () {
                 var o = this;
-                var out = $.Deferred();
-                Musicope.dropbox.readFile(Musicope.params.c_songUrl, { arrayBuffer: true }, function (error, data) {
-                    var arr = new Uint8Array(data);
-                    if (error || arr.length == 0) {
-                        throw "error loading midi file";
-                    }
-                    out.resolve(arr);
-                });
-                return out.promise();
+                var data = fs.readFileSync(Musicope.config.c_songUrl);
+                var arr = new Uint8Array(data);
+                if (arr.length == 0) {
+                    throw "error loading midi file";
+                }
+                return arr;
             };
             Game.prototype.init = function (arr) {
                 var o = this;
                 o.song = new _Game.Song(arr);
                 o.scene = new _Game.Scene(o.song);
-                o.metronome = new _Game.Metronome(o.song.midi.timePerBeat, o.song.midi.timePerBar / o.song.midi.timePerBeat, o.driver);
-                o.player = new _Game.Player(o.driver, o.song, o.metronome, o.scene);
+                o.metronome = new _Game.Metronome(o.song.midi.timePerBeat, o.song.midi.timePerBar / o.song.midi.timePerBeat);
+                o.player = new _Game.Player(o.song, o.metronome, o.scene);
                 o.keyboard = new _Game.Keyboard(o.song);
                 o.step();
             };
@@ -66,6 +86,9 @@ var Musicope;
                     if ($('.canvas').is(':visible')) {
                         o.requestAnimationFrame.call(window, _step);
                         o.player.step();
+                    }
+                    else {
+                        Musicope.webMidi.inClose();
                     }
                 }
                 _step();
@@ -79,123 +102,21 @@ var Musicope;
 (function (Musicope) {
     var Game;
     (function (Game) {
-        var Drivers;
-        (function (Drivers) {
-            var WebMidi = (function () {
-                function WebMidi() {
-                    var _this = this;
-                    this.ready = $.Deferred();
-                    this.inList = function () {
-                        return _this.midi.inputs;
-                    };
-                    this.outList = function () {
-                        return _this.midi.outputs;
-                    };
-                    this.inOpen = function (callback) {
-                        var o = _this;
-                        o.input = o.midi.inputs.get(Musicope.params.p_deviceIn);
-                        if (o.input) {
-                            o.input.onmidimessage = function (e) {
-                                callback(e.timeStamp, e.data[0], e.data[1], e.data[2]);
-                            };
-                        }
-                    };
-                    this.outOpen = function () {
-                        var o = _this;
-                        o.output = o.midi.outputs.get(Musicope.params.p_deviceOut);
-                        if (!o.output) {
-                            o.output = o.midi.outputs.get(0);
-                        }
-                    };
-                    this.inClose = function () {
-                        var o = _this;
-                        if (o.input && o.input.value) {
-                            o.input.value.onmidimessage = null;
-                        }
-                    };
-                    this.outClose = function () {
-                    };
-                    this.out = function (byte1, byte2, byte3) {
-                        var data = [byte1, byte2];
-                        if (typeof byte3 === "number") {
-                            data.push(byte3);
-                        }
-                        _this.output.send(data);
-                    };
-                    this.dispose = function () {
-                        var o = _this;
-                        o.inClose();
-                    };
-                    var o = this;
-                    navigator.requestMIDIAccess().then(function (m) {
-                        o.midi = m;
-                        o.ready.resolve();
-                    }, function (msg) {
-                        o.ready.reject("Failed to get MIDI access - " + msg);
-                    });
-                }
-                return WebMidi;
-            })();
-            Drivers.WebMidi = WebMidi;
-        })(Drivers = Game.Drivers || (Game.Drivers = {}));
-    })(Game = Musicope.Game || (Musicope.Game = {}));
-})(Musicope || (Musicope = {}));
-var Musicope;
-(function (Musicope) {
-    var Game;
-    (function (Game) {
+        Game.keyboardActions = {};
         var Keyboard = (function () {
             function Keyboard(song) {
-                var _this = this;
                 this.song = song;
-                this.actions = [];
-                this.dispose = function () {
-                    var o = _this;
-                    o.unsubscribeActions();
-                };
                 var o = this;
-                o.initActions();
-                o.checkActionsDuplicates();
                 o.subscribeActions();
             }
-            Keyboard.prototype.initActions = function () {
-                var o = this;
-                var deff = $.Deferred();
-                var keyboardParams = {
-                    song: o.song,
-                    actions: deff.promise()
-                };
-                for (var prop in Game.KeyboardFns.Actions.List) {
-                    var action = new Game.KeyboardFns.Actions.List[prop](keyboardParams);
-                    o.actions.push(action);
-                }
-                deff.resolve(o.actions);
-            };
-            Keyboard.prototype.checkActionsDuplicates = function () {
-                var o = this;
-                var keys = {};
-                o.actions.forEach(function (action) {
-                    if (keys[action.key]) {
-                        var text = "duplicate keys: '" + keys[action.key] + "' vs '" + action.id + "'";
-                        throw text;
-                    }
-                    keys[action.key] = action.id;
-                });
-            };
             Keyboard.prototype.subscribeActions = function () {
                 var o = this;
-                o.actions.forEach(function (action) {
-                    Mousetrap.bind(action.key, function () {
-                        action.triggerAction();
-                        Game.KeyboardFns.Overlay.display(action.id, action.getCurrentState());
-                    });
-                });
-            };
-            Keyboard.prototype.unsubscribeActions = function () {
-                var o = this;
-                o.actions.forEach(function (action) {
-                    Mousetrap.unbind(action.key);
-                });
+                for (var key in Game.keyboardActions) {
+                    Mousetrap.bind(key, function (action) {
+                        action.triggerAction(o.song);
+                        Game.KeyboardOverlay.display(action.title, action.getCurrentState());
+                    }.bind(this, Game.keyboardActions[key]));
+                }
             };
             return Keyboard;
         })();
@@ -206,538 +127,284 @@ var Musicope;
 (function (Musicope) {
     var Game;
     (function (Game) {
-        var KeyboardFns;
-        (function (KeyboardFns) {
-            var Overlay;
-            (function (Overlay) {
-                var displayDescription;
-                var displayValue;
-                var oldTimeOut;
-                function createDomIfNeeded() {
-                    if (!displayDescription || !displayValue) {
-                        var container = $("<div style='position:absolute; top:0px; left:0; color:white; font-size:xx-large; text-align:left;' />").appendTo("body");
-                        displayDescription = $("<span />").appendTo(container);
-                        displayValue = $("<span style='color:red;' />").appendTo(container);
+        $(document).ready(function () {
+            Game.keyboardActions["backspace"] = {
+                title: "Exit",
+                description: "Exit the gameplay.",
+                triggerAction: function (song) {
+                    Musicope.mainView.router.back();
+                },
+                getCurrentState: function () {
+                    return null;
+                }
+            };
+        });
+    })(Game = Musicope.Game || (Musicope.Game = {}));
+})(Musicope || (Musicope = {}));
+var Musicope;
+(function (Musicope) {
+    var Game;
+    (function (Game) {
+        $(document).ready(function () {
+            var states = [0.0, 0.2, 0.4, 0.6, 0.8];
+            Game.keyboardActions["c"] = {
+                title: "Cover notes",
+                description: "Cover a part of the note bars to increase the difficulty level.",
+                triggerAction: function () {
+                    var height = Game.KeyboardTools.toggle(Musicope.config.s_noteCoverRelHeight, states);
+                    Musicope.Params.setParam("s_noteCoverRelHeight", height);
+                },
+                getCurrentState: function () {
+                    return Musicope.config.s_noteCoverRelHeight;
+                }
+            };
+        });
+    })(Game = Musicope.Game || (Musicope.Game = {}));
+})(Musicope || (Musicope = {}));
+var Musicope;
+(function (Musicope) {
+    var Game;
+    (function (Game) {
+        $(document).ready(function () {
+            Game.keyboardActions["down"] = {
+                title: "Slow down",
+                description: "Slow down the playback by 10 percent points.",
+                triggerAction: function (song) {
+                    Musicope.Params.setParam("p_speed", Musicope.config.p_speed - 0.1);
+                },
+                getCurrentState: function () {
+                    return Musicope.config.p_speed * 100;
+                }
+            };
+        });
+    })(Game = Musicope.Game || (Musicope.Game = {}));
+})(Musicope || (Musicope = {}));
+var Musicope;
+(function (Musicope) {
+    var Game;
+    (function (Game) {
+        $(document).ready(function () {
+            Game.keyboardActions["esc"] = {
+                title: "Exit",
+                description: "Exit the gameplay.",
+                triggerAction: function (song) {
+                    Musicope.mainView.router.back();
+                },
+                getCurrentState: function () {
+                    return null;
+                }
+            };
+        });
+    })(Game = Musicope.Game || (Musicope.Game = {}));
+})(Musicope || (Musicope = {}));
+var Musicope;
+(function (Musicope) {
+    var Game;
+    (function (Game) {
+        $(document).ready(function () {
+            var options = [[false, false], [false, true], [true, false], [true, true]];
+            var names = ["none", "right", "left", "both"];
+            Game.keyboardActions["h"] = {
+                title: "Hands",
+                description: "Defines which hands are played by the user [no hands / right hand / left hand / both hands].",
+                triggerAction: function (song) {
+                    Musicope.Params.setParam("p_userHands", Game.KeyboardTools.toggle(Musicope.config.p_userHands, options));
+                },
+                getCurrentState: function () {
+                    var i = options.indexOf(Musicope.config.p_userHands);
+                    return names[i];
+                }
+            };
+        });
+    })(Game = Musicope.Game || (Musicope.Game = {}));
+})(Musicope || (Musicope = {}));
+var Musicope;
+(function (Musicope) {
+    var Game;
+    (function (Game) {
+        $(document).ready(function () {
+            Game.keyboardActions["home"] = {
+                title: "Rewind start",
+                description: "Rewind the song back to the initial position.",
+                triggerAction: function (song) {
+                    Musicope.Params.setParam("p_elapsedTime", Musicope.config.p_initTime);
+                },
+                getCurrentState: function () {
+                    return Musicope.config.p_elapsedTime / 1000;
+                }
+            };
+        });
+    })(Game = Musicope.Game || (Musicope.Game = {}));
+})(Musicope || (Musicope = {}));
+var Musicope;
+(function (Musicope) {
+    var Game;
+    (function (Game) {
+        $(document).ready(function () {
+            Game.keyboardActions["left"] = {
+                title: "Fast backward",
+                description: "Fast backward the song by the amount of 2 beats.",
+                triggerAction: function (song) {
+                    var newTime = Musicope.config.p_elapsedTime - 2 * song.midi.timePerBeat;
+                    var truncTime = Math.max(Musicope.config.p_initTime, newTime);
+                    Musicope.Params.setParam("p_elapsedTime", truncTime);
+                },
+                getCurrentState: function () {
+                    return Musicope.config.p_elapsedTime / 1000;
+                }
+            };
+        });
+    })(Game = Musicope.Game || (Musicope.Game = {}));
+})(Musicope || (Musicope = {}));
+var Musicope;
+(function (Musicope) {
+    var Game;
+    (function (Game) {
+        $(document).ready(function () {
+            Game.keyboardActions["m"] = {
+                title: "Metronome",
+                description: "Toggle state of the metronome on/off",
+                triggerAction: function () {
+                    Musicope.Params.setParam("m_isOn", !Musicope.config.m_isOn);
+                },
+                getCurrentState: function () {
+                    return Musicope.config.m_isOn ? "on" : "off";
+                }
+            };
+        });
+    })(Game = Musicope.Game || (Musicope.Game = {}));
+})(Musicope || (Musicope = {}));
+var Musicope;
+(function (Musicope) {
+    var Game;
+    (function (Game) {
+        $(document).ready(function () {
+            Game.keyboardActions["right"] = {
+                title: "Fast forward",
+                description: "Fast forward the song by the amount of 2 beats.",
+                triggerAction: function (song) {
+                    var newTime = Musicope.config.p_elapsedTime + 2 * song.midi.timePerBeat;
+                    var truncTime = Math.min(song.timePerSong + 10, newTime);
+                    Musicope.Params.setParam("p_elapsedTime", truncTime);
+                },
+                getCurrentState: function () {
+                    return Musicope.config.p_elapsedTime / 1000;
+                }
+            };
+        });
+    })(Game = Musicope.Game || (Musicope.Game = {}));
+})(Musicope || (Musicope = {}));
+var Musicope;
+(function (Musicope) {
+    var Game;
+    (function (Game) {
+        $(document).ready(function () {
+            Game.keyboardActions["space"] = {
+                title: "Pause",
+                description: "Pause / unpause the song playback.",
+                triggerAction: function (song) {
+                    Musicope.Params.setParam("p_isPaused", !Musicope.config.p_isPaused);
+                },
+                getCurrentState: function () {
+                    return Musicope.config.p_isPaused ? "on" : "off";
+                }
+            };
+        });
+    })(Game = Musicope.Game || (Musicope.Game = {}));
+})(Musicope || (Musicope = {}));
+var Musicope;
+(function (Musicope) {
+    var Game;
+    (function (Game) {
+        $(document).ready(function () {
+            Game.keyboardActions["up"] = {
+                title: "Speed up",
+                description: "Speed up the playback by 10 percent points.",
+                triggerAction: function (song) {
+                    Musicope.Params.setParam("p_speed", Musicope.config.p_speed + 0.1);
+                },
+                getCurrentState: function () {
+                    return Musicope.config.p_speed * 100;
+                }
+            };
+        });
+    })(Game = Musicope.Game || (Musicope.Game = {}));
+})(Musicope || (Musicope = {}));
+var Musicope;
+(function (Musicope) {
+    var Game;
+    (function (Game) {
+        $(document).ready(function () {
+            var options = [[false, false], [true, true]];
+            var names = ["off", "on"];
+            Game.keyboardActions["w"] = {
+                title: "Wait",
+                description: "The song playback stops until the correct note is hit.",
+                triggerAction: function (song) {
+                    Musicope.Params.setParam("p_waits", Game.KeyboardTools.toggle(Musicope.config.p_waits, options));
+                },
+                getCurrentState: function () {
+                    var i = options.indexOf(Musicope.config.p_waits);
+                    return names[i];
+                }
+            };
+        });
+    })(Game = Musicope.Game || (Musicope.Game = {}));
+})(Musicope || (Musicope = {}));
+var Musicope;
+(function (Musicope) {
+    var Game;
+    (function (Game) {
+        var KeyboardOverlay;
+        (function (KeyboardOverlay) {
+            var oldTimeOut;
+            function display(description, value) {
+                var str;
+                if (typeof value == "number") {
+                    str = Math.round(1000 * value) / 1000;
+                }
+                else {
+                    str = value;
+                }
+                $('.canvasInfoDesc').text(description + ": ");
+                $('.canvasInfoValue').text(str);
+                $('.canvasInfo').show();
+                clearTimeout(oldTimeOut);
+                oldTimeOut = setTimeout(function () {
+                    $('.canvasInfo').hide();
+                }, 5000);
+            }
+            KeyboardOverlay.display = display;
+        })(KeyboardOverlay = Game.KeyboardOverlay || (Game.KeyboardOverlay = {}));
+    })(Game = Musicope.Game || (Musicope.Game = {}));
+})(Musicope || (Musicope = {}));
+var Musicope;
+(function (Musicope) {
+    var Game;
+    (function (Game) {
+        var KeyboardTools;
+        (function (KeyboardTools) {
+            function areEqual(param1, param2) {
+                if (typeof param1 === "object" && typeof param2 === "object" && "every" in param1 && "every" in param2) {
+                    var areEqual = param1.every(function (param1i, i) {
+                        return param1i == param2[i];
+                    });
+                    return areEqual;
+                }
+                else {
+                    return param1 == param2;
+                }
+            }
+            KeyboardTools.areEqual = areEqual;
+            function toggle(currentOption, options) {
+                for (var i = 0; i < options.length; i++) {
+                    if (areEqual(currentOption, options[i])) {
+                        return options[(i + 1) % options.length];
                     }
                 }
-                function display(description, value) {
-                    if (value) {
-                        var str;
-                        if (typeof value == "number") {
-                            str = Math.round(1000 * value) / 1000;
-                        }
-                        else {
-                            str = value;
-                        }
-                        createDomIfNeeded();
-                        displayDescription.text(description + ": ");
-                        displayValue.text(str);
-                        clearTimeout(oldTimeOut);
-                        oldTimeOut = setTimeout(function () {
-                            displayDescription.text("");
-                            displayValue.text("");
-                        }, 5000);
-                    }
-                }
-                Overlay.display = display;
-            })(Overlay = KeyboardFns.Overlay || (KeyboardFns.Overlay = {}));
-        })(KeyboardFns = Game.KeyboardFns || (Game.KeyboardFns = {}));
-    })(Game = Musicope.Game || (Musicope.Game = {}));
-})(Musicope || (Musicope = {}));
-var Musicope;
-(function (Musicope) {
-    var Game;
-    (function (Game) {
-        var KeyboardFns;
-        (function (KeyboardFns) {
-            var Actions;
-            (function (Actions) {
-                var Tools;
-                (function (Tools) {
-                    function areEqual(param1, param2) {
-                        if (typeof param1 === "object" && typeof param2 === "object" && "every" in param1 && "every" in param2) {
-                            var areEqual = param1.every(function (param1i, i) {
-                                return param1i == param2[i];
-                            });
-                            return areEqual;
-                        }
-                        else {
-                            return param1 == param2;
-                        }
-                    }
-                    Tools.areEqual = areEqual;
-                    function toggle(currentOption, options) {
-                        for (var i = 0; i < options.length; i++) {
-                            if (areEqual(currentOption, options[i])) {
-                                return options[(i + 1) % options.length];
-                            }
-                        }
-                    }
-                    Tools.toggle = toggle;
-                })(Tools = Actions.Tools || (Actions.Tools = {}));
-            })(Actions = KeyboardFns.Actions || (KeyboardFns.Actions = {}));
-        })(KeyboardFns = Game.KeyboardFns || (Game.KeyboardFns = {}));
-    })(Game = Musicope.Game || (Musicope.Game = {}));
-})(Musicope || (Musicope = {}));
-var Musicope;
-(function (Musicope) {
-    var Game;
-    (function (Game) {
-        var KeyboardFns;
-        (function (KeyboardFns) {
-            var Actions;
-            (function (Actions) {
-                var List;
-                (function (List) {
-                    var CoverNotes = (function () {
-                        function CoverNotes(p) {
-                            this.p = p;
-                            this.id = "cover notes";
-                            this.description = "Cover notes";
-                            this.key = "c";
-                            this.states = [0.0, 0.2, 0.4, 0.6, 0.8];
-                        }
-                        CoverNotes.prototype.triggerAction = function () {
-                            var o = this;
-                            var height = Actions.Tools.toggle(Musicope.params.s_noteCoverRelHeight, o.states);
-                            Musicope.Params.setParam("s_noteCoverRelHeight", height);
-                        };
-                        CoverNotes.prototype.getCurrentState = function () {
-                            var o = this;
-                            return Musicope.params.s_noteCoverRelHeight;
-                        };
-                        return CoverNotes;
-                    })();
-                    List.CoverNotes = CoverNotes;
-                })(List = Actions.List || (Actions.List = {}));
-            })(Actions = KeyboardFns.Actions || (KeyboardFns.Actions = {}));
-        })(KeyboardFns = Game.KeyboardFns || (Game.KeyboardFns = {}));
-    })(Game = Musicope.Game || (Musicope.Game = {}));
-})(Musicope || (Musicope = {}));
-var Musicope;
-(function (Musicope) {
-    var Game;
-    (function (Game) {
-        var KeyboardFns;
-        (function (KeyboardFns) {
-            var Actions;
-            (function (Actions) {
-                var List;
-                (function (List) {
-                    var isFirst = true;
-                    var displayHelp = (function () {
-                        function displayHelp(p) {
-                            this.p = p;
-                            this.id = "display help";
-                            this.description = "displays a help window";
-                            this.key = "enter";
-                            this.isDisplayed = false;
-                            var o = this;
-                            o.window = $("#displayHelpOverlay");
-                        }
-                        displayHelp.prototype.triggerAction = function () {
-                            var o = this;
-                            o.isDisplayed = !o.isDisplayed;
-                            Musicope.Params.setParam("p_isPaused", o.isDisplayed);
-                            o.display();
-                        };
-                        displayHelp.prototype.getCurrentState = function () {
-                            var o = this;
-                            return o.isDisplayed;
-                        };
-                        displayHelp.prototype.display = function () {
-                            var o = this;
-                            if (o.isDisplayed) {
-                                o.p.actions.done(function (actions) {
-                                    Musicope.Params.subscribe("displayHelp", ".*", function (name, value) {
-                                        o.refillTable(actions);
-                                    });
-                                    o.refillTable(actions);
-                                    o.window.css("display", "block");
-                                });
-                            }
-                            else {
-                                Musicope.Params.unsubscribe("displayHelp");
-                                o.window.css("display", "none");
-                            }
-                        };
-                        displayHelp.prototype.refillTable = function (actions) {
-                            var o = this;
-                            var table = o.window.children("table");
-                            table.find("tr:has(td)").html("");
-                            var sortedActions = actions.sort(function (a, b) {
-                                return (a.id > b.id);
-                            });
-                            sortedActions.forEach(function (action) {
-                                var row = $("<tr/>").appendTo(table);
-                                var idCell = $("<td class='idCell'/>").appendTo(row);
-                                var keyCell = $("<td class='keyCell'/>").appendTo(row);
-                                var descriptionCell = $("<td class='descriptionCell'/>").appendTo(row);
-                                var currentCell = $("<td class='currentCell'/>").appendTo(row);
-                                idCell.text(action.id);
-                                keyCell.text("" + action.key);
-                                descriptionCell.text(action.description);
-                                currentCell.text(o.tryRoundValue(action.getCurrentState()));
-                            });
-                        };
-                        displayHelp.prototype.tryRoundValue = function (value) {
-                            if (typeof value == "number") {
-                                return Math.round(100 * value) / 100;
-                            }
-                            else {
-                                return value;
-                            }
-                        };
-                        return displayHelp;
-                    })();
-                    List.displayHelp = displayHelp;
-                })(List = Actions.List || (Actions.List = {}));
-            })(Actions = KeyboardFns.Actions || (KeyboardFns.Actions = {}));
-        })(KeyboardFns = Game.KeyboardFns || (Game.KeyboardFns = {}));
-    })(Game = Musicope.Game || (Musicope.Game = {}));
-})(Musicope || (Musicope = {}));
-var Musicope;
-(function (Musicope) {
-    var Game;
-    (function (Game) {
-        var KeyboardFns;
-        (function (KeyboardFns) {
-            var Actions;
-            (function (Actions) {
-                var List;
-                (function (List) {
-                    var Exit = (function () {
-                        function Exit(p) {
-                            this.p = p;
-                            this.id = "exit";
-                            this.description = "Exits the game view.";
-                            this.key = "esc";
-                        }
-                        Exit.prototype.triggerAction = function () {
-                            Musicope.game.dispose();
-                            Musicope.Params.reset();
-                            Musicope.List.Keyboard.bindKeyboard();
-                            $('#gameView').hide();
-                            $('#listView').show();
-                            $('#query').focus();
-                            var top = $('.elFocus').offset().top - 0.5 * $(window).height();
-                            $(window).scrollTop(top);
-                        };
-                        Exit.prototype.getCurrentState = function () {
-                        };
-                        return Exit;
-                    })();
-                    List.Exit = Exit;
-                })(List = Actions.List || (Actions.List = {}));
-            })(Actions = KeyboardFns.Actions || (KeyboardFns.Actions = {}));
-        })(KeyboardFns = Game.KeyboardFns || (Game.KeyboardFns = {}));
-    })(Game = Musicope.Game || (Musicope.Game = {}));
-})(Musicope || (Musicope = {}));
-var Musicope;
-(function (Musicope) {
-    var Game;
-    (function (Game) {
-        var KeyboardFns;
-        (function (KeyboardFns) {
-            var Actions;
-            (function (Actions) {
-                var List;
-                (function (List) {
-                    var MetronomeOn = (function () {
-                        function MetronomeOn(p) {
-                            this.p = p;
-                            this.id = "metronome";
-                            this.description = "toggle state of the metronome on/off";
-                            this.key = "m";
-                        }
-                        MetronomeOn.prototype.triggerAction = function () {
-                            var o = this;
-                            Musicope.Params.setParam("m_isOn", !Musicope.params.m_isOn);
-                        };
-                        MetronomeOn.prototype.getCurrentState = function () {
-                            var o = this;
-                            return Musicope.params.m_isOn ? "on" : "off";
-                        };
-                        return MetronomeOn;
-                    })();
-                    List.MetronomeOn = MetronomeOn;
-                })(List = Actions.List || (Actions.List = {}));
-            })(Actions = KeyboardFns.Actions || (KeyboardFns.Actions = {}));
-        })(KeyboardFns = Game.KeyboardFns || (Game.KeyboardFns = {}));
-    })(Game = Musicope.Game || (Musicope.Game = {}));
-})(Musicope || (Musicope = {}));
-var Musicope;
-(function (Musicope) {
-    var Game;
-    (function (Game) {
-        var KeyboardFns;
-        (function (KeyboardFns) {
-            var Actions;
-            (function (Actions) {
-                var List;
-                (function (List) {
-                    var MoveBack = (function () {
-                        function MoveBack(p) {
-                            this.p = p;
-                            this.id = "move back";
-                            this.description = "move back by the amount of 2 beats";
-                            this.key = "left";
-                        }
-                        MoveBack.prototype.triggerAction = function () {
-                            var o = this;
-                            var newTime = Musicope.params.p_elapsedTime - 2 * o.p.song.midi.timePerBeat;
-                            var truncTime = Math.max(Musicope.params.p_initTime, newTime);
-                            Musicope.Params.setParam("p_elapsedTime", truncTime);
-                        };
-                        MoveBack.prototype.getCurrentState = function () {
-                            var o = this;
-                            return Musicope.params.p_elapsedTime / 1000;
-                        };
-                        return MoveBack;
-                    })();
-                    List.MoveBack = MoveBack;
-                })(List = Actions.List || (Actions.List = {}));
-            })(Actions = KeyboardFns.Actions || (KeyboardFns.Actions = {}));
-        })(KeyboardFns = Game.KeyboardFns || (Game.KeyboardFns = {}));
-    })(Game = Musicope.Game || (Musicope.Game = {}));
-})(Musicope || (Musicope = {}));
-var Musicope;
-(function (Musicope) {
-    var Game;
-    (function (Game) {
-        var KeyboardFns;
-        (function (KeyboardFns) {
-            var Actions;
-            (function (Actions) {
-                var List;
-                (function (List) {
-                    var MoveForward = (function () {
-                        function MoveForward(p) {
-                            this.p = p;
-                            this.id = "move forward";
-                            this.description = "move forward by the amount of 2 beats";
-                            this.key = "right";
-                        }
-                        MoveForward.prototype.triggerAction = function () {
-                            var o = this;
-                            var newTime = Musicope.params.p_elapsedTime + 2 * o.p.song.midi.timePerBeat;
-                            var truncTime = Math.min(o.p.song.timePerSong + 10, newTime);
-                            Musicope.Params.setParam("p_elapsedTime", truncTime);
-                        };
-                        MoveForward.prototype.getCurrentState = function () {
-                            var o = this;
-                            return Musicope.params.p_elapsedTime / 1000;
-                        };
-                        return MoveForward;
-                    })();
-                    List.MoveForward = MoveForward;
-                })(List = Actions.List || (Actions.List = {}));
-            })(Actions = KeyboardFns.Actions || (KeyboardFns.Actions = {}));
-        })(KeyboardFns = Game.KeyboardFns || (Game.KeyboardFns = {}));
-    })(Game = Musicope.Game || (Musicope.Game = {}));
-})(Musicope || (Musicope = {}));
-var Musicope;
-(function (Musicope) {
-    var Game;
-    (function (Game) {
-        var KeyboardFns;
-        (function (KeyboardFns) {
-            var Actions;
-            (function (Actions) {
-                var List;
-                (function (List) {
-                    var MoveHome = (function () {
-                        function MoveHome(p) {
-                            this.p = p;
-                            this.id = "move home";
-                            this.description = "move to the initial state of the song";
-                            this.key = "home";
-                        }
-                        MoveHome.prototype.triggerAction = function () {
-                            var o = this;
-                            Musicope.Params.setParam("p_elapsedTime", Musicope.params.p_initTime);
-                        };
-                        MoveHome.prototype.getCurrentState = function () {
-                            var o = this;
-                            return Musicope.params.p_elapsedTime / 1000;
-                        };
-                        return MoveHome;
-                    })();
-                    List.MoveHome = MoveHome;
-                })(List = Actions.List || (Actions.List = {}));
-            })(Actions = KeyboardFns.Actions || (KeyboardFns.Actions = {}));
-        })(KeyboardFns = Game.KeyboardFns || (Game.KeyboardFns = {}));
-    })(Game = Musicope.Game || (Musicope.Game = {}));
-})(Musicope || (Musicope = {}));
-var Musicope;
-(function (Musicope) {
-    var Game;
-    (function (Game) {
-        var KeyboardFns;
-        (function (KeyboardFns) {
-            var Actions;
-            (function (Actions) {
-                var List;
-                (function (List) {
-                    var PauseOn = (function () {
-                        function PauseOn(p) {
-                            this.p = p;
-                            this.id = "pause";
-                            this.description = "pause and unpause the game";
-                            this.key = "space";
-                        }
-                        PauseOn.prototype.triggerAction = function () {
-                            var o = this;
-                            Musicope.Params.setParam("p_isPaused", !Musicope.params.p_isPaused);
-                        };
-                        PauseOn.prototype.getCurrentState = function () {
-                            var o = this;
-                            return Musicope.params.p_isPaused ? "on" : "off";
-                        };
-                        return PauseOn;
-                    })();
-                    List.PauseOn = PauseOn;
-                })(List = Actions.List || (Actions.List = {}));
-            })(Actions = KeyboardFns.Actions || (KeyboardFns.Actions = {}));
-        })(KeyboardFns = Game.KeyboardFns || (Game.KeyboardFns = {}));
-    })(Game = Musicope.Game || (Musicope.Game = {}));
-})(Musicope || (Musicope = {}));
-var Musicope;
-(function (Musicope) {
-    var Game;
-    (function (Game) {
-        var KeyboardFns;
-        (function (KeyboardFns) {
-            var Actions;
-            (function (Actions) {
-                var List;
-                (function (List) {
-                    var SlowDown = (function () {
-                        function SlowDown(p) {
-                            this.p = p;
-                            this.id = "slow down";
-                            this.description = "slow down the song by 10%";
-                            this.key = "down";
-                        }
-                        SlowDown.prototype.triggerAction = function () {
-                            var o = this;
-                            Musicope.Params.setParam("p_speed", Musicope.params.p_speed - 0.1);
-                        };
-                        SlowDown.prototype.getCurrentState = function () {
-                            var o = this;
-                            return Musicope.params.p_speed * 100;
-                        };
-                        return SlowDown;
-                    })();
-                    List.SlowDown = SlowDown;
-                })(List = Actions.List || (Actions.List = {}));
-            })(Actions = KeyboardFns.Actions || (KeyboardFns.Actions = {}));
-        })(KeyboardFns = Game.KeyboardFns || (Game.KeyboardFns = {}));
-    })(Game = Musicope.Game || (Musicope.Game = {}));
-})(Musicope || (Musicope = {}));
-var Musicope;
-(function (Musicope) {
-    var Game;
-    (function (Game) {
-        var KeyboardFns;
-        (function (KeyboardFns) {
-            var Actions;
-            (function (Actions) {
-                var List;
-                (function (List) {
-                    var SpeedUp = (function () {
-                        function SpeedUp(p) {
-                            this.p = p;
-                            this.id = "speed up";
-                            this.description = "speed up the song by 10%";
-                            this.key = "up";
-                        }
-                        SpeedUp.prototype.triggerAction = function () {
-                            var o = this;
-                            Musicope.Params.setParam("p_speed", Musicope.params.p_speed + 0.1);
-                        };
-                        SpeedUp.prototype.getCurrentState = function () {
-                            var o = this;
-                            return Musicope.params.p_speed * 100;
-                        };
-                        return SpeedUp;
-                    })();
-                    List.SpeedUp = SpeedUp;
-                })(List = Actions.List || (Actions.List = {}));
-            })(Actions = KeyboardFns.Actions || (KeyboardFns.Actions = {}));
-        })(KeyboardFns = Game.KeyboardFns || (Game.KeyboardFns = {}));
-    })(Game = Musicope.Game || (Musicope.Game = {}));
-})(Musicope || (Musicope = {}));
-var Musicope;
-(function (Musicope) {
-    var Game;
-    (function (Game) {
-        var KeyboardFns;
-        (function (KeyboardFns) {
-            var Actions;
-            (function (Actions) {
-                var List;
-                (function (List) {
-                    var UserHands = (function () {
-                        function UserHands(p) {
-                            this.p = p;
-                            this.id = "user hands";
-                            this.description = "toggle which hands the user plays.";
-                            this.key = "h";
-                            this.options = [[false, false], [false, true], [true, false], [true, true]];
-                            this.names = ["none", "right", "left", "both"];
-                        }
-                        UserHands.prototype.triggerAction = function () {
-                            var o = this;
-                            Musicope.Params.setParam("p_userHands", Actions.Tools.toggle(Musicope.params.p_userHands, o.options));
-                        };
-                        UserHands.prototype.getCurrentState = function () {
-                            var o = this;
-                            var i = o.options.indexOf(Musicope.params.p_userHands);
-                            return o.names[i];
-                        };
-                        return UserHands;
-                    })();
-                    List.UserHands = UserHands;
-                })(List = Actions.List || (Actions.List = {}));
-            })(Actions = KeyboardFns.Actions || (KeyboardFns.Actions = {}));
-        })(KeyboardFns = Game.KeyboardFns || (Game.KeyboardFns = {}));
-    })(Game = Musicope.Game || (Musicope.Game = {}));
-})(Musicope || (Musicope = {}));
-var Musicope;
-(function (Musicope) {
-    var Game;
-    (function (Game) {
-        var KeyboardFns;
-        (function (KeyboardFns) {
-            var Actions;
-            (function (Actions) {
-                var List;
-                (function (List) {
-                    var WaitOn = (function () {
-                        function WaitOn(p) {
-                            this.p = p;
-                            this.id = "wait";
-                            this.description = "shall the song wait for the user?";
-                            this.key = "w";
-                            this.options = [[false, false], [true, true]];
-                            this.names = ["off", "on"];
-                        }
-                        WaitOn.prototype.triggerAction = function () {
-                            var o = this;
-                            Musicope.Params.setParam("p_waits", Actions.Tools.toggle(Musicope.params.p_waits, o.options));
-                        };
-                        WaitOn.prototype.getCurrentState = function () {
-                            var o = this;
-                            var i = o.options.indexOf(Musicope.params.p_waits);
-                            return o.names[i];
-                        };
-                        return WaitOn;
-                    })();
-                    List.WaitOn = WaitOn;
-                })(List = Actions.List || (Actions.List = {}));
-            })(Actions = KeyboardFns.Actions || (KeyboardFns.Actions = {}));
-        })(KeyboardFns = Game.KeyboardFns || (Game.KeyboardFns = {}));
+            }
+            KeyboardTools.toggle = toggle;
+        })(KeyboardTools = Game.KeyboardTools || (Game.KeyboardTools = {}));
     })(Game = Musicope.Game || (Musicope.Game = {}));
 })(Musicope || (Musicope = {}));
 var Musicope;
@@ -745,20 +412,19 @@ var Musicope;
     var Game;
     (function (Game) {
         var Metronome = (function () {
-            function Metronome(timePerBeat, beatsPerBar, device) {
+            function Metronome(timePerBeat, beatsPerBar) {
                 var _this = this;
                 this.timePerBeat = timePerBeat;
                 this.beatsPerBar = beatsPerBar;
-                this.device = device;
                 this.lastPlayedId = -10000;
                 this.play = function (time) {
                     var o = _this;
-                    if (Musicope.params.m_isOn) {
-                        var id = Math.floor(Musicope.params.m_ticksPerBeat * time / o.timePerBeat);
+                    if (Musicope.config.m_isOn) {
+                        var id = Math.floor(Musicope.config.m_ticksPerBeat * time / o.timePerBeat);
                         if (id > o.lastPlayedId) {
-                            var noteId = id % o.beatsPerBar == 0 ? Musicope.params.m_id1 : Musicope.params.m_id2;
-                            var velocity = Math.min(127, Musicope.params.m_velocity);
-                            o.device.out(Musicope.params.m_channel, noteId, velocity);
+                            var noteId = id % o.beatsPerBar == 0 ? Musicope.config.m_id1 : Musicope.config.m_id2;
+                            var velocity = Math.min(127, Musicope.config.m_velocity);
+                            Musicope.webMidi.out(Musicope.config.m_channel, noteId, velocity);
                             o.lastPlayedId = id;
                         }
                     }
@@ -766,9 +432,6 @@ var Musicope;
                 this.reset = function () {
                     var o = _this;
                     o.lastPlayedId = -10000;
-                };
-                this.dispose = function () {
-                    Musicope.Params.unsubscribe("metronome");
                 };
                 var o = this;
                 o.subscribe();
@@ -889,15 +552,15 @@ var Musicope;
                 scene.unsetActiveId(1);
             }
         }
-        function driverOnNotesToOff(driver) {
+        function driverOnNotesToOff() {
             for (var i = 0; i < 128; i++) {
-                driver.out(144, i, 0);
+                Musicope.webMidi.out(144, i, 0);
             }
         }
         function getIdBelowCurrentTime(notes) {
             if (notes.length > 0) {
                 var id = notes.length - 1;
-                while (id >= 0 && notes[id] && notes[id].time > Musicope.params.p_elapsedTime) {
+                while (id >= 0 && notes[id] && notes[id].time > Musicope.config.p_elapsedTime) {
                     id--;
                 }
                 return id;
@@ -907,17 +570,16 @@ var Musicope;
             return playerTracks.map(getIdBelowCurrentTime);
         }
         function correctTimesInParams(timePerBar) {
-            if (typeof Musicope.params.p_initTime == 'undefined') {
+            if (typeof Musicope.config.p_initTime == 'undefined') {
                 Musicope.Params.setParam("p_initTime", -2 * timePerBar);
             }
-            if (typeof Musicope.params.p_elapsedTime == 'undefined') {
-                Musicope.Params.setParam("p_elapsedTime", Musicope.params.p_initTime);
+            if (typeof Musicope.config.p_elapsedTime == 'undefined') {
+                Musicope.Params.setParam("p_elapsedTime", Musicope.config.p_initTime);
             }
         }
         var Player = (function () {
-            function Player(driver, song, metronome, scene) {
+            function Player(song, metronome, scene) {
                 var _this = this;
-                this.driver = driver;
                 this.song = song;
                 this.metronome = metronome;
                 this.scene = scene;
@@ -925,16 +587,11 @@ var Musicope;
                     var o = _this;
                     o.playNotes.play();
                     o.playSustains.play();
-                    o.metronome.play(Musicope.params.p_elapsedTime);
-                    o.scene.redraw(Musicope.params.p_elapsedTime, Musicope.params.p_isPaused);
+                    o.metronome.play(Musicope.config.p_elapsedTime);
+                    o.scene.redraw(Musicope.config.p_elapsedTime, Musicope.config.p_isPaused);
                     var isFreeze = o.waitForNote.isFreeze();
                     hideTimeBarIfStops(o.scene, isFreeze);
                     return o.updateTime(isFreeze);
-                };
-                this.dispose = function () {
-                    var o = _this;
-                    o.fromDevice.dispose();
-                    Musicope.Params.unsubscribe("players.Basic");
                 };
                 this.subscribeToParamsChange = function () {
                     var o = _this;
@@ -949,14 +606,14 @@ var Musicope;
                     var idsBelowCurrentTime = getIdsBelowCurrentTime(o.song.midi.tracks);
                     o.waitForNote.reset(idsBelowCurrentTime);
                     o.playNotes.reset(idsBelowCurrentTime);
-                    driverOnNotesToOff(o.driver);
+                    driverOnNotesToOff();
                 };
                 this.assignClasses = function () {
                     var o = _this;
-                    o.fromDevice = new Game.PlayerFns.FromDevice(o.driver, o.scene, o.song.midi.tracks);
-                    o.playNotes = new Game.PlayerFns.PlayNotes(o.driver, o.scene, o.song.midi.tracks);
-                    o.playSustains = new Game.PlayerFns.PlaySustains(o.driver, o.song.midi.sustainNotes);
-                    o.waitForNote = new Game.PlayerFns.WaitForNote(o.driver, o.song.midi.tracks, o.fromDevice.onNoteOn);
+                    o.fromDevice = new Game.PlayerFns.FromDevice(o.scene, o.song.midi.tracks);
+                    o.playNotes = new Game.PlayerFns.PlayNotes(o.scene, o.song.midi.tracks);
+                    o.playSustains = new Game.PlayerFns.PlaySustains(o.song.midi.sustainNotes);
+                    o.waitForNote = new Game.PlayerFns.WaitForNote(o.song.midi.tracks, o.fromDevice.onNoteOn);
                 };
                 this.updateTime = function (isFreeze) {
                     var o = _this;
@@ -966,10 +623,10 @@ var Musicope;
                     }
                     var duration = currentTime - o.previousTime;
                     o.previousTime = currentTime;
-                    var isSongEnd = Musicope.params.p_elapsedTime > o.song.timePerSong + 1000;
-                    var doFreezeTime = isSongEnd || Musicope.params.p_isPaused || isFreeze || duration > 100; /*window was out of focus*/
+                    var isSongEnd = Musicope.config.p_elapsedTime > o.song.timePerSong + 1000;
+                    var doFreezeTime = isSongEnd || Musicope.config.p_isPaused || isFreeze || duration > 100; /*window was out of focus*/
                     if (!doFreezeTime) {
-                        var newElapsedTime = Musicope.params.p_elapsedTime + Musicope.params.p_speed * duration;
+                        var newElapsedTime = Musicope.config.p_elapsedTime + Musicope.config.p_speed * duration;
                         Musicope.Params.setParam("p_elapsedTime", newElapsedTime, true);
                     }
                     return isSongEnd;
@@ -991,9 +648,9 @@ var Musicope;
     (function (Game) {
         var PlayerFns;
         (function (PlayerFns) {
-            function sendBackToDevice(driver, kind, noteId, velocity) {
+            function sendBackToDevice(kind, noteId, velocity) {
                 if (kind < 242 && (kind < 127 || kind > 160)) {
-                    driver.out(kind, noteId, velocity);
+                    Musicope.webMidi.out(kind, noteId, velocity);
                 }
             }
             function execNoteOnFuncs(noteOnFuncs, noteId) {
@@ -1002,9 +659,8 @@ var Musicope;
                 }
             }
             var FromDevice = (function () {
-                function FromDevice(driver, scene, notes) {
+                function FromDevice(scene, notes) {
                     var _this = this;
-                    this.driver = driver;
                     this.scene = scene;
                     this.notes = notes;
                     this.noteOnFuncs = [];
@@ -1015,14 +671,9 @@ var Musicope;
                         var o = _this;
                         o.noteOnFuncs.push(func);
                     };
-                    this.dispose = function () {
-                        var o = _this;
-                        o.driver.inClose();
-                        o.driver.outClose();
-                    };
                     this.deviceIn = function (timeStamp, kind, noteId, velocity) {
                         var o = _this;
-                        sendBackToDevice(o.driver, kind, noteId, velocity);
+                        sendBackToDevice(kind, noteId, velocity);
                         var isNoteOn = kind === 144 && velocity > 0;
                         var isNoteOff = kind === 128 || (kind === 144 && velocity == 0);
                         if (isNoteOn && !o.isDoubleNote(timeStamp, isNoteOn, noteId, velocity)) {
@@ -1045,9 +696,9 @@ var Musicope;
                         return isDoubleNote;
                     };
                     var o = this;
-                    o.driver.outOpen();
-                    o.driver.out(0x80, 0, 0);
-                    o.driver.inOpen(o.deviceIn);
+                    Musicope.webMidi.outOpen();
+                    Musicope.webMidi.out(0x80, 0, 0);
+                    Musicope.webMidi.inOpen(o.deviceIn);
                 }
                 return FromDevice;
             })();
@@ -1062,9 +713,8 @@ var Musicope;
         var PlayerFns;
         (function (PlayerFns) {
             var PlayNotes = (function () {
-                function PlayNotes(driver, scene, notes) {
+                function PlayNotes(scene, notes) {
                     var _this = this;
-                    this.driver = driver;
                     this.scene = scene;
                     this.notes = notes;
                     this.play = function () {
@@ -1091,32 +741,32 @@ var Musicope;
                     };
                     this.isIdBelowCurrentTime = function (trackId) {
                         var o = _this;
-                        return o.notes[trackId][o.ids[trackId]] && o.notes[trackId][o.ids[trackId]].time < Musicope.params.p_elapsedTime;
+                        return o.notes[trackId][o.ids[trackId]] && o.notes[trackId][o.ids[trackId]].time < Musicope.config.p_elapsedTime;
                     };
                     this.playNote = function (note, trackId) {
                         var o = _this;
-                        var playsUser = Musicope.params.p_userHands[trackId];
+                        var playsUser = Musicope.config.p_userHands[trackId];
                         if (!playsUser || o.playOutOfReach(note)) {
                             if (note.on) {
-                                o.driver.out(144, note.id, Math.min(127, o.getVelocity(trackId, note)));
+                                Musicope.webMidi.out(144, note.id, Math.min(127, o.getVelocity(trackId, note)));
                                 o.scene.setActiveId(note.id);
                             }
                             else {
-                                o.driver.out(144, note.id, 0);
+                                Musicope.webMidi.out(144, note.id, 0);
                                 o.scene.unsetActiveId(note.id);
                             }
                         }
                     };
                     this.playOutOfReach = function (note) {
                         var o = _this;
-                        var isBelowMin = note.id < Musicope.params.p_minNote;
-                        var isAboveMax = note.id > Musicope.params.p_maxNote;
-                        Musicope.params.p_playOutOfReachNotes && (isBelowMin || isAboveMax);
+                        var isBelowMin = note.id < Musicope.config.p_minNote;
+                        var isAboveMax = note.id > Musicope.config.p_maxNote;
+                        Musicope.config.p_playOutOfReachNotes && (isBelowMin || isAboveMax);
                     };
                     this.getVelocity = function (trackId, note) {
                         var o = _this;
-                        var velocity = Musicope.params.p_volumes[trackId] * note.velocity;
-                        var maxVelocity = Musicope.params.p_maxVelocity[trackId];
+                        var velocity = Musicope.config.p_volumes[trackId] * note.velocity;
+                        var maxVelocity = Musicope.config.p_maxVelocity[trackId];
                         if (maxVelocity && velocity > maxVelocity) {
                             velocity = maxVelocity;
                         }
@@ -1138,28 +788,27 @@ var Musicope;
         var PlayerFns;
         (function (PlayerFns) {
             function isIdBelowCurrentTime(sustainNotes, id) {
-                return sustainNotes[id] && sustainNotes[id].time < Musicope.params.p_elapsedTime;
+                return sustainNotes[id] && sustainNotes[id].time < Musicope.config.p_elapsedTime;
             }
-            function playSustainNote(driver, note) {
-                if (Musicope.params.p_sustain) {
+            function playSustainNote(note) {
+                if (Musicope.config.p_sustain) {
                     if (note.on) {
-                        driver.out(176, 64, 127);
+                        Musicope.webMidi.out(176, 64, 127);
                     }
                     else {
-                        driver.out(176, 64, 0);
+                        Musicope.webMidi.out(176, 64, 0);
                     }
                 }
             }
             var PlaySustains = (function () {
-                function PlaySustains(driver, sustainNotes) {
+                function PlaySustains(sustainNotes) {
                     var _this = this;
-                    this.driver = driver;
                     this.sustainNotes = sustainNotes;
                     this.id = 0;
                     this.play = function () {
                         var o = _this;
                         while (isIdBelowCurrentTime(o.sustainNotes, o.id)) {
-                            playSustainNote(o.driver, o.sustainNotes[o.id]);
+                            playSustainNote(o.sustainNotes[o.id]);
                             o.id++;
                         }
                     };
@@ -1178,16 +827,15 @@ var Musicope;
         var PlayerFns;
         (function (PlayerFns) {
             var WaitForNote = (function () {
-                function WaitForNote(device, notes, onNoteOn) {
+                function WaitForNote(notes, onNoteOn) {
                     var _this = this;
-                    this.device = device;
                     this.notes = notes;
                     this.onNoteOn = onNoteOn;
                     this.isFreeze = function () {
                         var o = _this;
                         var freeze = false;
                         for (var trackId = 0; trackId < o.notes.length; trackId++) {
-                            var isWait = Musicope.params.p_userHands[trackId] && Musicope.params.p_waits[trackId];
+                            var isWait = Musicope.config.p_userHands[trackId] && Musicope.config.p_waits[trackId];
                             if (isWait) {
                                 while (!freeze && o.isIdBelowCurrentTimeMinusRadius(trackId, o.ids[trackId])) {
                                     freeze = o.isNoteUnpressed(trackId, o.ids[trackId]);
@@ -1221,15 +869,15 @@ var Musicope;
                     };
                     this.addNoteOnToKnownNotes = function (noteId) {
                         var o = _this;
-                        for (var i = 0; i < Musicope.params.p_userHands.length; i++) {
-                            if (Musicope.params.p_userHands[i]) {
+                        for (var i = 0; i < Musicope.config.p_userHands.length; i++) {
+                            if (Musicope.config.p_userHands[i]) {
                                 var id = o.ids[i];
                                 while (o.isIdBelowCurrentTimePlusRadius(i, id)) {
                                     var note = o.notes[i][id];
                                     if (note.on && !o.notesPressedTime[i][id] && note.id === noteId) {
-                                        var radius = Math.abs(o.notes[i][id].time - Musicope.params.p_elapsedTime) - 50;
-                                        if (radius < Musicope.params.p_radiuses[i]) {
-                                            o.notesPressedTime[i][id] = Musicope.params.p_elapsedTime;
+                                        var radius = Math.abs(o.notes[i][id].time - Musicope.config.p_elapsedTime) - 50;
+                                        if (radius < Musicope.config.p_radiuses[i]) {
+                                            o.notesPressedTime[i][id] = Musicope.config.p_elapsedTime;
                                             return;
                                         }
                                     }
@@ -1240,7 +888,7 @@ var Musicope;
                     };
                     this.isIdBelowCurrentTimePlusRadius = function (trackId, noteId) {
                         var o = _this;
-                        return o.notes[trackId][noteId] && o.notes[trackId][noteId].time < Musicope.params.p_elapsedTime + Musicope.params.p_radiuses[trackId];
+                        return o.notes[trackId][noteId] && o.notes[trackId][noteId].time < Musicope.config.p_elapsedTime + Musicope.config.p_radiuses[trackId];
                     };
                     this.resetNotesPressedTime = function (idsBelowCurrentTime) {
                         var o = _this;
@@ -1258,16 +906,16 @@ var Musicope;
                     };
                     this.isIdBelowCurrentTimeMinusRadius = function (trackId, noteId) {
                         var o = _this;
-                        return o.notes[trackId][noteId] && o.notes[trackId][noteId].time < Musicope.params.p_elapsedTime - Musicope.params.p_radiuses[trackId];
+                        return o.notes[trackId][noteId] && o.notes[trackId][noteId].time < Musicope.config.p_elapsedTime - Musicope.config.p_radiuses[trackId];
                     };
                     this.isNoteUnpressed = function (trackId, noteId) {
                         var o = _this;
                         var note = o.notes[trackId][noteId];
                         var wasPlayedByUser = o.notesPressedTime[trackId][noteId];
                         var waitForOutOfReach = true;
-                        if (!Musicope.params.p_waitForOutOfReachNotes) {
-                            var isNoteAboveMin = note.id >= Musicope.params.p_minNote;
-                            var isNoteBelowMax = note.id <= Musicope.params.p_maxNote;
+                        if (!Musicope.config.p_waitForOutOfReachNotes) {
+                            var isNoteAboveMin = note.id >= Musicope.config.p_minNote;
+                            var isNoteBelowMax = note.id <= Musicope.config.p_maxNote;
                             waitForOutOfReach = isNoteAboveMin && isNoteBelowMax;
                         }
                         return note.on && !wasPlayedByUser && waitForOutOfReach;
@@ -1306,9 +954,6 @@ var Musicope;
             function Scene(song) {
                 this.song = song;
                 this.activeIds = new Int32Array(127);
-                this.dispose = function () {
-                    Musicope.Params.unsubscribe("scene.Basic");
-                };
                 var o = this;
                 o.subscribeToParamsChange();
                 o.setBackgrColors();
@@ -1343,8 +988,8 @@ var Musicope;
             };
             Scene.prototype.setBackgrColors = function () {
                 var o = this;
-                o.pausedColor = new Int32Array(Game.SceneFns.hexToRgb(Musicope.params.s_colPaused));
-                o.unpausedColor = new Int32Array(Game.SceneFns.hexToRgb(Musicope.params.s_colUnPaused));
+                o.pausedColor = new Int32Array(Game.SceneFns.hexToRgb(Musicope.config.s_colPaused));
+                o.unpausedColor = new Int32Array(Game.SceneFns.hexToRgb(Musicope.config.s_colUnPaused));
             };
             Scene.prototype.setPausedState = function (isPaused) {
                 var o = this;
@@ -1359,7 +1004,7 @@ var Musicope;
                 var o = this;
                 o.canvas.width = window.innerWidth;
                 o.canvas.height = window.innerHeight;
-                o.pixelsPerTime = o.canvas.height * 4 / (o.song.midi.noteValuePerBeat * Musicope.params.s_quartersPerHeight * o.song.midi.timePerBeat);
+                o.pixelsPerTime = o.canvas.height * 4 / (o.song.midi.noteValuePerBeat * Musicope.config.s_quartersPerHeight * o.song.midi.timePerBeat);
             };
             Scene.prototype.setupWebGL = function () {
                 var o = this;
@@ -1383,8 +1028,8 @@ var Musicope;
                     sceneHeight: o.canvas.height,
                     tracks: o.song.sceneTracks,
                     sustainNotes: o.song.sceneSustainNotes,
-                    p_minNote: Musicope.params.p_minNote,
-                    p_maxNote: Musicope.params.p_maxNote,
+                    p_minNote: Musicope.config.p_minNote,
+                    p_maxNote: Musicope.config.p_maxNote,
                     playedNoteID: o.song.playedNoteID,
                 };
                 Game.SceneFns.drawScene(input);
@@ -1566,9 +1211,9 @@ var Musicope;
                 50
             ];
             function drawNoteCover(loc) {
-                if (Musicope.params.s_noteCoverRelHeight > 0.0) {
+                if (Musicope.config.s_noteCoverRelHeight > 0.0) {
                     var y0 = loc.yEndOfTimeBar;
-                    var y1 = y0 + Musicope.params.s_noteCoverRelHeight * (loc.input.sceneHeight - loc.yEndOfTimeBar);
+                    var y1 = y0 + Musicope.config.s_noteCoverRelHeight * (loc.input.sceneHeight - loc.yEndOfTimeBar);
                     var color = [0, 0, 0, 1];
                     var activeColor = [0, 0, 0, 0.5];
                     loc.input.drawRect(0, y0, loc.input.sceneWidth + 1, y1, [1], color, activeColor);
@@ -1580,7 +1225,7 @@ var Musicope;
                     var x1 = x0 + 2 * loc.blackWidth - 3;
                     var y0 = Math.floor(loc.yEndOfPiano * 0.4);
                     var y1 = loc.yEndOfPiano - 2;
-                    var activeColor = hexToRgb(Musicope.params.s_colPianoBlack);
+                    var activeColor = hexToRgb(Musicope.config.s_colPianoBlack);
                     loc.input.drawRect(x0, y0, x1, y1, [id], [0, 0, 0, 1], activeColor);
                 });
             }
@@ -1590,15 +1235,15 @@ var Musicope;
                 var outOfReachNote = id < loc.input.p_minNote || id > loc.input.p_maxNote;
                 var color;
                 if (neverPlayedNote && !outOfReachNote) {
-                    var notPlayedColor = hexToRgb(Musicope.params.s_colUnPlayedNotesInReach);
+                    var notPlayedColor = hexToRgb(Musicope.config.s_colUnPlayedNotesInReach);
                     color = notPlayedColor;
                 }
                 else if (neverPlayedNote) {
-                    var notPlayedColor = hexToRgb(Musicope.params.s_colUnPlayedNotes);
+                    var notPlayedColor = hexToRgb(Musicope.config.s_colUnPlayedNotes);
                     color = notPlayedColor;
                 }
                 else if (outOfReachNote) {
-                    var outOfReachColor = hexToRgb(Musicope.params.s_colOutOfReachNotes);
+                    var outOfReachColor = hexToRgb(Musicope.config.s_colOutOfReachNotes);
                     color = outOfReachColor;
                 }
                 else {
@@ -1613,13 +1258,13 @@ var Musicope;
                     var y0 = 12;
                     var y1 = loc.yEndOfPiano - 2;
                     var color = getColorForWhitePianoNotes(id, loc);
-                    var activeColor = hexToRgb(Musicope.params.s_colPianoWhite);
+                    var activeColor = hexToRgb(Musicope.config.s_colPianoWhite);
                     loc.input.drawRect(x0, y0, x1, y1, [id], color, activeColor);
                 });
             }
             function drawPianoTimeBarColor(loc) {
-                var color = hexToRgb(Musicope.params.s_colTime, 0.9);
-                var activeColor = hexToRgb(Musicope.params.s_colTime, 0.4);
+                var color = hexToRgb(Musicope.config.s_colTime, 0.9);
+                var activeColor = hexToRgb(Musicope.config.s_colTime, 0.4);
                 var y0 = loc.yEndOfPiano;
                 var y1 = loc.yEndOfTimeBar;
                 loc.input.drawRect(0, y0, 1, y1, [1, 2, 2, 1], color, activeColor);
@@ -1641,14 +1286,14 @@ var Musicope;
                 drawPianoTimeBarColor(loc);
             }
             function drawPiano(loc) {
-                if (Musicope.params.s_showPiano) {
+                if (Musicope.config.s_showPiano) {
                     drawPianoBackBlack(loc);
                     drawPianoWhiteNotes(loc);
                     drawPianoBlackNotes(loc);
                 }
             }
             function drawSustainNotes(loc) {
-                var color = hexToRgb(Musicope.params.s_colSustain);
+                var color = hexToRgb(Musicope.config.s_colSustain);
                 loc.input.sustainNotes.forEach(function (note) {
                     var y0 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOn + 1;
                     var y1 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOff - 2;
@@ -1681,8 +1326,8 @@ var Musicope;
                 return [min, max];
             }
             function drawTrack(loc, trackId) {
-                var whiteNoteColor = hexToRgb(Musicope.params.s_colWhites[trackId]);
-                var blackNoteColor = hexToRgb(Musicope.params.s_colBlacks[trackId]);
+                var whiteNoteColor = hexToRgb(Musicope.config.s_colWhites[trackId]);
+                var blackNoteColor = hexToRgb(Musicope.config.s_colBlacks[trackId]);
                 var minMaxVel = getMinMaxVelocity(loc.input.tracks[trackId]);
                 loc.input.tracks[trackId].forEach(function (note) {
                     var y0 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOn + 1;
@@ -1706,9 +1351,9 @@ var Musicope;
                 });
             }
             function drawSustainBackground(loc) {
-                if (Musicope.params.s_showSustainBg) {
-                    var color = hexToRgb(Musicope.params.s_colSustain);
-                    var color2 = hexToRgb(Musicope.params.s_colSustain, 0.5);
+                if (Musicope.config.s_showSustainBg) {
+                    var color = hexToRgb(Musicope.config.s_colSustain);
+                    var color2 = hexToRgb(Musicope.config.s_colSustain, 0.5);
                     loc.input.sustainNotes.forEach(function (note) {
                         var y0 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOn + 1;
                         var y1 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOff - 2;
@@ -1719,14 +1364,14 @@ var Musicope;
                 }
             }
             function drawBlackRails(loc) {
-                if (Musicope.params.s_showBlackRails) {
+                if (Musicope.config.s_showBlackRails) {
                     blackNoteIds.forEach(function (id, i) {
                         var x0 = blackNoteSpots[i] * loc.whiteWidth - loc.blackWidth + 2;
                         var x1 = x0 + 2 * loc.blackWidth - 3;
                         var y0 = loc.yEndOfPiano;
                         var y1 = loc.input.sceneHeight;
-                        var color1 = hexToRgb(Musicope.params.s_colorBlackRails2);
-                        var color2 = hexToRgb(Musicope.params.s_colorBlackRails3);
+                        var color1 = hexToRgb(Musicope.config.s_colorBlackRails2);
+                        var color2 = hexToRgb(Musicope.config.s_colorBlackRails3);
                         var color = (i - 1) % 5 === 0 || (i - 2) % 5 === 0 ? color1 : color2;
                         loc.input.drawRect(x0, y0, x1, y1, [id], color, color);
                     });
@@ -1734,10 +1379,10 @@ var Musicope;
             }
             function drawScene(input) {
                 var whiteWidth = Math.floor(input.sceneWidth / whiteNoteIds.length);
-                var maxRadius = Math.max.apply(null, Musicope.params.p_radiuses);
+                var maxRadius = Math.max.apply(null, Musicope.config.p_radiuses);
                 var timePerSceneHeigth = input.sceneHeight / input.pixelsPerTime;
                 var timeBarHeight = input.sceneHeight * maxRadius / timePerSceneHeigth;
-                var yEndOfTimeBar = Math.floor(Musicope.params.s_showPiano ? 0.2 * input.sceneHeight : timeBarHeight);
+                var yEndOfTimeBar = Math.floor(Musicope.config.s_showPiano ? 0.2 * input.sceneHeight : timeBarHeight);
                 var loc = {
                     input: input,
                     whiteWidth: whiteWidth,
@@ -1748,7 +1393,7 @@ var Musicope;
                 };
                 drawSustainBackground(loc);
                 drawBlackRails(loc);
-                Musicope.params.s_views.forEach(function (view, i) {
+                Musicope.config.s_views.forEach(function (view, i) {
                     if (view === "full") {
                         drawTrack(loc, i);
                     }
@@ -1979,9 +1624,9 @@ var Musicope;
             return sumVelocity / n;
         }
         function normalizeVolumeOfPlayerTracks(playerTracks) {
-            if (Musicope.params.f_normalize) {
+            if (Musicope.config.f_normalize) {
                 var meanVel = getMeanVelocity(playerTracks);
-                var scaleVel = Musicope.params.f_normalize / meanVel;
+                var scaleVel = Musicope.config.f_normalize / meanVel;
                 if (scaleVel < 1.0) {
                     playerTracks.forEach(function (notes) {
                         notes.forEach(function (note) {
@@ -1993,7 +1638,7 @@ var Musicope;
             }
         }
         function sortPlayerTracksByHands(playerTracks) {
-            return Musicope.params.f_trackIds.map(function (trackId) {
+            return Musicope.config.f_trackIds.map(function (trackId) {
                 return playerTracks[trackId] || [];
             });
         }
@@ -2022,44 +1667,47 @@ var Musicope;
         var scores = {};
         var scoresDirty = false;
         function sortList() {
-            var els = $('.midContainer .el:visible');
+            var els = $('.song-list li:visible');
             els.sort(function (a, b) {
                 var countA = parseInt($(a).find('.vote-count').text());
                 var countB = parseInt($(b).find('.vote-count').text());
                 if (countB === countA) {
-                    var nameA = $(a).find('.elLinkName').text();
-                    var nameB = $(b).find('.elLinkName').text();
+                    var nameA = $(a).find('.item-title').text();
+                    var nameB = $(b).find('.item-title').text();
                     return nameA > nameB ? 1 : -1;
                 }
                 else {
                     return countB - countA;
                 }
             });
-            els.detach().appendTo('.midContainer');
+            els.detach().appendTo('.song-list');
         }
         function voteUp(e) {
-            var id = $(this).parents('.el').children('.elURL').text().trim();
+            var id = decodeURIComponent($(this).parents('li').children('.elURL').text().trim());
             var old = parseInt(scores[id] || '0');
             scores[id] = old + 1;
             scoresDirty = true;
             $(this).siblings('.vote-count').text(old + 1);
+            e.stopPropagation();
             e.preventDefault();
         }
         function voteDown(e) {
-            var id = $(this).parents('.el').children('.elURL').text().trim();
+            var id = decodeURIComponent($(this).parents('li').children('.elURL').text().trim());
             var old = parseInt(scores[id] || '0');
             scores[id] = old - 1;
             scoresDirty = true;
             $(this).siblings('.vote-count').text(old - 1);
+            e.stopPropagation();
             e.preventDefault();
         }
-        function populateDOM(items, scores) {
-            items.forEach(function (item) {
-                var title = item.name.replace(".mid", "");
-                var path = item.path.replace(item.name, "");
-                var score = scores[item.path] || "0";
-                var template = $('.song-list-template').html().trim().replace("{{title}}", title).replace("{{path}}", path).replace("{{score}}", score).replace("{{url}}", item.path);
-                $(template).appendTo('.midContainer');
+        function populateDOM(files, scores) {
+            files.forEach(function (file) {
+                var patho = p.parse(file);
+                var score = scores[file] || "0";
+                var title = patho.name.replace(/_/g, " ");
+                var path = file.replace(patho.base, '').replace(/^songs/, '');
+                var template = $('.song-list-template').html().trim().replace("{{title}}", title).replace("{{titleEnc}}", encodeURIComponent(title)).replace("{{path}}", path).replace("{{score}}", score).replace(/{{urlEnc}}/g, encodeURIComponent(file)).replace(/{{url}}/g, file);
+                $(template).appendTo('.song-list');
             });
             sortList();
         }
@@ -2068,100 +1716,43 @@ var Musicope;
                 if (scoresDirty) {
                     var text = JSON.stringify(scores, null, 4);
                     scoresDirty = false;
-                    Musicope.dropbox.writeFile('settings.json', text);
+                    fs.writeFile(Musicope.songsJsonPath, text);
                 }
             }, 1000);
         }
         function initScores() {
-            var def = $.Deferred();
-            Musicope.dropbox.readFile('settings.json', function (error, data) {
-                if (!data) {
-                    def.resolve();
+            var fileExists = fs.existsSync(Musicope.songsJsonPath);
+            if (fileExists) {
+                var text = fs.readFileSync(Musicope.songsJsonPath, "utf-8");
+                eval("scores = " + text);
+            }
+            startSavingScores();
+        }
+        function getAllFiles(path) {
+            var files = [];
+            fs.readdirSync(path).forEach(function (v) {
+                var path2 = p.join(path, v);
+                var stat = fs.lstatSync(path2);
+                if (stat.isDirectory()) {
+                    var fls = getAllFiles(path2);
+                    files = files.concat(fls);
                 }
                 else {
-                    scores = JSON.parse(data);
-                    def.resolve();
+                    files.push(path2);
                 }
-                startSavingScores();
-            });
-            return def;
-        }
-        function getAllMidiFiles(client) {
-            var files = $.Deferred();
-            client.search('songs', '.mid', {}, function (error, entries) {
-                files.resolve(entries);
             });
             return files;
         }
         function init() {
-            Musicope.dropbox.authenticate(function (error, client) {
-                initScores().done(function () {
-                    getAllMidiFiles(client).done(function (items) {
-                        populateDOM(items, scores);
-                        $('.el:visible:first').addClass('elFocus');
-                        List.Keyboard.bindKeyboard();
-                    });
-                });
-            });
-            $(document).on('click', '.vote-up', voteUp);
-            $(document).on('click', '.vote-down', voteDown);
-            $(document).on('click', '.elLink', function () {
-                var el = $(this).siblings('.elURL');
-                if (el.length > 1) {
-                    throw "wtf";
-                }
-                Musicope.params.c_songUrl = $(el[0]).text().trim();
-                Mousetrap.reset();
-                Musicope.game = new Musicope.Game.Game();
-            });
-            var lastQuery = "";
-            $('#query').data('timeout', null).keyup(function () {
-                var _this = this;
-                clearTimeout($(this).data('timeout'));
-                $(this).data('timeout', setTimeout(function () {
-                    var query = $(_this).val();
-                    if (query !== lastQuery) {
-                        List.filterSongs(query);
-                        sortList();
-                        List.Keyboard.resetIndex();
-                        lastQuery = query;
-                    }
-                }, 500));
-            });
+            initScores();
+            var files = getAllFiles("songs");
+            populateDOM(files, scores);
+            $('.song-list li:visible:first').addClass('song-list-el-focus');
+            $('.vote-up').on('click', voteUp);
+            $('.vote-down').on('click', voteDown);
+            List.Keyboard.bindKeyboard();
         }
         List.init = init;
-    })(List = Musicope.List || (Musicope.List = {}));
-})(Musicope || (Musicope = {}));
-var Musicope;
-(function (Musicope) {
-    var List;
-    (function (List) {
-        function filterSongsByQueries(queries) {
-            var els = $('.el');
-            els.each(function (i, item) {
-                var url = $(item).find('.elURL').text().trim().toLowerCase();
-                var found = queries.every(function (query) {
-                    return url.indexOf(query) > -1;
-                });
-                var display = found ? 'block' : 'none';
-                $(item).css('display', display);
-            });
-        }
-        function splitQuery(query) {
-            var queries = query.toLowerCase().split(" ");
-            var trimmedQueries = queries.map(function (query) {
-                return query.trim();
-            });
-            var nonEmptyQueries = trimmedQueries.filter(function (query) {
-                return query != "";
-            });
-            return nonEmptyQueries;
-        }
-        function filterSongs(query) {
-            var queries = splitQuery(query);
-            filterSongsByQueries(queries);
-        }
-        List.filterSongs = filterSongs;
     })(List = Musicope.List || (Musicope.List = {}));
 })(Musicope || (Musicope = {}));
 var Musicope;
@@ -2171,32 +1762,33 @@ var Musicope;
         var Keyboard;
         (function (Keyboard) {
             function correctPosition() {
-                var el = $(".elFocus");
-                var rely = el.offset()["top"] - $(window).scrollTop() + 0.5 * el.height();
-                if (rely > 0.9 * window.innerHeight) {
-                    var dy = window.innerHeight - 1.5 * el.height() - rely;
-                    $(window).scrollTop($(window).scrollTop() - dy);
+                var ul = $('.list-scroll');
+                var li = $(".song-list-el-focus");
+                var rely = li.position().top - ul.scrollTop() + 35;
+                var drely1 = rely + 1.5 * li.height() - ul.height();
+                var drely2 = rely - 0.5 * li.height();
+                if (drely1 > 0) {
+                    ul.scrollTop(ul.scrollTop() + drely1);
                 }
-                else if (rely < 0.2 * window.innerHeight) {
-                    $(window).scrollTop(el.offset()["top"] - 2 * el.height());
+                else if (drely2 < 0) {
+                    ul.scrollTop(ul.scrollTop() + drely2);
                 }
                 return true;
             }
             function enter() {
                 Mousetrap.bind('enter', function (e) {
-                    Musicope.params.c_songUrl = $('.el').filter('.elFocus').find('.elURL').text().trim();
-                    Mousetrap.reset();
-                    Musicope.game = new Musicope.Game.Game();
+                    var href = $('.song-list-el-focus a').attr('href');
+                    Musicope.mainView.router.loadPage(href);
                     e.preventDefault();
                 });
             }
             function up() {
                 Mousetrap.bind('up', function (e) {
-                    var oldEl = $('.el').filter('.elFocus');
+                    var oldEl = $('.song-list-el-focus');
                     var newEl = oldEl.prev(':visible');
                     if (newEl.length > 0) {
-                        oldEl.removeClass('elFocus');
-                        newEl.addClass('elFocus');
+                        oldEl.removeClass('song-list-el-focus');
+                        newEl.addClass('song-list-el-focus');
                         correctPosition();
                     }
                     e.preventDefault();
@@ -2204,70 +1796,53 @@ var Musicope;
             }
             function down() {
                 Mousetrap.bind('down', function (e) {
-                    var oldEl = $('.el').filter('.elFocus');
+                    var oldEl = $('.song-list-el-focus');
                     var newEl = oldEl.next(':visible');
                     if (newEl.length > 0) {
-                        oldEl.removeClass('elFocus');
-                        newEl.addClass('elFocus');
+                        oldEl.removeClass('song-list-el-focus');
+                        newEl.addClass('song-list-el-focus');
                         correctPosition();
                     }
                     e.preventDefault();
                 });
             }
-            function resetIndex() {
-                $('.elFocus').removeClass('elFocus');
-                $('.el:visible:first').addClass('elFocus');
-                $(window).scrollTop(0);
+            function pageDown() {
+                Mousetrap.bind('pagedown', function (e) {
+                    var oldEl = $('.song-list-el-focus');
+                    var newEls = oldEl.nextAll(':visible');
+                    var newEl = newEls.length == 0 ? oldEl : (newEls.length < 5 ? newEls.last() : $(newEls[4]));
+                    oldEl.removeClass('song-list-el-focus');
+                    newEl.addClass('song-list-el-focus');
+                    correctPosition();
+                    e.preventDefault();
+                });
             }
-            Keyboard.resetIndex = resetIndex;
+            function pageUp() {
+                Mousetrap.bind('pageup', function (e) {
+                    var oldEl = $('.song-list-el-focus');
+                    var newEls = oldEl.prevAll(':visible');
+                    var newEl = newEls.length == 0 ? oldEl : (newEls.length < 5 ? newEls.last() : $(newEls[4]));
+                    oldEl.removeClass('song-list-el-focus');
+                    newEl.addClass('song-list-el-focus');
+                    correctPosition();
+                    e.preventDefault();
+                });
+            }
+            //export function resetIndex() {
+            //    $('.elFocus').removeClass('elFocus');
+            //    $('.el:visible:first').addClass('elFocus');
+            //    $(window).scrollTop(0);
+            //}
             function bindKeyboard() {
                 down();
                 up();
+                pageDown();
+                pageUp();
                 enter();
             }
             Keyboard.bindKeyboard = bindKeyboard;
         })(Keyboard = List.Keyboard || (List.Keyboard = {}));
     })(List = Musicope.List || (Musicope.List = {}));
-})(Musicope || (Musicope = {}));
-var Musicope;
-(function (Musicope) {
-    var List;
-    (function (List) {
-        var Options;
-        (function (Options) {
-            function getOptions() {
-            }
-            Options.getOptions = getOptions;
-        })(Options = List.Options || (List.Options = {}));
-    })(List = Musicope.List || (Musicope.List = {}));
-})(Musicope || (Musicope = {}));
-var Musicope;
-(function (Musicope) {
-    var Model;
-    (function (Model) {
-        var Game;
-        (function (Game) {
-            ;
-        })(Game = Model.Game || (Model.Game = {}));
-    })(Model = Musicope.Model || (Musicope.Model = {}));
-})(Musicope || (Musicope = {}));
-var Musicope;
-(function (Musicope) {
-    var Model;
-    (function (Model) {
-        var Game;
-        (function (Game) {
-            var UserParams;
-            (function (UserParams) {
-                ;
-                ;
-                ;
-                ;
-                ;
-                ;
-            })(UserParams = Game.UserParams || (Game.UserParams = {}));
-        })(Game = Model.Game || (Model.Game = {}));
-    })(Model = Musicope.Model || (Musicope.Model = {}));
 })(Musicope || (Musicope = {}));
 var Musicope;
 (function (Musicope) {
@@ -2284,7 +1859,6 @@ var Musicope;
         }
         function reset() {
             subscriptions = {};
-            Musicope.params = jQuery.extend(true, {}, Musicope.defaultParams);
         }
         Params.reset = reset;
         function subscribe(id, regex, callback) {
@@ -2294,12 +1868,8 @@ var Musicope;
             };
         }
         Params.subscribe = subscribe;
-        function unsubscribe(id) {
-            delete subscriptions[id];
-        }
-        Params.unsubscribe = unsubscribe;
         function setParam(name, value, dontNotifyOthers) {
-            Musicope.params[name] = value;
+            Musicope.config[name] = value;
             if (!dontNotifyOthers) {
                 call(name, value);
             }
@@ -2321,16 +1891,14 @@ var Musicope;
 })(Musicope || (Musicope = {}));
 var Musicope;
 (function (Musicope) {
-    Musicope.defaultParams = {
+    Musicope.defaultConfig = {
         // controllers
         c_songUrl: undefined,
-        c_driver: "WebMidi",
-        c_callbackUrl: undefined,
+        p_elapsedTime: undefined,
+        p_initTime: undefined,
         // players
         p_deviceIn: "0",
         p_deviceOut: "2",
-        p_elapsedTime: undefined,
-        p_initTime: undefined,
         p_isPaused: false,
         p_minNote: 36,
         p_maxNote: 96,
@@ -2375,6 +1943,121 @@ var Musicope;
         s_colOutOfReachNotes: "#ff5252",
         s_colUnPlayedNotesInReach: "#00ff90"
     };
-    Musicope.params = jQuery.extend(true, {}, Musicope.defaultParams);
+    Musicope.config;
+})(Musicope || (Musicope = {}));
+var Musicope;
+(function (Musicope) {
+    var Setup;
+    (function (Setup) {
+        function getValue(el) {
+            if (el.attr('type') == 'checkbox') {
+                return el[0].checked;
+            }
+            else {
+                return el.val();
+            }
+        }
+        function setValue(el, value) {
+            if (el.attr('type') == 'checkbox') {
+                el[0].checked = value;
+            }
+            else {
+                el.val(value);
+            }
+        }
+        function init() {
+            var fileExists = fs.existsSync(Musicope.setupJsonPath);
+            if (fileExists) {
+                var text = fs.readFileSync(Musicope.setupJsonPath, "utf-8");
+                Musicope.defaultConfig = JSON.parse(text);
+            }
+            for (var key in Musicope.defaultConfig) {
+                if (typeof Musicope.defaultConfig[key] == "object") {
+                    Musicope.defaultConfig[key].forEach(function (v, i) {
+                        var el = $('#' + key + '_' + i);
+                        if (el.length == 1) {
+                            setValue(el, v);
+                        }
+                    });
+                }
+                else {
+                    var el = $('#' + key);
+                    if (el.length == 1) {
+                        setValue(el, Musicope.defaultConfig[key]);
+                    }
+                }
+            }
+            $('.setupPage input').change(function (e) {
+                var el = $(this);
+                if (el.attr('id') in Musicope.defaultConfig) {
+                    Musicope.defaultConfig[el.attr('id')] = getValue(el);
+                    fs.writeFile(Musicope.setupJsonPath, JSON.stringify(Musicope.defaultConfig, null, 4));
+                }
+                else {
+                    var m = el.attr('id').match(/^(.+)_(\d)$/);
+                    if (m.length == 3) {
+                        if (m[1] in Musicope.defaultConfig) {
+                            Musicope.defaultConfig[m[1]][parseInt(m[2])] = getValue(el);
+                            fs.writeFile(Musicope.setupJsonPath, JSON.stringify(Musicope.defaultConfig, null, 4));
+                        }
+                    }
+                }
+            });
+        }
+        Setup.init = init;
+    })(Setup = Musicope.Setup || (Musicope.Setup = {}));
+})(Musicope || (Musicope = {}));
+var Musicope;
+(function (Musicope) {
+    var WebMidi = (function () {
+        function WebMidi() {
+            var _this = this;
+            this.ready = $.Deferred();
+            //inList = () => {
+            //    return []; //this.midi.inputs;
+            //}
+            //outList = () => {
+            //    return []; //this.midi.outputs;
+            //}
+            this.inOpen = function (callback) {
+                var o = _this;
+                o.input = o.midi.inputs.get(Musicope.config.p_deviceIn);
+                if (o.input) {
+                    o.input.onmidimessage = function (e) {
+                        callback(e.timeStamp, e.data[0], e.data[1], e.data[2]);
+                    };
+                }
+            };
+            this.outOpen = function () {
+                var o = _this;
+                o.output = o.midi.outputs.get(Musicope.config.p_deviceOut);
+                if (!o.output) {
+                    o.output = o.midi.outputs.get(0);
+                }
+            };
+            this.inClose = function () {
+                var o = _this;
+                if (o.input && o.input.value) {
+                    o.input.value.onmidimessage = null;
+                }
+            };
+            this.out = function (byte1, byte2, byte3) {
+                var data = [byte1, byte2];
+                if (typeof byte3 === "number") {
+                    data.push(byte3);
+                }
+                _this.output.send(data);
+            };
+            var o = this;
+            navigator.requestMIDIAccess().then(function (m) {
+                o.midi = m;
+                o.ready.resolve();
+            }, function (msg) {
+                o.ready.reject("Failed to get MIDI access - " + msg);
+            });
+        }
+        return WebMidi;
+    })();
+    Musicope.WebMidi = WebMidi;
 })(Musicope || (Musicope = {}));
 //# sourceMappingURL=app.js.map

@@ -1,17 +1,15 @@
 ﻿module Musicope {
 
-    export var defaultParams: IParams = {
+    export var defaultConfig: IConfig = {
 
         // controllers
         c_songUrl: undefined,
-        c_driver: "WebMidi",
-        c_callbackUrl: undefined,
+        p_elapsedTime: undefined,
+        p_initTime: undefined,
 
         // players
         p_deviceIn: "0",
         p_deviceOut: "2",
-        p_elapsedTime: undefined,
-        p_initTime: undefined,
         p_isPaused: false,
         p_minNote: 36,
         p_maxNote: 96,
@@ -60,6 +58,6 @@
         s_colUnPlayedNotesInReach: "#00ff90"
     };
 
-    export var params: IParams = jQuery.extend(true, {}, defaultParams);
+    export var config: IConfig;
 
 } 
