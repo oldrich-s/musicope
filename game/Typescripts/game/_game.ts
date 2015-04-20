@@ -23,17 +23,16 @@
 
         private getSong() {
             var o = this;
-            var data = fs.readFileSync(config.c_songUrl);
-            var arr = new Uint8Array(data);
-            if (arr.length == 0) {
+            var data: string = io.readFileB64(config.c_songUrl);
+            if (data.length == 0) {
                 throw "error loading midi file";
             }
-            return arr;
+            return data;
         }
 
-        private init(arr: Uint8Array): void {
+        private init(data: string): void {
             var o = this;
-            o.song = new Song(arr);
+            o.song = new Song(data);
             o.scene = new Scene(o.song);
             o.metronome = new Metronome(o.song.midi.timePerBeat, o.song.midi.timePerBar / o.song.midi.timePerBeat);
             o.player = new Player(o.song, o.metronome, o.scene);

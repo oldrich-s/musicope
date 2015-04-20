@@ -38,7 +38,6 @@
             var isNoteOn = kind === 144 && velocity > 0;
             var isNoteOff = kind === 128 || (kind === 144 && velocity == 0);
             if (isNoteOn && !o.isDoubleNote(timeStamp, isNoteOn, noteId, velocity)) {
-                console.log(timeStamp + " " + kind + " " + noteId + " " + velocity);
                 o.scene.setActiveId(noteId);
                 execNoteOnFuncs(o.noteOnFuncs, noteId);
             } else if (isNoteOff) {

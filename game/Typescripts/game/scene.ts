@@ -100,7 +100,7 @@
         private setupScene() {
             var o = this;
             var bag: Float32Array[] = [];
-
+            
             var input: SceneFns.Input = {
                 drawRect: (x0, y0, x1, y1, ids, color, activeColor) => {
                     bag.push(o.rect(x0, y0, x1, y1, ids, [color], [activeColor]));
@@ -112,6 +112,7 @@
                 sustainNotes: o.song.sceneSustainNotes,
                 p_minNote: config.p_minNote,
                 p_maxNote: config.p_maxNote,
+                timePerBar: o.song.midi.timePerBar,
                 playedNoteID: o.song.playedNoteID,
             };
             SceneFns.drawScene(input);

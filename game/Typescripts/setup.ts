@@ -4,7 +4,9 @@
         if (el.attr('type') == 'checkbox') {
             return (<any>el[0]).checked;
         } else {
-            return el.val();
+            var v = el.val();
+            var fl = parseFloat(v);
+            return fl === NaN ? v : fl;
         }
     }
 
@@ -18,9 +20,9 @@
 
     export function init() {
 
-        var fileExists = fs.existsSync(setupJsonPath);
+        var fileExists = io.existsFile(setupJsonPath);
         if (fileExists) {
-            var text = fs.readFileSync(setupJsonPath, "utf-8");
+            var text = io.readFile(setupJsonPath);
             defaultConfig = JSON.parse(text);
         }
 
@@ -44,13 +46,13 @@
             var el = $(this);
             if (el.attr('id') in defaultConfig) {
                 defaultConfig[el.attr('id')] = getValue(el);
-                fs.writeFile(setupJsonPath, JSON.stringify(defaultConfig, null, 4));
+                io.writeFile(setupJsonPath, JSON.stringify(defaultConfig, null, 4));
             } else {
                 var m = el.attr('id').match(/^(.+)_(\d)$/);
                 if (m.length == 3) {
                     if (m[1] in defaultConfig) {
                         defaultConfig[m[1]][parseInt(m[2])] = getValue(el);
-                        fs.writeFile(setupJsonPath, JSON.stringify(defaultConfig, null, 4));
+                        io.writeFile(setupJsonPath, JSON.stringify(defaultConfig, null, 4));
                     }
                 }
             }

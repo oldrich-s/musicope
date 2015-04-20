@@ -73,9 +73,8 @@ module Musicope.Game.Parsers.Midi {
         o.ticksPerQuarter = midi.header.ticksPerBeat;
     }
 
-    export function parseMidi(midi: Uint8Array): IParser {
-        var str = String.fromCharCode.apply(null, midi);        
-        var midiFile = MidiFile(str);
+    export function parseMidi(midi: string): IParser {
+        var midiFile = MidiFile(atob(midi));
         var parser: IParser2 = {
             timePerBeat: 0,
             timePerBar: 0,

@@ -9,7 +9,7 @@
 
         // players
         p_deviceIn: "0",
-        p_deviceOut: "2",
+        p_deviceOut: "0",
         p_isPaused: false,
         p_minNote: 36,
         p_maxNote: 96,

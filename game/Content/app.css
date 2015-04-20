@@ -1,9 +1,22 @@
-﻿.searchbar {
+﻿.playTitle {
+    margin-right: 10px;
+    color: #ffec82;
+    font-weight: bold;
+}
+
+.playPath {
+    margin-left: 10px;
+    color: #aeaeae;
+    font-style:italic;
+}
+
+.searchbar {
     height: 66px;
 }
 
 .searchbar .searchbar-input {
     height: 42px;
+    
 }
 
 .searchbar input[type="search"] {
@@ -47,7 +60,7 @@
 .vote-count {
   display: block;
   font-size: x-large;
-  color: white;
+  color: #ffec82;
 }
 
 .vote-down {

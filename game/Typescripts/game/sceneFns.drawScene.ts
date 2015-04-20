@@ -9,6 +9,7 @@
         sustainNotes: ISustainNoteScene[];
         p_minNote: number;
         p_maxNote: number;
+        timePerBar: number;
         playedNoteID: IMinMax;
     }
 
@@ -53,6 +54,23 @@
     var blackNoteSpots = [
         1, 3, 4, 6, 7, 8, 10, 11, 13, 14, 15, 17, 18, 20, 21, 22, 24, 25, 27, 28, 29, 31, 32,
         34, 35, 36, 38, 39, 41, 42, 43, 45, 46, 48, 49, 50];
+
+    var colors = [
+        "#FA0B0C",
+        "#F44712",
+        "#F88010",
+        "#F5D23B",
+        "#B5B502",
+        "#149033",
+        "#1B9081",
+        "#7D6AFD",
+        "#A840FD",
+        "#7F087C",
+        "#A61586",
+        "#D71386"
+    ];
+
+    var cLineColor = "#808080";
 
     function drawNoteCover(loc: Local) {
         if (config.s_noteCoverRelHeight > 0.0) {
@@ -179,57 +197,65 @@
     }
 
     function drawTrack(loc: Local, trackId: number) {
-        var whiteNoteColor = hexToRgb(config.s_colWhites[trackId]);
-        var blackNoteColor = hexToRgb(config.s_colBlacks[trackId]);
         var minMaxVel = getMinMaxVelocity(loc.input.tracks[trackId]);
+        var white = hexToRgb("#ffffff");
         loc.input.tracks[trackId].forEach(function (note) {
             var y0 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOn + 1;
             var y1 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOff - 2;
             var ipos = whiteNoteIds.indexOf(note.id);
+            var color = hexToRgb(colors[note.id % 12]);
             if (ipos >= 0) {
+                var f = trackId == 0 ? 4 : 0;
                 var x0 = ipos * loc.whiteWidth + 3;
                 var x1 = x0 + loc.whiteWidth - 5;
-                var color = getColorByVelocity(whiteNoteColor, note.velocityOn, minMaxVel);
-                loc.input.drawRect(x0, y0, x1, y1, [trackId + 200], color, color);
+                //var color = getColorByVelocity(whiteNoteColor, note.velocityOn, minMaxVel);
+                loc.input.drawRect(x0, y0, x1, y1, [trackId + 200], white, white);
+                loc.input.drawRect(x0 + f, y0, x1 - f, y1, [trackId + 200], color, color);
             } else {
+                var f = trackId == 0 ? 3 : 0;
                 var pos = blackNoteIds.indexOf(note.id);
                 if (pos >= 0) {
                     var x0 = blackNoteSpots[pos] * loc.whiteWidth - loc.blackWidth + 2;
                     var x1 = x0 + 2 * loc.blackWidth - 3;
-                    var color = getColorByVelocity(blackNoteColor, note.velocityOn, minMaxVel);
-                    loc.input.drawRect(x0, y0, x1, y1, [trackId + 202], color, color);
+                    //var color = getColorByVelocity(blackNoteColor, note.velocityOn, minMaxVel);
+                    loc.input.drawRect(x0, y0, x1, y1, [trackId + 202], white, white);
+                    loc.input.drawRect(x0 + f, y0, x1 - f, y1, [trackId + 202], color, color);
                 }
             }
         });
     }
 
-    function drawSustainBackground(loc: Local) {
-        if (config.s_showSustainBg) {
-            var color = hexToRgb(config.s_colSustain);
-            var color2 = hexToRgb(config.s_colSustain, 0.5);
-            loc.input.sustainNotes.forEach((note) => {
-                var y0 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOn + 1;
-                var y1 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOff - 2;
-                var ipos = whiteNoteIds.length;
-                loc.input.drawRect(0, y0, loc.input.sceneWidth + 1, y0 + 2, [200], color, color);
-                loc.input.drawRect(0, y1, loc.input.sceneWidth + 1, y1 + 2, [200], color2, color);
-            });
+    function drawBarLines(loc: Local) {
+        var maxTime = 0;
+        loc.input.tracks.forEach((t) => {
+            if (t.length > 0) {
+                maxTime = Math.max(t[t.length - 1].timeOff, maxTime);
+            }
+        });
+        var color = hexToRgb(cLineColor);
+        var i = 0;
+        while (true) {
+            var time = loc.input.timePerBar * i;
+            var y = loc.yEndOfTimeBar + loc.input.pixelsPerTime * time;
+            if (time > maxTime) {
+                break;
+            }
+            var x1 = (whiteNoteIds.length + 1) * loc.whiteWidth;
+            loc.input.drawRect(0, y, x1, y + 1, [200], color, color);
+            i++;
         }
     }
 
-    function drawBlackRails(loc: Local) {
-        if (config.s_showBlackRails) {
-            blackNoteIds.forEach((id, i) => {
-                var x0 = blackNoteSpots[i] * loc.whiteWidth - loc.blackWidth + 2;
-                var x1 = x0 + 2 * loc.blackWidth - 3;
+    function drawCLines(loc: Local) {
+        var color = hexToRgb(cLineColor);
+        whiteNoteIds.forEach((id, i) => {
+            if (id % 12 == 0) {
+                var x0 = i * loc.whiteWidth;
                 var y0 = loc.yEndOfPiano;
                 var y1 = loc.input.sceneHeight;
-                var color1 = hexToRgb(config.s_colorBlackRails2);
-                var color2 = hexToRgb(config.s_colorBlackRails3);
-                var color = (i - 1) % 5 === 0 || (i - 2) % 5 === 0 ? color1 : color2;
-                loc.input.drawRect(x0, y0, x1, y1, [id], color, color);
-            });
-        }
+                loc.input.drawRect(x0, y0, x0 + 1, y1, [id], color, color);
+            }
+        });
     }
 
     export function drawScene(input: Input) {
@@ -246,8 +272,8 @@
             yEndOfPiano: yEndOfTimeBar - timeBarHeight,
             xRemainder: input.sceneWidth - whiteWidth * whiteNoteIds.length,
         }
-        drawSustainBackground(loc);
-        drawBlackRails(loc);
+        drawCLines(loc);
+        drawBarLines(loc);
         config.s_views.forEach((view, i) => {
             if (view === "full") { drawTrack(loc, i); }
         });

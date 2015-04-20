@@ -144,7 +144,7 @@
         sceneTracks: INoteScene[][];
         sceneSustainNotes: ISustainNoteScene[];
 
-        constructor(data: Uint8Array) {
+        constructor(data: string) {
             var o = this;
             o.midi = Parsers.Midi.parseMidi(data);
             o.midi.tracks = sortPlayerTracksByHands(o.midi.tracks);

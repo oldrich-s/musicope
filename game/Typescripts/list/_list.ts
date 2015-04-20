@@ -41,10 +41,10 @@
 
     function populateDOM(files: string[], scores: any) {
         files.forEach((file) => {
-            var patho = p.parse(file);
             var score = scores[file] || "0";
-            var title = patho.name.replace(/_/g, " ");
-            var path = file.replace(patho.base, '').replace(/^songs/,'');
+            var m = file.match(/^songs\\(.*?)([^\\]+)$/);
+            var path = m[1];
+            var title = m[2].replace(/_/g, " ");
             var template =
                 $('.song-list-template')
                     .html().trim()
@@ -64,38 +64,23 @@
             if (scoresDirty) {
                 var text = JSON.stringify(scores, null, 4);
                 scoresDirty = false;
-                fs.writeFile(songsJsonPath, text);
+                io.writeFile(songsJsonPath, text);
             }
         }, 1000);
     }
 
     function initScores() {
-        var fileExists = fs.existsSync(songsJsonPath);
+        var fileExists = io.existsFile(songsJsonPath);
         if (fileExists) {
-            var text = fs.readFileSync(songsJsonPath, "utf-8");
+            var text = io.readFile(songsJsonPath);
             eval("scores = " + text);
         }
         startSavingScores();
     }
 
-    function getAllFiles(path: string) {
-        var files: string[] = [];
-        fs.readdirSync(path).forEach((v) => {
-            var path2 = p.join(path, v);
-            var stat = fs.lstatSync(path2);
-            if (stat.isDirectory()) {
-                var fls = getAllFiles(path2);
-                files = files.concat(fls);
-            } else {
-                files.push(path2);
-            }
-        });
-        return files;
-    }
-
     export function init() {
         initScores();
-        var files = getAllFiles("songs");
+        var files: string[] = JSON.parse(io.getAllFiles("songs"));
         populateDOM(files, scores);
         $('.song-list li:visible:first').addClass('song-list-el-focus');
         $('.vote-up').on('click', voteUp);

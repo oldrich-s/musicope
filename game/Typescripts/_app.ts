@@ -1,8 +1,4 @@
-﻿declare var require;
-
-var fs = require("fs");
-var p = require('path');
-var gui = require('nw.gui');
+﻿declare var io;
 
 module Musicope {
 
@@ -14,8 +10,19 @@ module Musicope {
     export var songsJsonPath = "songs.json";
     export var setupJsonPath = "setup.json";
 
-    var win = gui.Window.get();
-    //win.maximize();
+    export function correctPosition() {
+        var ul = $('.list-scroll');
+        var li = $(".song-list-el-focus");
+        var rely: number = li.position().top - ul.scrollTop() + 35;
+        var drely1 = rely + 1.5 * li.height() - ul.height();
+        var drely2 = rely - 0.5 * li.height();
+        if (drely1 > 0) {
+            ul.scrollTop(ul.scrollTop() + drely1);
+        } else if (drely2 < 0) {
+            ul.scrollTop(ul.scrollTop() + drely2);
+        }
+        return true;
+    }
 
     $(document).ready(() => {
 
@@ -41,19 +48,24 @@ module Musicope {
 
         app.onPageBeforeAnimation('play',(page) => {
             if ('url' in page.query) {
+                $('.searchbar-input input').blur();
                 Mousetrap.reset();
                 config = jQuery.extend(true, {}, defaultConfig);
                 config.c_songUrl = decodeURIComponent(page.query.url);
                 game = new Musicope.Game.Game();
+                var path = decodeURIComponent(page.query.url).replace(/songs\\(.+)\\[^\\]+$/, '$1');
                 $('.playTitle').text(decodeURIComponent(page.query.title));
+                $('.playPath').text(path);
                 app.sizeNavbars();
             }
         });
 
         app.onPageAfterAnimation('index',(page) => {
+            $('.searchbar-input input').focus();
             Mousetrap.reset();
             Params.reset();
             List.Keyboard.bindKeyboard();
+            correctPosition();
         });
 
         app.onPageAfterAnimation('help',(page) => {

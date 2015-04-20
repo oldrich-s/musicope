@@ -14,6 +14,7 @@
         constructor(private song: Song) {
             var o = this;
             o.subscribeActions();
+            $('.canvasInfo').hide();
         }
 
         private subscribeActions() {

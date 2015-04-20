@@ -1,19 +1,5 @@
 ﻿module Musicope.List.Keyboard {
 
-    function correctPosition() {
-        var ul = $('.list-scroll');
-        var li = $(".song-list-el-focus");
-        var rely: number = li.position().top - ul.scrollTop() + 35;
-        var drely1 = rely + 1.5 * li.height() - ul.height();
-        var drely2 = rely - 0.5 * li.height();
-        if (drely1 > 0) {
-            ul.scrollTop(ul.scrollTop() + drely1);
-        } else if (drely2 < 0) {
-            ul.scrollTop(ul.scrollTop() + drely2);
-        }
-        return true;
-    }
-
     function enter() {
         Mousetrap.bind('enter',(e) => {
             var href = $('.song-list-el-focus a').attr('href');
@@ -41,6 +27,32 @@
             var newEl = oldEl.nextAll(':visible').first();
             if (newEl.length > 0) {
                 oldEl.removeClass('song-list-el-focus');
+                newEl.addClass('song-list-el-focus');
+                correctPosition();
+            }
+            e.preventDefault();
+        });
+    }
+
+    function home() {
+        Mousetrap.bind('home',(e) => {
+            var list = $('.song-list');
+            var newEl = list.find('li:visible').first();
+            if (newEl.length > 0) {
+                list.find('.song-list-el-focus').removeClass('song-list-el-focus');
+                newEl.addClass('song-list-el-focus');
+                correctPosition();
+            }
+            e.preventDefault();
+        });
+    }
+
+    function end() {
+        Mousetrap.bind('end',(e) => {
+            var list = $('.song-list');
+            var newEl = list.find('li:visible').last();
+            if (newEl.length > 0) {
+                list.find('.song-list-el-focus').removeClass('song-list-el-focus');
                 newEl.addClass('song-list-el-focus');
                 correctPosition();
             }
@@ -79,6 +91,8 @@
     export function bindKeyboard() {
         down();
         up();
+        home();
+        end();
         pageDown();
         pageUp();
         enter();

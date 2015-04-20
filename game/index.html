@@ -68,7 +68,10 @@
                                     <span>Back</span>
                                 </a>
                             </div>
-                            <div class="center sliding playTitle"></div>
+                            <div class="center sliding">
+                                <span class="playTitle"></span> -
+                                <span class="playPath"></span>
+                            </div>
                             <div class="right">
                                 <a href="#help" class="link">
                                     Help
@@ -108,6 +111,28 @@
                             <div class="content-block-title">Playback Setup</div>
                             <div class="list-block">
                                 <ul>
+
+                                    <li>
+                                        <div class="item-content">
+                                            <div class="item-inner">
+                                                <div class="item-title label">Midi Input Index</div>
+                                                <div class="item-input">
+                                                    <input type="text" id="p_deviceIn" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+
+                                    <li>
+                                        <div class="item-content">
+                                            <div class="item-inner">
+                                                <div class="item-title label">Midi Output Index</div>
+                                                <div class="item-input">
+                                                    <input type="text" id="p_deviceOut" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
 
                                     <li>
                                         <div class="item-content">
@@ -492,7 +517,7 @@
                 </div>
                 <div class="item-inner">
                     <div class="item-title-row" style="padding:0 20px 0 20px;">
-                        <div class="item-title" style="width:100%;white-space:normal;word-wrap:break-word;font-size: 20px;">{{title}}</div>
+                        <div class="item-title" style="width:100%;white-space:normal;word-wrap:break-word;font-size: 20px;color:#ffec82">{{title}}</div>
                     </div>
                     <div class="item-text">{{path}}</div>
                 </div>
