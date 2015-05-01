@@ -91,7 +91,7 @@
         }
 
         static getContext(canvas: any) {
-            return canvas.getContext("experimental-webgl", { antialias: true });
+            return canvas.getContext("webgl", { antialias: true });
         }
 
         private getShader(id: string) {

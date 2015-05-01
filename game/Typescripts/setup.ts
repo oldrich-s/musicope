@@ -19,10 +19,9 @@
     }
 
     export function init() {
-
-        var fileExists = io.existsFile(setupJsonPath);
+        var fileExists = fs.existsSync(setupJsonPath);
         if (fileExists) {
-            var text = io.readFile(setupJsonPath);
+            var text = fs.readFileSync(setupJsonPath, "utf-8");
             defaultConfig = JSON.parse(text);
         }
 
@@ -46,13 +45,13 @@
             var el = $(this);
             if (el.attr('id') in defaultConfig) {
                 defaultConfig[el.attr('id')] = getValue(el);
-                io.writeFile(setupJsonPath, JSON.stringify(defaultConfig, null, 4));
+                fs.writeFile(setupJsonPath, JSON.stringify(defaultConfig, null, 4));
             } else {
                 var m = el.attr('id').match(/^(.+)_(\d)$/);
                 if (m.length == 3) {
                     if (m[1] in defaultConfig) {
                         defaultConfig[m[1]][parseInt(m[2])] = getValue(el);
-                        io.writeFile(setupJsonPath, JSON.stringify(defaultConfig, null, 4));
+                        fs.writeFile(setupJsonPath, JSON.stringify(defaultConfig, null, 4));
                     }
                 }
             }

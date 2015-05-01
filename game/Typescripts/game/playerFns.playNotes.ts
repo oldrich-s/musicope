@@ -56,7 +56,7 @@
             var o = this;
             var isBelowMin = note.id < config.p_minNote;
             var isAboveMax = note.id > config.p_maxNote;
-            config.p_playOutOfReachNotes && (isBelowMin || isAboveMax);
+            return config.p_playOutOfReachNotes && (isBelowMin || isAboveMax);
         }
 
         private getVelocity = (trackId: number, note: Parsers.INote) => {

@@ -23,11 +23,12 @@
 
         private getSong() {
             var o = this;
-            var data: string = io.readFileB64(config.c_songUrl);
-            if (data.length == 0) {
+            var data = fs.readFileSync(config.c_songUrl);
+            var str = String.fromCharCode.apply(null, new Uint8Array(data));
+            if (str.length == 0) {
                 throw "error loading midi file";
             }
-            return data;
+            return str;
         }
 
         private init(data: string): void {

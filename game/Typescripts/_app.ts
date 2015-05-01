@@ -1,4 +1,8 @@
-﻿declare var io;
+﻿declare var require;
+
+var fs = require("fs");
+var p = require('path');
+var gui = require('nw.gui');
 
 module Musicope {
 
@@ -7,8 +11,8 @@ module Musicope {
     export var mainView;
     export var webMidi: WebMidi;
 
-    export var songsJsonPath = "songs.json";
-    export var setupJsonPath = "setup.json";
+    export var songsJsonPath = "..\\songs.json";
+    export var setupJsonPath = "..\\setup.json";
 
     export function correctPosition() {
         var ul = $('.list-scroll');

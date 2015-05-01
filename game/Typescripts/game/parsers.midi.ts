@@ -74,7 +74,7 @@ module Musicope.Game.Parsers.Midi {
     }
 
     export function parseMidi(midi: string): IParser {
-        var midiFile = MidiFile(atob(midi));
+        var midiFile = MidiFile(midi);
         var parser: IParser2 = {
             timePerBeat: 0,
             timePerBar: 0,
