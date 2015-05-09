@@ -18,13 +18,25 @@
         }
     }
 
-    export function init() {
-        var fileExists = fs.existsSync(setupJsonPath);
-        if (fileExists) {
-            var text = fs.readFileSync(setupJsonPath, "utf-8");
-            defaultConfig = JSON.parse(text);
-        }
+    function onDOMChange() {
+        $('.setupPage input').change(function (e) {
+            var el = $(this);
+            if (el.attr('id') in defaultConfig) {
+                defaultConfig[el.attr('id')] = getValue(el);
+                IO.writeTextFile(setupJsonPath, JSON.stringify(defaultConfig, null, 4));
+            } else {
+                var m = el.attr('id').match(/^(.+)_(\d)$/);
+                if (m.length == 3) {
+                    if (m[1] in defaultConfig) {
+                        defaultConfig[m[1]][parseInt(m[2])] = getValue(el);
+                        IO.writeTextFile(setupJsonPath, JSON.stringify(defaultConfig, null, 4));
+                    }
+                }
+            }
+        });
+    }
 
+    function setConfigDOM() {
         for (var key in defaultConfig) {
             if (typeof defaultConfig[key] == "object") {
                 defaultConfig[key].forEach((v, i) => {
@@ -40,23 +52,28 @@
                 }
             }
         }
+    }
 
-        $('.setupPage input').change(function (e) {
-            var el = $(this);
-            if (el.attr('id') in defaultConfig) {
-                defaultConfig[el.attr('id')] = getValue(el);
-                fs.writeFile(setupJsonPath, JSON.stringify(defaultConfig, null, 4));
+    function readConfig() {
+        var def = $.Deferred<void>();
+        IO.existsFile(setupJsonPath).then((fileExists) => {
+            if (fileExists) {
+                IO.readTextFile(setupJsonPath).then((text) => {
+                    defaultConfig = JSON.parse(text);
+                    def.resolve();
+                });
             } else {
-                var m = el.attr('id').match(/^(.+)_(\d)$/);
-                if (m.length == 3) {
-                    if (m[1] in defaultConfig) {
-                        defaultConfig[m[1]][parseInt(m[2])] = getValue(el);
-                        fs.writeFile(setupJsonPath, JSON.stringify(defaultConfig, null, 4));
-                    }
-                }
+                def.resolve();
             }
         });
+        return def;
+    }
 
+    export function init() {
+        readConfig().then(() => {
+            setConfigDOM();
+            onDOMChange();
+        });
     }
 
 } 

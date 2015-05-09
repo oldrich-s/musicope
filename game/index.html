@@ -495,9 +495,24 @@
                     </div>
 
                     <div class="page-content">
-                        <div class="page-content" style="padding-top:0;overflow:hidden;">
-                            Help
+                        <div class="page-content" style="padding-top:0;">
+                            <table class="help-page-main">
+                                <tr>
+                                    <th>Hotkey</th>
+                                    <th>Title</th>
+                                    <th>Description</th>
+                                    <th>Current value</th>
+                                </tr>
+                            </table>
                         </div>
+                        <script type="text/html" class="help-page-el">
+                            <tr>
+                                <td class="hpe-key">{{key}}</td>
+                                <td class="hpe-title">{{title}}</td>
+                                <td class="hpe-description">{{desc}}</td>
+                                <td class="hpe-value">{{value}}</td>
+                            </tr>
+                        </script>
                     </div>
                 </div>
 

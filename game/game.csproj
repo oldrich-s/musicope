@@ -10,7 +10,7 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
-    <TypeScriptToolsVersion>1.4</TypeScriptToolsVersion>
+    <TypeScriptToolsVersion>1.5</TypeScriptToolsVersion>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
@@ -42,6 +42,7 @@
     <TypeScriptCompile Include="Typescripts\game\keyboardActions.backspace.ts" />
     <TypeScriptCompile Include="Typescripts\game\keyboardActions.esc.ts" />
     <TypeScriptCompile Include="Typescripts\game\_game.ts" />
+    <TypeScriptCompile Include="Typescripts\io.ts" />
     <TypeScriptCompile Include="Typescripts\setup.ts" />
     <TypeScriptCompile Include="Typescripts\webMidi.ts" />
     <TypeScriptCompile Include="Typescripts\game\keyboardOverlay.ts" />

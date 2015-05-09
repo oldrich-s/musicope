@@ -1,18 +1,12 @@
-﻿declare var require;
-
-var fs = require("fs");
-var p = require('path');
-var gui = require('nw.gui');
-
-module Musicope {
+﻿module Musicope {
 
     export var game: Game.Game;
     export var app: Framework7;
     export var mainView;
     export var webMidi: WebMidi;
 
-    export var songsJsonPath = "..\\songs.json";
-    export var setupJsonPath = "..\\setup.json";
+    export var songsJsonPath = "songs.json";
+    export var setupJsonPath = "setup.json";
 
     export function correctPosition() {
         var ul = $('.list-scroll');
@@ -26,6 +20,16 @@ module Musicope {
             ul.scrollTop(ul.scrollTop() + drely2);
         }
         return true;
+    }
+
+    function tryRoundValue(value: any): string {
+        if (typeof value == "number") {
+            return "" + (Math.round(100 * value) / 100);
+        } else if (value === undefined || value === null) {
+            return "-";
+        } else {
+            return "" + value;
+        }
     }
 
     $(document).ready(() => {
@@ -72,8 +76,20 @@ module Musicope {
             correctPosition();
         });
 
-        app.onPageAfterAnimation('help',(page) => {
+        app.onPageBeforeAnimation('help',(page) => {
             config.p_isPaused = true;
+            var root = $('.help-page-main');
+            root.find("tr:has(td)").html("");
+            var tmpl = $(".help-page-el").text();
+            for (var key in Game.keyboardActions) {
+                var v = Game.keyboardActions[key];
+                var text = tmpl
+                    .replace("{{title}}", v.title)
+                    .replace("{{key}}", key)
+                    .replace("{{desc}}", v.description)
+                    .replace("{{value}}", tryRoundValue(v.getCurrentState()));
+                root.append(text);
+            }
         });
 
         List.init();

@@ -1,0 +1,1 @@
+rcedit musicope.exe --set-icon icon.ico

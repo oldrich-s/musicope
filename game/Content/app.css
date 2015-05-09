@@ -76,52 +76,40 @@
   border-top-color: #007aff;
 }
 
-#displayHelpOverlay {
-    display:none;
-    z-index:100;
-    position:absolute;
-    top:0; left:0;
-    width:100%;
-    height:100%;
-    text-align: center;
-    vertical-align:middle;
-    background-color: rgba(0,0,0,0.5);
-    color: white;
-    text-align: center;
-    overflow: scroll;
-}
-
-#displayHelpOverlay table {
+.help-page-main {
     background-color: rgba(0,0,0,0.9);
-    font-size: xx-large;
+    font-size: x-large;
     text-align: left;
     border-collapse:collapse;
+    width: 100%;
 }
 
-#displayHelpOverlay table th {
+.help-page-main th {
     font-weight: normal;
-    border-bottom: 2px solid #808080;
+    border-bottom: 1px solid #808080;
     padding: 5px 20px 5px 20px;
     color: #ffad73;
 }
 
-#displayHelpOverlay table td {
+.help-page-main td {
     border-bottom: 1px solid #808080;
     padding: 5px 20px 5px 20px;
 }
 
-#displayHelpOverlay table .idCell {
+.hpe-title {
 }
 
-#displayHelpOverlay table .keyCell {
+.hpe-key {
     color: #ffec83;
 }
 
-#displayHelpOverlay table .descriptionCell {
-    font-size: x-large;
+.hpe-description {
+    font-size: large;
+    font-style: italic;
 }
 
-#displayHelpOverlay table .currentCell {
-    font-size: x-large;
+.hpe-value {
+    font-size: large;
     color: #aeaeae;
 }
+

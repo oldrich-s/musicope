@@ -15,20 +15,16 @@
             $('#gameView').show();
             if (!config.c_songUrl) { throw "c_songUrl does not exist!"; }
             else {
-                webMidi.ready.done(() => {
-                    o.init(o.getSong());
+                webMidi.ready.then(() => {
+                    IO.readBinaryFileAsString(config.c_songUrl).then((text) => {
+                        if (text.length == 0) {
+                            throw "error loading midi file";
+                        } else {
+                            o.init(text);
+                        }
+                    });
                 });
             }
-        }
-
-        private getSong() {
-            var o = this;
-            var data = fs.readFileSync(config.c_songUrl);
-            var str = String.fromCharCode.apply(null, new Uint8Array(data));
-            if (str.length == 0) {
-                throw "error loading midi file";
-            }
-            return str;
         }
 
         private init(data: string): void {

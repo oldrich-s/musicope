@@ -42,7 +42,7 @@
     function populateDOM(files: string[], scores: any) {
         files.forEach((file) => {
             var score = scores[file] || "0";
-            var m = file.match(/^..\\songs\\(.*?)([^\\]+)$/);
+            var m = file.match(/^songs\\(.*?)([^\\]+)$/);
             var path = m[1];
             var title = m[2].replace(/_/g, " ");
             var template =
@@ -64,38 +64,25 @@
             if (scoresDirty) {
                 var text = JSON.stringify(scores, null, 4);
                 scoresDirty = false;
-                fs.writeFile(songsJsonPath, text);
+                IO.writeTextFile(songsJsonPath, text);
             }
         }, 1000);
     }
 
     function initScores() {
-        var fileExists = fs.existsSync(songsJsonPath);
-        if (fileExists) {
-            var text = fs.readFileSync(songsJsonPath, "utf-8");
-            eval("scores = " + text);
-        }
-        startSavingScores();
-    }
-
-    function getAllFiles(path: string) {
-        var files: string[] = [];
-        fs.readdirSync(path).forEach((v) => {
-            var path2 = p.join(path, v);
-            var stat = fs.lstatSync(path2);
-            if (stat.isDirectory()) {
-                var fls = getAllFiles(path2);
-                files = files.concat(fls);
-            } else {
-                files.push(path2);
+        IO.existsFile(songsJsonPath).then((fileExists) => {
+            if (fileExists) {
+                IO.readTextFile(songsJsonPath).then((text) => {
+                    eval("scores = " + text);
+                });
             }
         });
-        return files;
+        startSavingScores();
     }
 
     export function init() {
         initScores();
-        var files: string[] = getAllFiles("..\\songs");
+        var files: string[] = IO.getAllFiles("songs");
         populateDOM(files, scores);
         $('.song-list li:visible:first').addClass('song-list-el-focus');
         $('.vote-up').on('click', voteUp);

@@ -1,15 +1,12 @@
 ;
-var fs = require("fs");
-var p = require('path');
-var gui = require('nw.gui');
 var Musicope;
 (function (Musicope) {
     Musicope.game;
     Musicope.app;
     Musicope.mainView;
     Musicope.webMidi;
-    Musicope.songsJsonPath = "..\\songs.json";
-    Musicope.setupJsonPath = "..\\setup.json";
+    Musicope.songsJsonPath = "songs.json";
+    Musicope.setupJsonPath = "setup.json";
     function correctPosition() {
         var ul = $('.list-scroll');
         var li = $(".song-list-el-focus");
@@ -25,6 +22,17 @@ var Musicope;
         return true;
     }
     Musicope.correctPosition = correctPosition;
+    function tryRoundValue(value) {
+        if (typeof value == "number") {
+            return "" + (Math.round(100 * value) / 100);
+        }
+        else if (value === undefined || value === null) {
+            return "-";
+        }
+        else {
+            return "" + value;
+        }
+    }
     $(document).ready(function () {
         Musicope.app = new Framework7({
             swipeBackPage: false
@@ -61,8 +69,20 @@ var Musicope;
             Musicope.List.Keyboard.bindKeyboard();
             correctPosition();
         });
-        Musicope.app.onPageAfterAnimation('help', function (page) {
+        Musicope.app.onPageBeforeAnimation('help', function (page) {
             Musicope.config.p_isPaused = true;
+            var root = $('.help-page-main');
+            root.find("tr:has(td)").html("");
+            var tmpl = $(".help-page-el").text();
+            for (var key in Musicope.Game.keyboardActions) {
+                var v = Musicope.Game.keyboardActions[key];
+                var text = tmpl
+                    .replace("{{title}}", v.title)
+                    .replace("{{key}}", key)
+                    .replace("{{desc}}", v.description)
+                    .replace("{{value}}", tryRoundValue(v.getCurrentState()));
+                root.append(text);
+            }
         });
         Musicope.List.init();
         Musicope.Setup.init();
@@ -72,12 +92,12 @@ var Musicope;
 var Musicope;
 (function (Musicope) {
     var Game;
-    (function (_Game) {
+    (function (Game_1) {
         var Game = (function () {
             function Game() {
-                this.requestAnimationFrame = window["requestAnimationFrame"] || window["webkitRequestAnimationFrame"] || window["mozRequestAnimationFrame"] || window["oRequestAnimationFrame"] || window["msRequestAnimationFrame"] || function (callback) {
-                    window.setTimeout(callback, 1000 / 60);
-                };
+                this.requestAnimationFrame = window["requestAnimationFrame"] || window["webkitRequestAnimationFrame"] ||
+                    window["mozRequestAnimationFrame"] || window["oRequestAnimationFrame"] ||
+                    window["msRequestAnimationFrame"] || function (callback) { window.setTimeout(callback, 1000 / 60); };
                 var o = this;
                 $('#listView').hide();
                 $('#gameView').show();
@@ -85,27 +105,25 @@ var Musicope;
                     throw "c_songUrl does not exist!";
                 }
                 else {
-                    Musicope.webMidi.ready.done(function () {
-                        o.init(o.getSong());
+                    Musicope.webMidi.ready.then(function () {
+                        Musicope.IO.readBinaryFileAsString(Musicope.config.c_songUrl).then(function (text) {
+                            if (text.length == 0) {
+                                throw "error loading midi file";
+                            }
+                            else {
+                                o.init(text);
+                            }
+                        });
                     });
                 }
             }
-            Game.prototype.getSong = function () {
-                var o = this;
-                var data = fs.readFileSync(Musicope.config.c_songUrl);
-                var str = String.fromCharCode.apply(null, new Uint8Array(data));
-                if (str.length == 0) {
-                    throw "error loading midi file";
-                }
-                return str;
-            };
             Game.prototype.init = function (data) {
                 var o = this;
-                o.song = new _Game.Song(data);
-                o.scene = new _Game.Scene(o.song);
-                o.metronome = new _Game.Metronome(o.song.midi.timePerBeat, o.song.midi.timePerBar / o.song.midi.timePerBeat);
-                o.player = new _Game.Player(o.song, o.metronome, o.scene);
-                o.keyboard = new _Game.Keyboard(o.song);
+                o.song = new Game_1.Song(data);
+                o.scene = new Game_1.Scene(o.song);
+                o.metronome = new Game_1.Metronome(o.song.midi.timePerBeat, o.song.midi.timePerBar / o.song.midi.timePerBeat);
+                o.player = new Game_1.Player(o.song, o.metronome, o.scene);
+                o.keyboard = new Game_1.Keyboard(o.song);
                 o.step();
             };
             Game.prototype.step = function () {
@@ -123,7 +141,7 @@ var Musicope;
             };
             return Game;
         })();
-        _Game.Game = Game;
+        Game_1.Game = Game;
     })(Game = Musicope.Game || (Musicope.Game = {}));
 })(Musicope || (Musicope = {}));
 var Musicope;
@@ -414,7 +432,8 @@ var Musicope;
         var KeyboardTools;
         (function (KeyboardTools) {
             function areEqual(param1, param2) {
-                if (typeof param1 === "object" && typeof param2 === "object" && "every" in param1 && "every" in param2) {
+                if (typeof param1 === "object" && typeof param2 === "object" &&
+                    "every" in param1 && "every" in param2) {
                     var areEqual = param1.every(function (param1i, i) {
                         return param1i == param2[i];
                     });
@@ -652,7 +671,10 @@ var Musicope;
                     var duration = currentTime - o.previousTime;
                     o.previousTime = currentTime;
                     var isSongEnd = Musicope.config.p_elapsedTime > o.song.timePerSong + 1000;
-                    var doFreezeTime = isSongEnd || Musicope.config.p_isPaused || isFreeze || duration > 100; /*window was out of focus*/
+                    var doFreezeTime = isSongEnd ||
+                        Musicope.config.p_isPaused ||
+                        isFreeze ||
+                        duration > 100; /*window was out of focus*/
                     if (!doFreezeTime) {
                         var newElapsedTime = Musicope.config.p_elapsedTime + Musicope.config.p_speed * duration;
                         Musicope.Params.setParam("p_elapsedTime", newElapsedTime, true);
@@ -762,13 +784,12 @@ var Musicope;
                     };
                     this.assignIds = function () {
                         var o = _this;
-                        o.ids = o.notes.map(function () {
-                            return 0;
-                        });
+                        o.ids = o.notes.map(function () { return 0; });
                     };
                     this.isIdBelowCurrentTime = function (trackId) {
                         var o = _this;
-                        return o.notes[trackId][o.ids[trackId]] && o.notes[trackId][o.ids[trackId]].time < Musicope.config.p_elapsedTime;
+                        return o.notes[trackId][o.ids[trackId]] &&
+                            o.notes[trackId][o.ids[trackId]].time < Musicope.config.p_elapsedTime;
                     };
                     this.playNote = function (note, trackId) {
                         var o = _this;
@@ -882,9 +903,7 @@ var Musicope;
                     };
                     this.assignIds = function () {
                         var o = _this;
-                        o.ids = o.notes.map(function () {
-                            return 0;
-                        });
+                        o.ids = o.notes.map(function () { return 0; });
                     };
                     this.assignNotesPressedTime = function () {
                         var o = _this;
@@ -915,7 +934,8 @@ var Musicope;
                     };
                     this.isIdBelowCurrentTimePlusRadius = function (trackId, noteId) {
                         var o = _this;
-                        return o.notes[trackId][noteId] && o.notes[trackId][noteId].time < Musicope.config.p_elapsedTime + Musicope.config.p_radiuses[trackId];
+                        return o.notes[trackId][noteId] &&
+                            o.notes[trackId][noteId].time < Musicope.config.p_elapsedTime + Musicope.config.p_radiuses[trackId];
                     };
                     this.resetNotesPressedTime = function (idsBelowCurrentTime) {
                         var o = _this;
@@ -933,7 +953,8 @@ var Musicope;
                     };
                     this.isIdBelowCurrentTimeMinusRadius = function (trackId, noteId) {
                         var o = _this;
-                        return o.notes[trackId][noteId] && o.notes[trackId][noteId].time < Musicope.config.p_elapsedTime - Musicope.config.p_radiuses[trackId];
+                        return o.notes[trackId][noteId] &&
+                            o.notes[trackId][noteId].time < Musicope.config.p_elapsedTime - Musicope.config.p_radiuses[trackId];
                     };
                     this.isNoteUnpressed = function (trackId, noteId) {
                         var o = _this;
@@ -965,9 +986,7 @@ var Musicope;
         function concat(arrays) {
             var result = (function () {
                 var length = 0;
-                arrays.forEach(function (a) {
-                    length += a.length;
-                });
+                arrays.forEach(function (a) { length += a.length; });
                 return new Float32Array(length);
             })();
             var pos = 0;
@@ -1066,12 +1085,8 @@ var Musicope;
             };
             Scene.prototype.rect = function (x0, y0, x1, y1, ids, colors, activeColors) {
                 var o = this;
-                function fx(v) {
-                    return v / o.canvas.width * 2 - 1;
-                }
-                function fy(v) {
-                    return v / o.canvas.height * 2 - 1;
-                }
+                function fx(v) { return v / o.canvas.width * 2 - 1; }
+                function fy(v) { return v / o.canvas.height * 2 - 1; }
                 if (colors.length === 1) {
                     colors = [colors[0], colors[0], colors[0], colors[0]];
                 }
@@ -1084,7 +1099,12 @@ var Musicope;
                 if (ids.length === 1) {
                     ids = [ids[0], ids[0], ids[0], ids[0]];
                 }
-                var out = new Float32Array([fx(x0), fy(y0), colors[0][0], colors[0][1], colors[0][2], colors[0][3], ids[0], activeColors[0][0], activeColors[0][1], activeColors[0][2], activeColors[0][3], fx(x1), fy(y0), colors[1][0], colors[1][1], colors[1][2], colors[1][3], ids[1], activeColors[1][0], activeColors[1][1], activeColors[1][2], activeColors[1][3], fx(x1), fy(y1), colors[2][0], colors[2][1], colors[2][2], colors[2][3], ids[2], activeColors[2][0], activeColors[2][1], activeColors[2][2], activeColors[2][3], fx(x0), fy(y0), colors[0][0], colors[0][1], colors[0][2], colors[0][3], ids[0], activeColors[0][0], activeColors[0][1], activeColors[0][2], activeColors[0][3], fx(x1), fy(y1), colors[2][0], colors[2][1], colors[2][2], colors[2][3], ids[2], activeColors[2][0], activeColors[2][1], activeColors[2][2], activeColors[2][3], fx(x0), fy(y1), colors[3][0], colors[3][1], colors[3][2], colors[3][3], ids[3], activeColors[3][0], activeColors[3][1], activeColors[3][2], activeColors[3][3]]);
+                var out = new Float32Array([fx(x0), fy(y0), colors[0][0], colors[0][1], colors[0][2], colors[0][3], ids[0], activeColors[0][0], activeColors[0][1], activeColors[0][2], activeColors[0][3],
+                    fx(x1), fy(y0), colors[1][0], colors[1][1], colors[1][2], colors[1][3], ids[1], activeColors[1][0], activeColors[1][1], activeColors[1][2], activeColors[1][3],
+                    fx(x1), fy(y1), colors[2][0], colors[2][1], colors[2][2], colors[2][3], ids[2], activeColors[2][0], activeColors[2][1], activeColors[2][2], activeColors[2][3],
+                    fx(x0), fy(y0), colors[0][0], colors[0][1], colors[0][2], colors[0][3], ids[0], activeColors[0][0], activeColors[0][1], activeColors[0][2], activeColors[0][3],
+                    fx(x1), fy(y1), colors[2][0], colors[2][1], colors[2][2], colors[2][3], ids[2], activeColors[2][0], activeColors[2][1], activeColors[2][2], activeColors[2][3],
+                    fx(x0), fy(y1), colors[3][0], colors[3][1], colors[3][2], colors[3][3], ids[3], activeColors[3][0], activeColors[3][1], activeColors[3][2], activeColors[3][3]]);
                 return out;
             };
             return Scene;
@@ -1101,143 +1121,33 @@ var Musicope;
             // http://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
             function hexToRgb(hex, alpha) {
                 var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
-                hex = hex.replace(shorthandRegex, function (m, r, g, b) {
-                    return (r + r + g + g + b + b);
-                });
+                hex = hex.replace(shorthandRegex, function (m, r, g, b) { return (r + r + g + g + b + b); });
                 var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
                 return [parseInt(result[1], 16) / 255, parseInt(result[2], 16) / 255, parseInt(result[3], 16) / 255, alpha || 1];
             }
             SceneFns.hexToRgb = hexToRgb;
             var whiteNoteIds = [
-                21,
-                23,
-                24,
-                26,
-                28,
-                29,
-                31,
-                33,
-                35,
-                36,
-                38,
-                40,
-                41,
-                43,
-                45,
-                47,
-                48,
-                50,
-                52,
-                53,
-                55,
-                57,
-                59,
-                60,
-                62,
-                64,
-                65,
-                67,
-                69,
-                71,
-                72,
-                74,
-                76,
-                77,
-                79,
-                81,
-                83,
-                84,
-                86,
-                88,
-                89,
-                91,
-                93,
-                95,
-                96,
-                98,
-                100,
-                101,
-                103,
-                105,
-                107,
-                108
-            ];
+                21, 23,
+                24, 26, 28, 29, 31, 33, 35,
+                36, 38, 40, 41, 43, 45, 47,
+                48, 50, 52, 53, 55, 57, 59,
+                60, 62, 64, 65, 67, 69, 71,
+                72, 74, 76, 77, 79, 81, 83,
+                84, 86, 88, 89, 91, 93, 95,
+                96, 98, 100, 101, 103, 105, 107,
+                108];
             var blackNoteIds = [
                 22,
-                25,
-                27,
-                30,
-                32,
-                34,
-                37,
-                39,
-                42,
-                44,
-                46,
-                49,
-                51,
-                54,
-                56,
-                58,
-                61,
-                63,
-                66,
-                68,
-                70,
-                73,
-                75,
-                78,
-                80,
-                82,
-                85,
-                87,
-                90,
-                92,
-                94,
-                97,
-                99,
-                102,
-                104,
-                106
-            ];
+                25, 27, 30, 32, 34,
+                37, 39, 42, 44, 46,
+                49, 51, 54, 56, 58,
+                61, 63, 66, 68, 70,
+                73, 75, 78, 80, 82,
+                85, 87, 90, 92, 94,
+                97, 99, 102, 104, 106];
             var blackNoteSpots = [
-                1,
-                3,
-                4,
-                6,
-                7,
-                8,
-                10,
-                11,
-                13,
-                14,
-                15,
-                17,
-                18,
-                20,
-                21,
-                22,
-                24,
-                25,
-                27,
-                28,
-                29,
-                31,
-                32,
-                34,
-                35,
-                36,
-                38,
-                39,
-                41,
-                42,
-                43,
-                45,
-                46,
-                48,
-                49,
-                50
-            ];
+                1, 3, 4, 6, 7, 8, 10, 11, 13, 14, 15, 17, 18, 20, 21, 22, 24, 25, 27, 28, 29, 31, 32,
+                34, 35, 36, 38, 39, 41, 42, 43, 45, 46, 48, 49, 50];
             var colors = [
                 "#FA0B0C",
                 "#F44712",
@@ -1485,9 +1395,7 @@ var Musicope;
                 WebGL.prototype.setBuffer = function (bufferData) {
                     var o = this;
                     var dims = 0;
-                    o.attributes.forEach(function (attr) {
-                        dims += attr.dim;
-                    });
+                    o.attributes.forEach(function (attr) { dims += attr.dim; });
                     o.attrLength = bufferData.length / dims;
                     if (o.buffer) {
                         o.gl.deleteBuffer(o.buffer);
@@ -1713,6 +1621,57 @@ var Musicope;
 })(Musicope || (Musicope = {}));
 var Musicope;
 (function (Musicope) {
+    var IO;
+    (function (IO) {
+        var fs = require("fs");
+        var p = require('path');
+        var gui = require('nw.gui');
+        function readBinaryFileAsString(path) {
+            var def = $.Deferred();
+            var data = fs.readFileSync(path);
+            var str = String.fromCharCode.apply(null, new Uint8Array(data));
+            def.resolve(str);
+            return def;
+        }
+        IO.readBinaryFileAsString = readBinaryFileAsString;
+        function readTextFile(path) {
+            var def = $.Deferred();
+            var text = fs.readFileSync(path, "utf-8");
+            def.resolve(text);
+            return def;
+        }
+        IO.readTextFile = readTextFile;
+        function existsFile(path) {
+            var def = $.Deferred();
+            var fileExists = fs.existsSync(path);
+            def.resolve(fileExists);
+            return def;
+        }
+        IO.existsFile = existsFile;
+        function writeTextFile(path, text) {
+            fs.writeFile(path, text);
+        }
+        IO.writeTextFile = writeTextFile;
+        function getAllFiles(path) {
+            var files = [];
+            fs.readdirSync(path).forEach(function (v) {
+                var path2 = p.join(path, v);
+                var stat = fs.lstatSync(path2);
+                if (stat.isDirectory()) {
+                    var fls = getAllFiles(path2);
+                    files = files.concat(fls);
+                }
+                else {
+                    files.push(path2);
+                }
+            });
+            return files;
+        }
+        IO.getAllFiles = getAllFiles;
+    })(IO = Musicope.IO || (Musicope.IO = {}));
+})(Musicope || (Musicope = {}));
+var Musicope;
+(function (Musicope) {
     var List;
     (function (List) {
         var scores = {};
@@ -1754,10 +1713,17 @@ var Musicope;
         function populateDOM(files, scores) {
             files.forEach(function (file) {
                 var score = scores[file] || "0";
-                var m = file.match(/^..\\songs\\(.*?)([^\\]+)$/);
+                var m = file.match(/^songs\\(.*?)([^\\]+)$/);
                 var path = m[1];
                 var title = m[2].replace(/_/g, " ");
-                var template = $('.song-list-template').html().trim().replace("{{title}}", title).replace("{{titleEnc}}", encodeURIComponent(title)).replace("{{path}}", path).replace("{{score}}", score).replace(/{{urlEnc}}/g, encodeURIComponent(file)).replace(/{{url}}/g, file);
+                var template = $('.song-list-template')
+                    .html().trim()
+                    .replace("{{title}}", title)
+                    .replace("{{titleEnc}}", encodeURIComponent(title))
+                    .replace("{{path}}", path)
+                    .replace("{{score}}", score)
+                    .replace(/{{urlEnc}}/g, encodeURIComponent(file))
+                    .replace(/{{url}}/g, file);
                 $(template).appendTo('.song-list');
             });
             sortList();
@@ -1767,36 +1733,23 @@ var Musicope;
                 if (scoresDirty) {
                     var text = JSON.stringify(scores, null, 4);
                     scoresDirty = false;
-                    fs.writeFile(Musicope.songsJsonPath, text);
+                    Musicope.IO.writeTextFile(Musicope.songsJsonPath, text);
                 }
             }, 1000);
         }
         function initScores() {
-            var fileExists = fs.existsSync(Musicope.songsJsonPath);
-            if (fileExists) {
-                var text = fs.readFileSync(Musicope.songsJsonPath, "utf-8");
-                eval("scores = " + text);
-            }
-            startSavingScores();
-        }
-        function getAllFiles(path) {
-            var files = [];
-            fs.readdirSync(path).forEach(function (v) {
-                var path2 = p.join(path, v);
-                var stat = fs.lstatSync(path2);
-                if (stat.isDirectory()) {
-                    var fls = getAllFiles(path2);
-                    files = files.concat(fls);
-                }
-                else {
-                    files.push(path2);
+            Musicope.IO.existsFile(Musicope.songsJsonPath).then(function (fileExists) {
+                if (fileExists) {
+                    Musicope.IO.readTextFile(Musicope.songsJsonPath).then(function (text) {
+                        eval("scores = " + text);
+                    });
                 }
             });
-            return files;
+            startSavingScores();
         }
         function init() {
             initScores();
-            var files = getAllFiles("..\\songs");
+            var files = Musicope.IO.getAllFiles("songs");
             populateDOM(files, scores);
             $('.song-list li:visible:first').addClass('song-list-el-focus');
             $('.vote-up').on('click', voteUp);
@@ -1871,7 +1824,8 @@ var Musicope;
                 Mousetrap.bind('pagedown', function (e) {
                     var oldEl = $('.song-list-el-focus');
                     var newEls = oldEl.nextAll(':visible');
-                    var newEl = newEls.length == 0 ? oldEl : (newEls.length < 5 ? newEls.last() : $(newEls[4]));
+                    var newEl = newEls.length == 0 ? oldEl :
+                        (newEls.length < 5 ? newEls.last() : $(newEls[4]));
                     oldEl.removeClass('song-list-el-focus');
                     newEl.addClass('song-list-el-focus');
                     Musicope.correctPosition();
@@ -1882,7 +1836,8 @@ var Musicope;
                 Mousetrap.bind('pageup', function (e) {
                     var oldEl = $('.song-list-el-focus');
                     var newEls = oldEl.prevAll(':visible');
-                    var newEl = newEls.length == 0 ? oldEl : (newEls.length < 5 ? newEls.last() : $(newEls[4]));
+                    var newEl = newEls.length == 0 ? oldEl :
+                        (newEls.length < 5 ? newEls.last() : $(newEls[4]));
                     oldEl.removeClass('song-list-el-focus');
                     newEl.addClass('song-list-el-focus');
                     Musicope.correctPosition();
@@ -2025,12 +1980,25 @@ var Musicope;
                 el.val(value);
             }
         }
-        function init() {
-            var fileExists = fs.existsSync(Musicope.setupJsonPath);
-            if (fileExists) {
-                var text = fs.readFileSync(Musicope.setupJsonPath, "utf-8");
-                Musicope.defaultConfig = JSON.parse(text);
-            }
+        function onDOMChange() {
+            $('.setupPage input').change(function (e) {
+                var el = $(this);
+                if (el.attr('id') in Musicope.defaultConfig) {
+                    Musicope.defaultConfig[el.attr('id')] = getValue(el);
+                    Musicope.IO.writeTextFile(Musicope.setupJsonPath, JSON.stringify(Musicope.defaultConfig, null, 4));
+                }
+                else {
+                    var m = el.attr('id').match(/^(.+)_(\d)$/);
+                    if (m.length == 3) {
+                        if (m[1] in Musicope.defaultConfig) {
+                            Musicope.defaultConfig[m[1]][parseInt(m[2])] = getValue(el);
+                            Musicope.IO.writeTextFile(Musicope.setupJsonPath, JSON.stringify(Musicope.defaultConfig, null, 4));
+                        }
+                    }
+                }
+            });
+        }
+        function setConfigDOM() {
             for (var key in Musicope.defaultConfig) {
                 if (typeof Musicope.defaultConfig[key] == "object") {
                     Musicope.defaultConfig[key].forEach(function (v, i) {
@@ -2047,21 +2015,26 @@ var Musicope;
                     }
                 }
             }
-            $('.setupPage input').change(function (e) {
-                var el = $(this);
-                if (el.attr('id') in Musicope.defaultConfig) {
-                    Musicope.defaultConfig[el.attr('id')] = getValue(el);
-                    fs.writeFile(Musicope.setupJsonPath, JSON.stringify(Musicope.defaultConfig, null, 4));
+        }
+        function readConfig() {
+            var def = $.Deferred();
+            Musicope.IO.existsFile(Musicope.setupJsonPath).then(function (fileExists) {
+                if (fileExists) {
+                    Musicope.IO.readTextFile(Musicope.setupJsonPath).then(function (text) {
+                        Musicope.defaultConfig = JSON.parse(text);
+                        def.resolve();
+                    });
                 }
                 else {
-                    var m = el.attr('id').match(/^(.+)_(\d)$/);
-                    if (m.length == 3) {
-                        if (m[1] in Musicope.defaultConfig) {
-                            Musicope.defaultConfig[m[1]][parseInt(m[2])] = getValue(el);
-                            fs.writeFile(Musicope.setupJsonPath, JSON.stringify(Musicope.defaultConfig, null, 4));
-                        }
-                    }
+                    def.resolve();
                 }
+            });
+            return def;
+        }
+        function init() {
+            readConfig().then(function () {
+                setConfigDOM();
+                onDOMChange();
             });
         }
         Setup.init = init;
