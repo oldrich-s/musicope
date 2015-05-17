@@ -522,10 +522,12 @@ var Musicope;
                             break;
                     }
                 }
-                function processMeta(o, v) {
+                function processMeta(o, v, ticks) {
                     switch (v.subtype) {
                         case "setTempo":
-                            o.timePerQuarter = v.microsecondsPerBeat / 1000;
+                            if (ticks == 0) {
+                                o.timePerQuarter = v.microsecondsPerBeat / 1000;
+                            }
                             break;
                         case "timeSignature":
                             o.beatsPerBar = v.numerator;
@@ -539,13 +541,13 @@ var Musicope;
                     track.forEach(function (v) {
                         ticks = ticks + v.deltaTime;
                         if (v.type == "meta") {
-                            processMeta(o, v);
+                            processMeta(o, v, ticks);
                         }
                         else if (v.type == "channel") {
                             if (o.timePerBeat == 0) {
-                                o.timePerBeat = o.timePerQuarter * 4 / o.noteValuePerBeat;
+                                o.timePerBeat = o.timePerQuarter;
                                 o.timePerTick = o.timePerQuarter / o.ticksPerQuarter;
-                                o.timePerBar = o.timePerBeat * o.beatsPerBar;
+                                o.timePerBar = o.timePerBeat * o.beatsPerBar * 4.0 / o.noteValuePerBeat;
                             }
                             var time = ticks * o.timePerTick;
                             processMessage(o, v, time);
@@ -556,9 +558,13 @@ var Musicope;
                     midi.tracks.forEach(function (track, i) {
                         parsePlayerTrack(o, track);
                     });
-                    if (o.tracks[0].length == 0) {
-                        o.tracks.shift();
-                    }
+                    var tracks = [];
+                    o.tracks.forEach(function (track) {
+                        if (track.length > 0) {
+                            tracks.push(track);
+                        }
+                    });
+                    o.tracks = tracks;
                 }
                 function parseHeader(midi, o) {
                     o.ticksPerQuarter = midi.header.ticksPerBeat;
@@ -1050,7 +1056,7 @@ var Musicope;
                 var o = this;
                 o.canvas.width = window.innerWidth;
                 o.canvas.height = window.innerHeight;
-                o.pixelsPerTime = o.canvas.height * 4 / (o.song.midi.noteValuePerBeat * Musicope.config.s_quartersPerHeight * o.song.midi.timePerBeat);
+                o.pixelsPerTime = o.canvas.height / (Musicope.config.s_quartersPerHeight * o.song.midi.timePerBeat);
             };
             Scene.prototype.setupWebGL = function () {
                 var o = this;

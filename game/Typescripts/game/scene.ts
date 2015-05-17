@@ -83,7 +83,7 @@
             var o = this;
             o.canvas.width = window.innerWidth;
             o.canvas.height = window.innerHeight;
-            o.pixelsPerTime = o.canvas.height * 4 / (o.song.midi.noteValuePerBeat * config.s_quartersPerHeight * o.song.midi.timePerBeat);
+            o.pixelsPerTime = o.canvas.height / (config.s_quartersPerHeight * o.song.midi.timePerBeat);
         }
 
         private setupWebGL() {

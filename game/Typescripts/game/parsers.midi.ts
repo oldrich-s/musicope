@@ -29,10 +29,12 @@ module Musicope.Game.Parsers.Midi {
         }
     }
 
-    function processMeta(o: IParser2, v) {
+    function processMeta(o: IParser2, v, ticks: number) {
         switch (v.subtype) {
             case "setTempo":
-                o.timePerQuarter = v.microsecondsPerBeat / 1000;    
+                if (ticks == 0) {
+                    o.timePerQuarter = v.microsecondsPerBeat / 1000;
+                }
                 break;
             case "timeSignature":
                 o.beatsPerBar = v.numerator;
@@ -47,12 +49,12 @@ module Musicope.Game.Parsers.Midi {
         track.forEach((v) => {
             ticks = ticks + v.deltaTime;
             if (v.type == "meta") {
-                processMeta(o, v);
+                processMeta(o, v, ticks);
             } else if (v.type == "channel") {
                 if (o.timePerBeat == 0) {
-                    o.timePerBeat = o.timePerQuarter * 4 / o.noteValuePerBeat;
+                    o.timePerBeat = o.timePerQuarter;
                     o.timePerTick = o.timePerQuarter / o.ticksPerQuarter;
-                    o.timePerBar = o.timePerBeat * o.beatsPerBar;
+                    o.timePerBar = o.timePerBeat * o.beatsPerBar * 4.0 / o.noteValuePerBeat;
                 }
                 var time = ticks * o.timePerTick;
                 processMessage(o, v, time);
@@ -64,9 +66,13 @@ module Musicope.Game.Parsers.Midi {
         midi.tracks.forEach((track, i) => {
             parsePlayerTrack(o, track);
         });
-        if (o.tracks[0].length == 0) {
-            o.tracks.shift();
-        }
+        var tracks = [];
+        o.tracks.forEach((track) => {
+            if (track.length > 0) {
+                tracks.push(track);
+            }
+        });
+        o.tracks = tracks;
     }
 
     function parseHeader(midi, o: IParser2) {
