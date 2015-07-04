@@ -53,11 +53,11 @@ module Musicope.Game.Parsers.Midi {
         var msecs = 0;
         o.tracks.push([]);
         track.forEach((v) => {
+            var msecsPerBeat = findMSecPerBeat(o, msecs);
+            msecs = msecs + msecsPerBeat * v.deltaTime / o.ticksPerBeat;
             if (v.type == "meta") {
                 processMeta(o, v, msecs);
             } else if (v.type == "channel") {
-                var msecsPerBeat = findMSecPerBeat(o, msecs);
-                msecs = msecs + msecsPerBeat * v.deltaTime / o.ticksPerBeat;
                 processMessage(o, v, msecs);
             }
         });

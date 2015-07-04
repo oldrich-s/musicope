@@ -1,103 +1,93 @@
 ;
 var Musicope;
 (function (Musicope) {
-    var Game;
-    (function (Game) {
-        $(document).ready(function () {
-            Game.keyboardActions["backspace"] = {
-                title: "Exit",
-                description: "Exit the gameplay.",
-                triggerAction: function (song) {
-                    Musicope.mainView.router.back();
-                },
-                getCurrentState: function () {
-                    return null;
-                }
-            };
+    Musicope.game;
+    Musicope.app;
+    Musicope.mainView;
+    Musicope.webMidi;
+    Musicope.songsJsonPath = "songs.json";
+    Musicope.setupJsonPath = "setup.json";
+    function correctPosition() {
+        var ul = $('.list-scroll');
+        var li = $(".song-list-el-focus");
+        var rely = li.position().top - ul.scrollTop() + 35;
+        var drely1 = rely + 1.5 * li.height() - ul.height();
+        var drely2 = rely - 0.5 * li.height();
+        if (drely1 > 0) {
+            ul.scrollTop(ul.scrollTop() + drely1);
+        }
+        else if (drely2 < 0) {
+            ul.scrollTop(ul.scrollTop() + drely2);
+        }
+        return true;
+    }
+    Musicope.correctPosition = correctPosition;
+    function tryRoundValue(value) {
+        if (typeof value == "number") {
+            return "" + (Math.round(100 * value) / 100);
+        }
+        else if (value === undefined || value === null) {
+            return "-";
+        }
+        else {
+            return "" + value;
+        }
+    }
+    $(document).ready(function () {
+        Musicope.app = new Framework7({
+            swipeBackPage: false
         });
-    })(Game = Musicope.Game || (Musicope.Game = {}));
-})(Musicope || (Musicope = {}));
-var Musicope;
-(function (Musicope) {
-    var Game;
-    (function (Game) {
-        $(document).ready(function () {
-            Game.keyboardActions["esc"] = {
-                title: "Exit",
-                description: "Exit the gameplay.",
-                triggerAction: function (song) {
-                    Musicope.mainView.router.back();
-                },
-                getCurrentState: function () {
-                    return null;
-                }
-            };
+        Musicope.mainView = Musicope.app.addView('.view-main', {
+            domCache: true
         });
-    })(Game = Musicope.Game || (Musicope.Game = {}));
-})(Musicope || (Musicope = {}));
-var Musicope;
-(function (Musicope) {
-    var Game;
-    (function (Game) {
-        $(document).ready(function () {
-            Game.keyboardActions["end"] = {
-                title: "Goto end",
-                description: "Rewind the song to the end.",
-                triggerAction: function (song) {
-                    var end = 0;
-                    song.midi.tracks.forEach(function (t) {
-                        t.forEach(function (n) {
-                            if (n.time > end) {
-                                end = n.time;
-                            }
-                        });
-                    });
-                    Musicope.Params.setParam("p_elapsedTime", end);
-                },
-                getCurrentState: function () {
-                    return Musicope.config.p_elapsedTime / 1000;
-                }
-            };
+        var mySearchbar = Musicope.app.searchbar('.searchbar', {
+            searchList: '.list-block-search',
+            searchIn: '.item-title, .item-text'
         });
-    })(Game = Musicope.Game || (Musicope.Game = {}));
-})(Musicope || (Musicope = {}));
-var Musicope;
-(function (Musicope) {
-    var Game;
-    (function (Game) {
-        $(document).ready(function () {
-            var names = ["Reset", "Start defined", "End defined"];
-            var state = 0;
-            Game.keyboardActions["l"] = {
-                title: "Loop",
-                description: "Define start / stop loop and erase.",
-                triggerAction: function (song) {
-                    var keys = Object.keys(song.midi.signatures).sort(function (a, b) { return Number(b) - Number(a); });
-                    var fkeys = keys.filter(function (s) { return Number(s) < Musicope.config.p_elapsedTime; });
-                    var key = Number(fkeys.length == 0 ? keys[keys.length - 1] : fkeys[0]);
-                    var n = (Musicope.config.p_elapsedTime - key) / song.midi.signatures[key].msecsPerBar;
-                    if (state === 0) {
-                        var startTime = key + Math.floor(n + 0.001) * song.midi.signatures[key].msecsPerBar;
-                        Musicope.Params.setParam("p_loopStart", startTime);
-                        state = state + 1;
-                    }
-                    else if (state === 1) {
-                        var endTime = key + Math.ceil(n + 0.001) * song.midi.signatures[key].msecsPerBar;
-                        Musicope.Params.setParam("p_loopEnd", endTime);
-                        state = state + 1;
-                    }
-                    else {
-                        Musicope.Params.setParam("p_loopStart", null);
-                        Musicope.Params.setParam("p_loopEnd", null);
-                        state = 0;
-                    }
-                },
-                getCurrentState: function () {
-                    return names[state];
-                }
-            };
+        $('.list-block-search').on('search', function (a, b, c) {
+            $('.song-list-el-focus').removeClass('song-list-el-focus');
+            $('.list-scroll li:visible:first').addClass('song-list-el-focus');
+            $('.list-scroll').scrollTop(0);
         });
-    })(Game = Musicope.Game || (Musicope.Game = {}));
+        Musicope.app.onPageBeforeAnimation('play', function (page) {
+            if ('url' in page.query) {
+                $('.searchbar-input input').blur();
+                Mousetrap.reset();
+                Musicope.config = jQuery.extend(true, {}, Musicope.defaultConfig);
+                Musicope.config.c_songUrl = decodeURIComponent(page.query.url);
+                Musicope.game = new Musicope.Game.Game();
+                var path = decodeURIComponent(page.query.url).replace(/songs\\(.+)\\[^\\]+$/, '$1');
+                $('.playTitle').text(decodeURIComponent(page.query.title));
+                $('.playPath').text(path);
+                Musicope.app.sizeNavbars();
+            }
+        });
+        Musicope.app.onPageAfterAnimation('index', function (page) {
+            $('.searchbar-input input').focus();
+            Mousetrap.reset();
+            Musicope.Params.reset();
+            Musicope.List.Keyboard.bindKeyboard();
+            correctPosition();
+        });
+        Musicope.app.onPageBeforeAnimation('help', function (page) {
+            Musicope.config.p_isPaused = true;
+            var root = $('.help-page-main');
+            root.find("tr:has(td)").html("");
+            var tmpl = $(".help-page-el").text();
+            for (var key in Musicope.Game.keyboardActions) {
+                var v = Musicope.Game.keyboardActions[key];
+                var text = tmpl
+                    .replace("{{title}}", v.title)
+                    .replace("{{key}}", key)
+                    .replace("{{desc}}", v.description)
+                    .replace("{{value}}", tryRoundValue(v.getCurrentState()));
+                root.append(text);
+            }
+        });
+        Musicope.List.init();
+        Musicope.Setup.init();
+        Musicope.webMidi = new Musicope.WebMidi();
+    });
 })(Musicope || (Musicope = {}));
 var Musicope;
 (function (Musicope) {
@@ -156,215 +146,46 @@ var Musicope;
 })(Musicope || (Musicope = {}));
 var Musicope;
 (function (Musicope) {
-    var IO;
-    (function (IO) {
-        var fs = require("fs");
-        var p = require('path');
-        var gui = require('nw.gui');
-        function readBinaryFileAsString(path) {
-            var def = $.Deferred();
-            var data = fs.readFileSync(path);
-            var str = String.fromCharCode.apply(null, new Uint8Array(data));
-            def.resolve(str);
-            return def;
-        }
-        IO.readBinaryFileAsString = readBinaryFileAsString;
-        function readTextFile(path) {
-            var def = $.Deferred();
-            var text = fs.readFileSync(path, "utf-8");
-            def.resolve(text);
-            return def;
-        }
-        IO.readTextFile = readTextFile;
-        function existsFile(path) {
-            var def = $.Deferred();
-            var fileExists = fs.existsSync(path);
-            def.resolve(fileExists);
-            return def;
-        }
-        IO.existsFile = existsFile;
-        function writeTextFile(path, text) {
-            fs.writeFile(path, text);
-        }
-        IO.writeTextFile = writeTextFile;
-        function getAllFiles(path) {
-            var files = [];
-            fs.readdirSync(path).forEach(function (v) {
-                var path2 = p.join(path, v);
-                var stat = fs.lstatSync(path2);
-                if (stat.isDirectory()) {
-                    var fls = getAllFiles(path2);
-                    files = files.concat(fls);
-                }
-                else {
-                    files.push({ path: path2, time: stat.birthtime });
-                }
-            });
-            return files;
-        }
-        IO.getAllFiles = getAllFiles;
-    })(IO = Musicope.IO || (Musicope.IO = {}));
-})(Musicope || (Musicope = {}));
-var Musicope;
-(function (Musicope) {
-    var Setup;
-    (function (Setup) {
-        function getValue(el) {
-            if (el.attr('type') == 'checkbox') {
-                return el[0].checked;
+    var Game;
+    (function (Game) {
+        Game.keyboardActions = {};
+        var Keyboard = (function () {
+            function Keyboard(song) {
+                this.song = song;
+                var o = this;
+                o.subscribeActions();
+                $('.canvasInfo').hide();
             }
-            else {
-                var v = el.val();
-                var fl = parseFloat(v);
-                return fl === NaN ? v : fl;
-            }
-        }
-        function setValue(el, value) {
-            if (el.attr('type') == 'checkbox') {
-                el[0].checked = value;
-            }
-            else {
-                el.val(value);
-            }
-        }
-        function onDOMChange() {
-            $('.setupPage input').change(function (e) {
-                var el = $(this);
-                if (el.attr('id') in Musicope.defaultConfig) {
-                    Musicope.defaultConfig[el.attr('id')] = getValue(el);
-                    Musicope.IO.writeTextFile(Musicope.setupJsonPath, JSON.stringify(Musicope.defaultConfig, null, 4));
-                }
-                else {
-                    var m = el.attr('id').match(/^(.+)_(\d)$/);
-                    if (m.length == 3) {
-                        if (m[1] in Musicope.defaultConfig) {
-                            Musicope.defaultConfig[m[1]][parseInt(m[2])] = getValue(el);
-                            Musicope.IO.writeTextFile(Musicope.setupJsonPath, JSON.stringify(Musicope.defaultConfig, null, 4));
-                        }
-                    }
-                }
-            });
-        }
-        function setConfigDOM() {
-            for (var key in Musicope.defaultConfig) {
-                if (typeof Musicope.defaultConfig[key] == "object") {
-                    Musicope.defaultConfig[key].forEach(function (v, i) {
-                        var el = $('#' + key + '_' + i);
-                        if (el.length == 1) {
-                            setValue(el, v);
-                        }
-                    });
-                }
-                else {
-                    var el = $('#' + key);
-                    if (el.length == 1) {
-                        setValue(el, Musicope.defaultConfig[key]);
-                    }
-                }
-            }
-        }
-        function readConfig() {
-            var def = $.Deferred();
-            Musicope.IO.existsFile(Musicope.setupJsonPath).then(function (fileExists) {
-                if (fileExists) {
-                    Musicope.IO.readTextFile(Musicope.setupJsonPath).then(function (text) {
-                        Musicope.defaultConfig = JSON.parse(text);
-                        def.resolve();
-                    });
-                }
-                else {
-                    def.resolve();
-                }
-            });
-            return def;
-        }
-        function init() {
-            readConfig().then(function () {
-                setConfigDOM();
-                onDOMChange();
-            });
-        }
-        Setup.init = init;
-    })(Setup = Musicope.Setup || (Musicope.Setup = {}));
-})(Musicope || (Musicope = {}));
-var Musicope;
-(function (Musicope) {
-    var WebMidi = (function () {
-        function WebMidi() {
-            var _this = this;
-            this.ready = $.Deferred();
-            //inList = () => {
-            //    return []; //this.midi.inputs;
-            //}
-            //outList = () => {
-            //    return []; //this.midi.outputs;
-            //}
-            this.inOpen = function (callback) {
-                var o = _this;
-                o.input = o.midi.inputs.get(Musicope.config.p_deviceIn);
-                if (o.input) {
-                    o.input.onmidimessage = function (e) {
-                        callback(e.timeStamp, e.data[0], e.data[1], e.data[2]);
-                    };
+            Keyboard.prototype.subscribeActions = function () {
+                var o = this;
+                for (var key in Game.keyboardActions) {
+                    Mousetrap.bind(key, function (action) {
+                        action.triggerAction(o.song);
+                        Game.KeyboardOverlay.display(action.title, action.getCurrentState());
+                    }.bind(this, Game.keyboardActions[key]));
                 }
             };
-            this.outOpen = function () {
-                var o = _this;
-                o.output = o.midi.outputs.get(Musicope.config.p_deviceOut);
-                if (!o.output) {
-                    o.output = o.midi.outputs.get(0);
-                }
-            };
-            this.inClose = function () {
-                var o = _this;
-                if (o.input && o.input.value) {
-                    o.input.value.onmidimessage = null;
-                }
-            };
-            this.out = function (byte1, byte2, byte3) {
-                var data = [byte1, byte2];
-                if (typeof byte3 === "number") {
-                    data.push(byte3);
-                }
-                _this.output.send(data);
-            };
-            var o = this;
-            navigator.requestMIDIAccess().then(function (m) {
-                o.midi = m;
-                o.ready.resolve();
-            }, function (msg) {
-                o.ready.reject("Failed to get MIDI access - " + msg);
-            });
-        }
-        return WebMidi;
-    })();
-    Musicope.WebMidi = WebMidi;
+            return Keyboard;
+        })();
+        Game.Keyboard = Keyboard;
+    })(Game = Musicope.Game || (Musicope.Game = {}));
 })(Musicope || (Musicope = {}));
 var Musicope;
 (function (Musicope) {
     var Game;
     (function (Game) {
-        var KeyboardOverlay;
-        (function (KeyboardOverlay) {
-            var oldTimeOut;
-            function display(description, value) {
-                var str;
-                if (typeof value == "number") {
-                    str = Math.round(1000 * value) / 1000;
+        $(document).ready(function () {
+            Game.keyboardActions["backspace"] = {
+                title: "Exit",
+                description: "Exit the gameplay.",
+                triggerAction: function (song) {
+                    Musicope.mainView.router.back();
+                },
+                getCurrentState: function () {
+                    return null;
                 }
-                else {
-                    str = value;
-                }
-                $('.canvasInfoDesc').text(description + ": ");
-                $('.canvasInfoValue').text(str);
-                $('.canvasInfo').show();
-                clearTimeout(oldTimeOut);
-                oldTimeOut = setTimeout(function () {
-                    $('.canvasInfo').hide();
-                }, 5000);
-            }
-            KeyboardOverlay.display = display;
-        })(KeyboardOverlay = Game.KeyboardOverlay || (Game.KeyboardOverlay = {}));
+            };
+        });
     })(Game = Musicope.Game || (Musicope.Game = {}));
 })(Musicope || (Musicope = {}));
 var Musicope;
@@ -392,14 +213,135 @@ var Musicope;
     var Game;
     (function (Game) {
         $(document).ready(function () {
-            Game.keyboardActions["m"] = {
-                title: "Metronome",
-                description: "Toggle state of the metronome on/off",
-                triggerAction: function () {
-                    Musicope.Params.setParam("m_isOn", !Musicope.config.m_isOn);
+            Game.keyboardActions["down"] = {
+                title: "Slow down",
+                description: "Slow down the playback by 10 percent points.",
+                triggerAction: function (song) {
+                    Musicope.Params.setParam("p_speed", Musicope.config.p_speed - 0.1);
                 },
                 getCurrentState: function () {
-                    return Musicope.config.m_isOn ? "on" : "off";
+                    return Musicope.config.p_speed * 100;
+                }
+            };
+        });
+    })(Game = Musicope.Game || (Musicope.Game = {}));
+})(Musicope || (Musicope = {}));
+var Musicope;
+(function (Musicope) {
+    var Game;
+    (function (Game) {
+        $(document).ready(function () {
+            Game.keyboardActions["end"] = {
+                title: "Goto end",
+                description: "Rewind the song to the end.",
+                triggerAction: function (song) {
+                    var end = 0;
+                    song.midi.tracks.forEach(function (t) {
+                        t.forEach(function (n) {
+                            if (n.time > end) {
+                                end = n.time;
+                            }
+                        });
+                    });
+                    Musicope.Params.setParam("p_elapsedTime", end);
+                },
+                getCurrentState: function () {
+                    return Musicope.config.p_elapsedTime / 1000;
+                }
+            };
+        });
+    })(Game = Musicope.Game || (Musicope.Game = {}));
+})(Musicope || (Musicope = {}));
+var Musicope;
+(function (Musicope) {
+    var Game;
+    (function (Game) {
+        $(document).ready(function () {
+            Game.keyboardActions["esc"] = {
+                title: "Exit",
+                description: "Exit the gameplay.",
+                triggerAction: function (song) {
+                    Musicope.mainView.router.back();
+                },
+                getCurrentState: function () {
+                    return null;
+                }
+            };
+        });
+    })(Game = Musicope.Game || (Musicope.Game = {}));
+})(Musicope || (Musicope = {}));
+var Musicope;
+(function (Musicope) {
+    var Game;
+    (function (Game) {
+        $(document).ready(function () {
+            var options = [[false, false], [false, true], [true, false], [true, true]];
+            var names = ["none", "right", "left", "both"];
+            Game.keyboardActions["h"] = {
+                title: "Hands",
+                description: "Defines which hands are played by the user [no hands / right hand / left hand / both hands].",
+                triggerAction: function (song) {
+                    Musicope.Params.setParam("p_userHands", Game.KeyboardTools.toggle(Musicope.config.p_userHands, options));
+                },
+                getCurrentState: function () {
+                    var i = options.indexOf(Musicope.config.p_userHands);
+                    return names[i];
+                }
+            };
+        });
+    })(Game = Musicope.Game || (Musicope.Game = {}));
+})(Musicope || (Musicope = {}));
+var Musicope;
+(function (Musicope) {
+    var Game;
+    (function (Game) {
+        $(document).ready(function () {
+            Game.keyboardActions["home"] = {
+                title: "Rewind start",
+                description: "Rewind the song back to the initial position.",
+                triggerAction: function (song) {
+                    Musicope.Params.setParam("p_elapsedTime", Musicope.config.p_initTime);
+                },
+                getCurrentState: function () {
+                    return Musicope.config.p_elapsedTime / 1000;
+                }
+            };
+        });
+    })(Game = Musicope.Game || (Musicope.Game = {}));
+})(Musicope || (Musicope = {}));
+var Musicope;
+(function (Musicope) {
+    var Game;
+    (function (Game) {
+        $(document).ready(function () {
+            var names = ["Reset", "Start defined", "End defined"];
+            var state = 0;
+            Game.keyboardActions["l"] = {
+                title: "Loop",
+                description: "Define start / stop loop and erase.",
+                triggerAction: function (song) {
+                    var keys = Object.keys(song.midi.signatures).sort(function (a, b) { return Number(b) - Number(a); });
+                    var fkeys = keys.filter(function (s) { return Number(s) < Musicope.config.p_elapsedTime; });
+                    var key = Number(fkeys.length == 0 ? keys[keys.length - 1] : fkeys[0]);
+                    var n = (Musicope.config.p_elapsedTime - key) / song.midi.signatures[key].msecsPerBar;
+                    if (state === 0) {
+                        var startTime = key + Math.floor(n + 0.001) * song.midi.signatures[key].msecsPerBar;
+                        Musicope.Params.setParam("p_loopStart", startTime);
+                        state = state + 1;
+                    }
+                    else if (state === 1) {
+                        var endTime = key + Math.ceil(n + 0.001) * song.midi.signatures[key].msecsPerBar;
+                        Musicope.Params.setParam("p_loopEnd", endTime);
+                        state = state + 1;
+                    }
+                    else {
+                        Musicope.Params.setParam("p_loopStart", null);
+                        Musicope.Params.setParam("p_loopEnd", null);
+                        state = 0;
+                    }
+                },
+                getCurrentState: function () {
+                    return names[state];
                 }
             };
         });
@@ -434,119 +376,14 @@ var Musicope;
     var Game;
     (function (Game) {
         $(document).ready(function () {
-            Game.keyboardActions["home"] = {
-                title: "Rewind start",
-                description: "Rewind the song back to the initial position.",
-                triggerAction: function (song) {
-                    Musicope.Params.setParam("p_elapsedTime", Musicope.config.p_initTime);
+            Game.keyboardActions["m"] = {
+                title: "Metronome",
+                description: "Toggle state of the metronome on/off",
+                triggerAction: function () {
+                    Musicope.Params.setParam("m_isOn", !Musicope.config.m_isOn);
                 },
                 getCurrentState: function () {
-                    return Musicope.config.p_elapsedTime / 1000;
-                }
-            };
-        });
-    })(Game = Musicope.Game || (Musicope.Game = {}));
-})(Musicope || (Musicope = {}));
-var Musicope;
-(function (Musicope) {
-    var Game;
-    (function (Game) {
-        $(document).ready(function () {
-            Game.keyboardActions["space"] = {
-                title: "Pause",
-                description: "Pause / unpause the song playback.",
-                triggerAction: function (song) {
-                    Musicope.Params.setParam("p_isPaused", !Musicope.config.p_isPaused);
-                },
-                getCurrentState: function () {
-                    return Musicope.config.p_isPaused ? "on" : "off";
-                }
-            };
-        });
-    })(Game = Musicope.Game || (Musicope.Game = {}));
-})(Musicope || (Musicope = {}));
-var Musicope;
-(function (Musicope) {
-    var Game;
-    (function (Game) {
-        $(document).ready(function () {
-            Game.keyboardActions["down"] = {
-                title: "Slow down",
-                description: "Slow down the playback by 10 percent points.",
-                triggerAction: function (song) {
-                    Musicope.Params.setParam("p_speed", Musicope.config.p_speed - 0.1);
-                },
-                getCurrentState: function () {
-                    return Musicope.config.p_speed * 100;
-                }
-            };
-        });
-    })(Game = Musicope.Game || (Musicope.Game = {}));
-})(Musicope || (Musicope = {}));
-var Musicope;
-(function (Musicope) {
-    var Game;
-    (function (Game) {
-        $(document).ready(function () {
-            Game.keyboardActions["up"] = {
-                title: "Speed up",
-                description: "Speed up the playback by 10 percent points.",
-                triggerAction: function (song) {
-                    Musicope.Params.setParam("p_speed", Musicope.config.p_speed + 0.1);
-                },
-                getCurrentState: function () {
-                    return Musicope.config.p_speed * 100;
-                }
-            };
-        });
-    })(Game = Musicope.Game || (Musicope.Game = {}));
-})(Musicope || (Musicope = {}));
-var Musicope;
-(function (Musicope) {
-    var Game;
-    (function (Game) {
-        var KeyboardTools;
-        (function (KeyboardTools) {
-            function areEqual(param1, param2) {
-                if (typeof param1 === "object" && typeof param2 === "object" &&
-                    "every" in param1 && "every" in param2) {
-                    var areEqual = param1.every(function (param1i, i) {
-                        return param1i == param2[i];
-                    });
-                    return areEqual;
-                }
-                else {
-                    return param1 == param2;
-                }
-            }
-            KeyboardTools.areEqual = areEqual;
-            function toggle(currentOption, options) {
-                for (var i = 0; i < options.length; i++) {
-                    if (areEqual(currentOption, options[i])) {
-                        return options[(i + 1) % options.length];
-                    }
-                }
-            }
-            KeyboardTools.toggle = toggle;
-        })(KeyboardTools = Game.KeyboardTools || (Game.KeyboardTools = {}));
-    })(Game = Musicope.Game || (Musicope.Game = {}));
-})(Musicope || (Musicope = {}));
-var Musicope;
-(function (Musicope) {
-    var Game;
-    (function (Game) {
-        $(document).ready(function () {
-            var options = [[false, false], [false, true], [true, false], [true, true]];
-            var names = ["none", "right", "left", "both"];
-            Game.keyboardActions["h"] = {
-                title: "Hands",
-                description: "Defines which hands are played by the user [no hands / right hand / left hand / both hands].",
-                triggerAction: function (song) {
-                    Musicope.Params.setParam("p_userHands", Game.KeyboardTools.toggle(Musicope.config.p_userHands, options));
-                },
-                getCurrentState: function () {
-                    var i = options.indexOf(Musicope.config.p_userHands);
-                    return names[i];
+                    return Musicope.config.m_isOn ? "on" : "off";
                 }
             };
         });
@@ -581,6 +418,42 @@ var Musicope;
     var Game;
     (function (Game) {
         $(document).ready(function () {
+            Game.keyboardActions["space"] = {
+                title: "Pause",
+                description: "Pause / unpause the song playback.",
+                triggerAction: function (song) {
+                    Musicope.Params.setParam("p_isPaused", !Musicope.config.p_isPaused);
+                },
+                getCurrentState: function () {
+                    return Musicope.config.p_isPaused ? "on" : "off";
+                }
+            };
+        });
+    })(Game = Musicope.Game || (Musicope.Game = {}));
+})(Musicope || (Musicope = {}));
+var Musicope;
+(function (Musicope) {
+    var Game;
+    (function (Game) {
+        $(document).ready(function () {
+            Game.keyboardActions["up"] = {
+                title: "Speed up",
+                description: "Speed up the playback by 10 percent points.",
+                triggerAction: function (song) {
+                    Musicope.Params.setParam("p_speed", Musicope.config.p_speed + 0.1);
+                },
+                getCurrentState: function () {
+                    return Musicope.config.p_speed * 100;
+                }
+            };
+        });
+    })(Game = Musicope.Game || (Musicope.Game = {}));
+})(Musicope || (Musicope = {}));
+var Musicope;
+(function (Musicope) {
+    var Game;
+    (function (Game) {
+        $(document).ready(function () {
             var options = [[false, false], [true, true]];
             var names = ["off", "on"];
             Game.keyboardActions["w"] = {
@@ -601,26 +474,57 @@ var Musicope;
 (function (Musicope) {
     var Game;
     (function (Game) {
-        Game.keyboardActions = {};
-        var Keyboard = (function () {
-            function Keyboard(song) {
-                this.song = song;
-                var o = this;
-                o.subscribeActions();
-                $('.canvasInfo').hide();
-            }
-            Keyboard.prototype.subscribeActions = function () {
-                var o = this;
-                for (var key in Game.keyboardActions) {
-                    Mousetrap.bind(key, function (action) {
-                        action.triggerAction(o.song);
-                        Game.KeyboardOverlay.display(action.title, action.getCurrentState());
-                    }.bind(this, Game.keyboardActions[key]));
+        var KeyboardOverlay;
+        (function (KeyboardOverlay) {
+            var oldTimeOut;
+            function display(description, value) {
+                var str;
+                if (typeof value == "number") {
+                    str = Math.round(1000 * value) / 1000;
                 }
-            };
-            return Keyboard;
-        })();
-        Game.Keyboard = Keyboard;
+                else {
+                    str = value;
+                }
+                $('.canvasInfoDesc').text(description + ": ");
+                $('.canvasInfoValue').text(str);
+                $('.canvasInfo').show();
+                clearTimeout(oldTimeOut);
+                oldTimeOut = setTimeout(function () {
+                    $('.canvasInfo').hide();
+                }, 5000);
+            }
+            KeyboardOverlay.display = display;
+        })(KeyboardOverlay = Game.KeyboardOverlay || (Game.KeyboardOverlay = {}));
+    })(Game = Musicope.Game || (Musicope.Game = {}));
+})(Musicope || (Musicope = {}));
+var Musicope;
+(function (Musicope) {
+    var Game;
+    (function (Game) {
+        var KeyboardTools;
+        (function (KeyboardTools) {
+            function areEqual(param1, param2) {
+                if (typeof param1 === "object" && typeof param2 === "object" &&
+                    "every" in param1 && "every" in param2) {
+                    var areEqual = param1.every(function (param1i, i) {
+                        return param1i == param2[i];
+                    });
+                    return areEqual;
+                }
+                else {
+                    return param1 == param2;
+                }
+            }
+            KeyboardTools.areEqual = areEqual;
+            function toggle(currentOption, options) {
+                for (var i = 0; i < options.length; i++) {
+                    if (areEqual(currentOption, options[i])) {
+                        return options[(i + 1) % options.length];
+                    }
+                }
+            }
+            KeyboardTools.toggle = toggle;
+        })(KeyboardTools = Game.KeyboardTools || (Game.KeyboardTools = {}));
     })(Game = Musicope.Game || (Musicope.Game = {}));
 })(Musicope || (Musicope = {}));
 var Musicope;
@@ -665,51 +569,6 @@ var Musicope;
         })();
         Game.Metronome = Metronome;
     })(Game = Musicope.Game || (Musicope.Game = {}));
-})(Musicope || (Musicope = {}));
-var Musicope;
-(function (Musicope) {
-    var Params;
-    (function (Params) {
-        var subscriptions = {};
-        function call(param, value) {
-            for (var prop in subscriptions) {
-                var s = subscriptions[prop];
-                if (param.search(s["regex"]) > -1) {
-                    s["callback"](param, value);
-                }
-            }
-        }
-        function reset() {
-            subscriptions = {};
-        }
-        Params.reset = reset;
-        function subscribe(id, regex, callback) {
-            subscriptions[id] = {
-                regex: new RegExp(regex),
-                callback: callback
-            };
-        }
-        Params.subscribe = subscribe;
-        function setParam(name, value, dontNotifyOthers) {
-            Musicope.config[name] = value;
-            if (!dontNotifyOthers) {
-                call(name, value);
-            }
-        }
-        Params.setParam = setParam;
-        function areEqual(param1, param2) {
-            if ("every" in param1 && "every" in param2) {
-                var areEqual = param1.every(function (param1i, i) {
-                    return param1i == param2[i];
-                });
-                return areEqual;
-            }
-            else {
-                return param1 == param2;
-            }
-        }
-        Params.areEqual = areEqual;
-    })(Params = Musicope.Params || (Musicope.Params = {}));
 })(Musicope || (Musicope = {}));
 // time units = miliseconds
 var Musicope;
@@ -777,12 +636,12 @@ var Musicope;
                     var msecs = 0;
                     o.tracks.push([]);
                     track.forEach(function (v) {
+                        var msecsPerBeat = findMSecPerBeat(o, msecs);
+                        msecs = msecs + msecsPerBeat * v.deltaTime / o.ticksPerBeat;
                         if (v.type == "meta") {
                             processMeta(o, v, msecs);
                         }
                         else if (v.type == "channel") {
-                            var msecsPerBeat = findMSecPerBeat(o, msecs);
-                            msecs = msecs + msecsPerBeat * v.deltaTime / o.ticksPerBeat;
                             processMessage(o, v, msecs);
                         }
                     });
@@ -1577,22 +1436,32 @@ var Musicope;
                     }
                 });
                 var color = hexToRgb(cLineColor);
-                var i = 0;
                 var keys = Object.keys(loc.input.signatures).sort(function (a, b) { return Number(a) - Number(b); });
-                var i = 0;
-                var time = 0;
-                while (true) {
-                    var y = loc.yEndOfTimeBar + loc.input.pixelsPerTime * time;
-                    var x1 = (whiteNoteIds.length + 1) * loc.whiteWidth;
-                    loc.input.drawRect(0, y, x1, y + 1, [200], color, color);
-                    time = time + loc.input.signatures[keys[i]].msecsPerBar;
-                    if (time > maxTime + 0.1) {
-                        break;
+                keys.forEach(function (key, i) {
+                    var startTime = Number(key);
+                    if (i + 1 < keys.length) {
+                        var endTime = Number(keys[i + 1]);
+                        var step = loc.input.signatures[startTime].msecsPerBar;
+                        var n = Math.round((endTime - startTime) / step);
+                        var newStep = (endTime - startTime) / n;
+                        for (var j = 0; j < n; j++) {
+                            var time = startTime + j * newStep;
+                            var y = loc.yEndOfTimeBar + loc.input.pixelsPerTime * time;
+                            var x1 = (whiteNoteIds.length + 1) * loc.whiteWidth;
+                            loc.input.drawRect(0, y, x1, y + 1, [200], color, color);
+                        }
                     }
-                    if (i + 1 < keys.length && Math.abs(time - Number(keys[i + 1])) < 200) {
-                        i = i + 1;
+                    else {
+                        var step = loc.input.signatures[startTime].msecsPerBar;
+                        var n = Math.ceil((maxTime - startTime) / step);
+                        for (var j = 0; j < n; j++) {
+                            var time = startTime + j * step;
+                            var y = loc.yEndOfTimeBar + loc.input.pixelsPerTime * time;
+                            var x1 = (whiteNoteIds.length + 1) * loc.whiteWidth;
+                            loc.input.drawRect(0, y, x1, y + 1, [200], color, color);
+                        }
                     }
-                }
+                });
             }
             function drawCLines(loc) {
                 var color = hexToRgb(cLineColor);
@@ -1888,6 +1757,147 @@ var Musicope;
 })(Musicope || (Musicope = {}));
 var Musicope;
 (function (Musicope) {
+    var IO;
+    (function (IO) {
+        var fs = require("fs");
+        var p = require('path');
+        var gui = require('nw.gui');
+        function readBinaryFileAsString(path) {
+            var def = $.Deferred();
+            var data = fs.readFileSync(path);
+            var str = String.fromCharCode.apply(null, new Uint8Array(data));
+            def.resolve(str);
+            return def;
+        }
+        IO.readBinaryFileAsString = readBinaryFileAsString;
+        function readTextFile(path) {
+            var def = $.Deferred();
+            var text = fs.readFileSync(path, "utf-8");
+            def.resolve(text);
+            return def;
+        }
+        IO.readTextFile = readTextFile;
+        function existsFile(path) {
+            var def = $.Deferred();
+            var fileExists = fs.existsSync(path);
+            def.resolve(fileExists);
+            return def;
+        }
+        IO.existsFile = existsFile;
+        function writeTextFile(path, text) {
+            fs.writeFile(path, text);
+        }
+        IO.writeTextFile = writeTextFile;
+        function getAllFiles(path) {
+            var files = [];
+            fs.readdirSync(path).forEach(function (v) {
+                var path2 = p.join(path, v);
+                var stat = fs.lstatSync(path2);
+                if (stat.isDirectory()) {
+                    var fls = getAllFiles(path2);
+                    files = files.concat(fls);
+                }
+                else {
+                    files.push({ path: path2, time: stat.birthtime });
+                }
+            });
+            return files;
+        }
+        IO.getAllFiles = getAllFiles;
+    })(IO = Musicope.IO || (Musicope.IO = {}));
+})(Musicope || (Musicope = {}));
+var Musicope;
+(function (Musicope) {
+    var List;
+    (function (List) {
+        var scores = {};
+        var scoresDirty = false;
+        function sortList() {
+            var els = $('.song-list li:visible');
+            els.sort(function (a, b) {
+                var countA = parseInt($(a).find('.vote-count').text());
+                var countB = parseInt($(b).find('.vote-count').text());
+                if (countB === countA) {
+                    var timeA = parseInt($(a).find('.item-time').text());
+                    var timeB = parseInt($(b).find('.item-time').text());
+                    return timeB > timeA ? 1 : -1;
+                }
+                else {
+                    return countB - countA;
+                }
+            });
+            els.detach().appendTo('.song-list');
+        }
+        function voteUp(e) {
+            var id = decodeURIComponent($(this).parents('li').children('.elURL').text().trim());
+            var old = parseInt(scores[id] || '0');
+            scores[id] = old + 1;
+            scoresDirty = true;
+            $(this).siblings('.vote-count').text(old + 1);
+            e.stopPropagation();
+            e.preventDefault();
+        }
+        function voteDown(e) {
+            var id = decodeURIComponent($(this).parents('li').children('.elURL').text().trim());
+            var old = parseInt(scores[id] || '0');
+            scores[id] = old - 1;
+            scoresDirty = true;
+            $(this).siblings('.vote-count').text(old - 1);
+            e.stopPropagation();
+            e.preventDefault();
+        }
+        function populateDOM(files, scores) {
+            files.forEach(function (file) {
+                var score = scores[file.path] || "0";
+                var m = file.path.match(/^songs\\(.*?)([^\\]+)$/);
+                var path = m[1];
+                var title = m[2].replace(/_/g, " ");
+                var template = $('.song-list-template')
+                    .html().trim()
+                    .replace("{{title}}", title)
+                    .replace("{{titleEnc}}", encodeURIComponent(title))
+                    .replace("{{path}}", path)
+                    .replace("{{score}}", score)
+                    .replace("{{time}}", '' + file.time.getTime())
+                    .replace(/{{urlEnc}}/g, encodeURIComponent(file.path))
+                    .replace(/{{url}}/g, file.path);
+                $(template).appendTo('.song-list');
+            });
+            sortList();
+        }
+        function startSavingScores() {
+            setInterval(function () {
+                if (scoresDirty) {
+                    var text = JSON.stringify(scores, null, 4);
+                    scoresDirty = false;
+                    Musicope.IO.writeTextFile(Musicope.songsJsonPath, text);
+                }
+            }, 1000);
+        }
+        function initScores() {
+            Musicope.IO.existsFile(Musicope.songsJsonPath).then(function (fileExists) {
+                if (fileExists) {
+                    Musicope.IO.readTextFile(Musicope.songsJsonPath).then(function (text) {
+                        eval("scores = " + text);
+                    });
+                }
+            });
+            startSavingScores();
+        }
+        function init() {
+            initScores();
+            var files = Musicope.IO.getAllFiles("songs");
+            populateDOM(files, scores);
+            $('.song-list li:visible:first').addClass('song-list-el-focus');
+            $('.vote-up').on('click', voteUp);
+            $('.vote-down').on('click', voteDown);
+            List.Keyboard.bindKeyboard();
+        }
+        List.init = init;
+    })(List = Musicope.List || (Musicope.List = {}));
+})(Musicope || (Musicope = {}));
+var Musicope;
+(function (Musicope) {
     var List;
     (function (List) {
         var Keyboard;
@@ -1986,93 +1996,48 @@ var Musicope;
 })(Musicope || (Musicope = {}));
 var Musicope;
 (function (Musicope) {
-    var List;
-    (function (List) {
-        var scores = {};
-        var scoresDirty = false;
-        function sortList() {
-            var els = $('.song-list li:visible');
-            els.sort(function (a, b) {
-                var countA = parseInt($(a).find('.vote-count').text());
-                var countB = parseInt($(b).find('.vote-count').text());
-                if (countB === countA) {
-                    var timeA = parseInt($(a).find('.item-time').text());
-                    var timeB = parseInt($(b).find('.item-time').text());
-                    return timeB > timeA ? 1 : -1;
+    var Params;
+    (function (Params) {
+        var subscriptions = {};
+        function call(param, value) {
+            for (var prop in subscriptions) {
+                var s = subscriptions[prop];
+                if (param.search(s["regex"]) > -1) {
+                    s["callback"](param, value);
                 }
-                else {
-                    return countB - countA;
-                }
-            });
-            els.detach().appendTo('.song-list');
+            }
         }
-        function voteUp(e) {
-            var id = decodeURIComponent($(this).parents('li').children('.elURL').text().trim());
-            var old = parseInt(scores[id] || '0');
-            scores[id] = old + 1;
-            scoresDirty = true;
-            $(this).siblings('.vote-count').text(old + 1);
-            e.stopPropagation();
-            e.preventDefault();
+        function reset() {
+            subscriptions = {};
         }
-        function voteDown(e) {
-            var id = decodeURIComponent($(this).parents('li').children('.elURL').text().trim());
-            var old = parseInt(scores[id] || '0');
-            scores[id] = old - 1;
-            scoresDirty = true;
-            $(this).siblings('.vote-count').text(old - 1);
-            e.stopPropagation();
-            e.preventDefault();
+        Params.reset = reset;
+        function subscribe(id, regex, callback) {
+            subscriptions[id] = {
+                regex: new RegExp(regex),
+                callback: callback
+            };
         }
-        function populateDOM(files, scores) {
-            files.forEach(function (file) {
-                var score = scores[file.path] || "0";
-                var m = file.path.match(/^songs\\(.*?)([^\\]+)$/);
-                var path = m[1];
-                var title = m[2].replace(/_/g, " ");
-                var template = $('.song-list-template')
-                    .html().trim()
-                    .replace("{{title}}", title)
-                    .replace("{{titleEnc}}", encodeURIComponent(title))
-                    .replace("{{path}}", path)
-                    .replace("{{score}}", score)
-                    .replace("{{time}}", '' + file.time.getTime())
-                    .replace(/{{urlEnc}}/g, encodeURIComponent(file.path))
-                    .replace(/{{url}}/g, file.path);
-                $(template).appendTo('.song-list');
-            });
-            sortList();
+        Params.subscribe = subscribe;
+        function setParam(name, value, dontNotifyOthers) {
+            Musicope.config[name] = value;
+            if (!dontNotifyOthers) {
+                call(name, value);
+            }
         }
-        function startSavingScores() {
-            setInterval(function () {
-                if (scoresDirty) {
-                    var text = JSON.stringify(scores, null, 4);
-                    scoresDirty = false;
-                    Musicope.IO.writeTextFile(Musicope.songsJsonPath, text);
-                }
-            }, 1000);
+        Params.setParam = setParam;
+        function areEqual(param1, param2) {
+            if ("every" in param1 && "every" in param2) {
+                var areEqual = param1.every(function (param1i, i) {
+                    return param1i == param2[i];
+                });
+                return areEqual;
+            }
+            else {
+                return param1 == param2;
+            }
         }
-        function initScores() {
-            Musicope.IO.existsFile(Musicope.songsJsonPath).then(function (fileExists) {
-                if (fileExists) {
-                    Musicope.IO.readTextFile(Musicope.songsJsonPath).then(function (text) {
-                        eval("scores = " + text);
-                    });
-                }
-            });
-            startSavingScores();
-        }
-        function init() {
-            initScores();
-            var files = Musicope.IO.getAllFiles("songs");
-            populateDOM(files, scores);
-            $('.song-list li:visible:first').addClass('song-list-el-focus');
-            $('.vote-up').on('click', voteUp);
-            $('.vote-down').on('click', voteDown);
-            List.Keyboard.bindKeyboard();
-        }
-        List.init = init;
-    })(List = Musicope.List || (Musicope.List = {}));
+        Params.areEqual = areEqual;
+    })(Params = Musicope.Params || (Musicope.Params = {}));
 })(Musicope || (Musicope = {}));
 var Musicope;
 (function (Musicope) {
@@ -2134,92 +2099,137 @@ var Musicope;
 })(Musicope || (Musicope = {}));
 var Musicope;
 (function (Musicope) {
-    Musicope.game;
-    Musicope.app;
-    Musicope.mainView;
-    Musicope.webMidi;
-    Musicope.songsJsonPath = "songs.json";
-    Musicope.setupJsonPath = "setup.json";
-    function correctPosition() {
-        var ul = $('.list-scroll');
-        var li = $(".song-list-el-focus");
-        var rely = li.position().top - ul.scrollTop() + 35;
-        var drely1 = rely + 1.5 * li.height() - ul.height();
-        var drely2 = rely - 0.5 * li.height();
-        if (drely1 > 0) {
-            ul.scrollTop(ul.scrollTop() + drely1);
-        }
-        else if (drely2 < 0) {
-            ul.scrollTop(ul.scrollTop() + drely2);
-        }
-        return true;
-    }
-    Musicope.correctPosition = correctPosition;
-    function tryRoundValue(value) {
-        if (typeof value == "number") {
-            return "" + (Math.round(100 * value) / 100);
-        }
-        else if (value === undefined || value === null) {
-            return "-";
-        }
-        else {
-            return "" + value;
-        }
-    }
-    $(document).ready(function () {
-        Musicope.app = new Framework7({
-            swipeBackPage: false
-        });
-        Musicope.mainView = Musicope.app.addView('.view-main', {
-            domCache: true
-        });
-        var mySearchbar = Musicope.app.searchbar('.searchbar', {
-            searchList: '.list-block-search',
-            searchIn: '.item-title, .item-text'
-        });
-        $('.list-block-search').on('search', function (a, b, c) {
-            $('.song-list-el-focus').removeClass('song-list-el-focus');
-            $('.list-scroll li:visible:first').addClass('song-list-el-focus');
-            $('.list-scroll').scrollTop(0);
-        });
-        Musicope.app.onPageBeforeAnimation('play', function (page) {
-            if ('url' in page.query) {
-                $('.searchbar-input input').blur();
-                Mousetrap.reset();
-                Musicope.config = jQuery.extend(true, {}, Musicope.defaultConfig);
-                Musicope.config.c_songUrl = decodeURIComponent(page.query.url);
-                Musicope.game = new Musicope.Game.Game();
-                var path = decodeURIComponent(page.query.url).replace(/songs\\(.+)\\[^\\]+$/, '$1');
-                $('.playTitle').text(decodeURIComponent(page.query.title));
-                $('.playPath').text(path);
-                Musicope.app.sizeNavbars();
+    var Setup;
+    (function (Setup) {
+        function getValue(el) {
+            if (el.attr('type') == 'checkbox') {
+                return el[0].checked;
             }
-        });
-        Musicope.app.onPageAfterAnimation('index', function (page) {
-            $('.searchbar-input input').focus();
-            Mousetrap.reset();
-            Musicope.Params.reset();
-            Musicope.List.Keyboard.bindKeyboard();
-            correctPosition();
-        });
-        Musicope.app.onPageBeforeAnimation('help', function (page) {
-            Musicope.config.p_isPaused = true;
-            var root = $('.help-page-main');
-            root.find("tr:has(td)").html("");
-            var tmpl = $(".help-page-el").text();
-            for (var key in Musicope.Game.keyboardActions) {
-                var v = Musicope.Game.keyboardActions[key];
-                var text = tmpl
-                    .replace("{{title}}", v.title)
-                    .replace("{{key}}", key)
-                    .replace("{{desc}}", v.description)
-                    .replace("{{value}}", tryRoundValue(v.getCurrentState()));
-                root.append(text);
+            else {
+                var v = el.val();
+                var fl = parseFloat(v);
+                return fl === NaN ? v : fl;
             }
-        });
-        Musicope.List.init();
-        Musicope.Setup.init();
-        Musicope.webMidi = new Musicope.WebMidi();
-    });
+        }
+        function setValue(el, value) {
+            if (el.attr('type') == 'checkbox') {
+                el[0].checked = value;
+            }
+            else {
+                el.val(value);
+            }
+        }
+        function onDOMChange() {
+            $('.setupPage input').change(function (e) {
+                var el = $(this);
+                if (el.attr('id') in Musicope.defaultConfig) {
+                    Musicope.defaultConfig[el.attr('id')] = getValue(el);
+                    Musicope.IO.writeTextFile(Musicope.setupJsonPath, JSON.stringify(Musicope.defaultConfig, null, 4));
+                }
+                else {
+                    var m = el.attr('id').match(/^(.+)_(\d)$/);
+                    if (m.length == 3) {
+                        if (m[1] in Musicope.defaultConfig) {
+                            Musicope.defaultConfig[m[1]][parseInt(m[2])] = getValue(el);
+                            Musicope.IO.writeTextFile(Musicope.setupJsonPath, JSON.stringify(Musicope.defaultConfig, null, 4));
+                        }
+                    }
+                }
+            });
+        }
+        function setConfigDOM() {
+            for (var key in Musicope.defaultConfig) {
+                if (typeof Musicope.defaultConfig[key] == "object") {
+                    Musicope.defaultConfig[key].forEach(function (v, i) {
+                        var el = $('#' + key + '_' + i);
+                        if (el.length == 1) {
+                            setValue(el, v);
+                        }
+                    });
+                }
+                else {
+                    var el = $('#' + key);
+                    if (el.length == 1) {
+                        setValue(el, Musicope.defaultConfig[key]);
+                    }
+                }
+            }
+        }
+        function readConfig() {
+            var def = $.Deferred();
+            Musicope.IO.existsFile(Musicope.setupJsonPath).then(function (fileExists) {
+                if (fileExists) {
+                    Musicope.IO.readTextFile(Musicope.setupJsonPath).then(function (text) {
+                        Musicope.defaultConfig = JSON.parse(text);
+                        def.resolve();
+                    });
+                }
+                else {
+                    def.resolve();
+                }
+            });
+            return def;
+        }
+        function init() {
+            readConfig().then(function () {
+                setConfigDOM();
+                onDOMChange();
+            });
+        }
+        Setup.init = init;
+    })(Setup = Musicope.Setup || (Musicope.Setup = {}));
+})(Musicope || (Musicope = {}));
+var Musicope;
+(function (Musicope) {
+    var WebMidi = (function () {
+        function WebMidi() {
+            var _this = this;
+            this.ready = $.Deferred();
+            //inList = () => {
+            //    return []; //this.midi.inputs;
+            //}
+            //outList = () => {
+            //    return []; //this.midi.outputs;
+            //}
+            this.inOpen = function (callback) {
+                var o = _this;
+                o.input = o.midi.inputs.get(Musicope.config.p_deviceIn);
+                if (o.input) {
+                    o.input.onmidimessage = function (e) {
+                        callback(e.timeStamp, e.data[0], e.data[1], e.data[2]);
+                    };
+                }
+            };
+            this.outOpen = function () {
+                var o = _this;
+                o.output = o.midi.outputs.get(Musicope.config.p_deviceOut);
+                if (!o.output) {
+                    o.output = o.midi.outputs.get(0);
+                }
+            };
+            this.inClose = function () {
+                var o = _this;
+                if (o.input && o.input.value) {
+                    o.input.value.onmidimessage = null;
+                }
+            };
+            this.out = function (byte1, byte2, byte3) {
+                var data = [byte1, byte2];
+                if (typeof byte3 === "number") {
+                    data.push(byte3);
+                }
+                _this.output.send(data);
+            };
+            var o = this;
+            navigator.requestMIDIAccess().then(function (m) {
+                o.midi = m;
+                o.ready.resolve();
+            }, function (msg) {
+                o.ready.reject("Failed to get MIDI access - " + msg);
+            });
+        }
+        return WebMidi;
+    })();
+    Musicope.WebMidi = WebMidi;
 })(Musicope || (Musicope = {}));
 //# sourceMappingURL=app.js.map

@@ -226,33 +226,41 @@
     }
 
     function drawBarLines(loc: Local) {
+
         var maxTime = 0;
         loc.input.tracks.forEach((t) => {
             if (t.length > 0) {
                 maxTime = Math.max(t[t.length - 1].timeOff, maxTime);
             }
         });
+
         var color = hexToRgb(cLineColor);
-        var i = 0;
 
-        var keys = Object.keys(loc.input.signatures).sort((a,b) => Number(a) - Number(b));
-        var i = 0;
-        var time = 0;
-        while (true) {
-            var y = loc.yEndOfTimeBar + loc.input.pixelsPerTime * time;
-            var x1 = (whiteNoteIds.length + 1) * loc.whiteWidth;
-            loc.input.drawRect(0, y, x1, y + 1, [200], color, color);
-
-            time = time + loc.input.signatures[keys[i]].msecsPerBar;
-
-            if (time > maxTime + 0.1) {
-                break;
+        var keys = Object.keys(loc.input.signatures).sort((a, b) => Number(a) - Number(b));
+        keys.forEach((key, i) => {
+            var startTime = Number(key);
+            if (i + 1 < keys.length) {
+                var endTime = Number(keys[i + 1]);
+                var step = loc.input.signatures[startTime].msecsPerBar;
+                var n = Math.round((endTime - startTime) / step);
+                var newStep = (endTime - startTime) / n;
+                for (var j = 0; j < n; j++) {
+                    var time = startTime + j * newStep;
+                    var y = loc.yEndOfTimeBar + loc.input.pixelsPerTime * time;
+                    var x1 = (whiteNoteIds.length + 1) * loc.whiteWidth;
+                    loc.input.drawRect(0, y, x1, y + 1, [200], color, color);
+                }
+            } else {
+                var step = loc.input.signatures[startTime].msecsPerBar;
+                var n = Math.ceil((maxTime - startTime) / step);
+                for (var j = 0; j < n; j++) {
+                    var time = startTime + j * step;
+                    var y = loc.yEndOfTimeBar + loc.input.pixelsPerTime * time;
+                    var x1 = (whiteNoteIds.length + 1) * loc.whiteWidth;
+                    loc.input.drawRect(0, y, x1, y + 1, [200], color, color);
+                }
             }
-
-            if (i + 1 < keys.length && Math.abs(time - Number(keys[i + 1])) < 200) {
-                i = i + 1;
-            }
-        }
+        });
     }
 
     function drawCLines(loc: Local) {
