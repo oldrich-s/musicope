@@ -9,7 +9,7 @@
         sustainNotes: ISustainNoteScene[];
         p_minNote: number;
         p_maxNote: number;
-        timePerBar: number;
+        signatures: { [msecs: number]: Parsers.ISignature };
         playedNoteID: IMinMax;
     }
 
@@ -200,7 +200,7 @@
         var minMaxVel = getMinMaxVelocity(loc.input.tracks[trackId]);
         var white = hexToRgb("#ffffff");
         loc.input.tracks[trackId].forEach(function (note) {
-            var y0 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOn + 1;
+            var y0 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOn + 2;
             var y1 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOff - 2;
             var ipos = whiteNoteIds.indexOf(note.id);
             var color = hexToRgb(colors[note.id % 12]);
@@ -234,15 +234,24 @@
         });
         var color = hexToRgb(cLineColor);
         var i = 0;
+
+        var keys = Object.keys(loc.input.signatures).sort((a,b) => Number(a) - Number(b));
+        var i = 0;
+        var time = 0;
         while (true) {
-            var time = loc.input.timePerBar * i;
             var y = loc.yEndOfTimeBar + loc.input.pixelsPerTime * time;
-            if (time > maxTime) {
-                break;
-            }
             var x1 = (whiteNoteIds.length + 1) * loc.whiteWidth;
             loc.input.drawRect(0, y, x1, y + 1, [200], color, color);
-            i++;
+
+            time = time + loc.input.signatures[keys[i]].msecsPerBar;
+
+            if (time > maxTime + 0.1) {
+                break;
+            }
+
+            if (i + 1 < keys.length && Math.abs(time - Number(keys[i + 1])) < 200) {
+                i = i + 1;
+            }
         }
     }
 

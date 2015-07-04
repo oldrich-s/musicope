@@ -6,7 +6,11 @@
             title: "Fast forward",
             description: "Fast forward the song by the amount of 2 beats.",
             triggerAction: (song: Song) => {
-                var newTime = config.p_elapsedTime + 2 * song.midi.timePerBeat;
+                var keys = Object.keys(song.midi.signatures).sort((a, b) => Number(b) - Number(a));
+                var fkeys = keys.filter((s) => { return Number(s) < config.p_elapsedTime + 10; });
+                var key = Number(fkeys.length == 0 ? keys[keys.length - 1] : fkeys[0]);
+                var n = (config.p_elapsedTime - key) / song.midi.signatures[key].msecsPerBar;
+                var newTime = key + Math.ceil(n + 0.5) * song.midi.signatures[key].msecsPerBar;
                 var truncTime = Math.min(song.timePerSong + 10, newTime);
                 Params.setParam("p_elapsedTime", truncTime);
             },

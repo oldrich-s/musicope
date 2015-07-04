@@ -50,7 +50,7 @@
         constructor(private song: Song, private metronome: Metronome, private scene: Scene) {
             var o = this;
             o = this;
-            correctTimesInParams(o.song.midi.timePerBar);
+            correctTimesInParams(o.song.midi.signatures[0].msecsPerBar);
             o.subscribeToParamsChange();
             o.assignClasses();
         }
@@ -68,7 +68,7 @@
 
         private subscribeToParamsChange = () => {
             var o = this;
-            Params.subscribe("players.Basic", "^p_elapsedTime$",(name, value) => {
+            Params.subscribe("players.Basic", "^p_elapsedTime$", (name, value) => {
                 o.reset();
             });
         }
@@ -108,7 +108,12 @@
 
             if (!doFreezeTime) {
                 var newElapsedTime = config.p_elapsedTime + config.p_speed * duration;
-                Params.setParam("p_elapsedTime", newElapsedTime, true);
+                if (config.p_loopEnd !== null && newElapsedTime > config.p_loopEnd) {
+                    newElapsedTime = config.p_loopStart;
+                    Params.setParam("p_elapsedTime", newElapsedTime);
+                } else {
+                    Params.setParam("p_elapsedTime", newElapsedTime, true);
+                }
             }
 
             return isSongEnd;

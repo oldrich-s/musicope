@@ -46,14 +46,15 @@
         }
 
         private isDoubleNote = (timeStamp: number, isNoteOn: boolean, noteId: number, velocity: number) => {
-            var o = this;
-            var isSimilarTime = Math.abs(timeStamp - o.oldTimeStamp) < 3;
-            var idMaches = Math.abs(noteId - o.oldId) == 12 || Math.abs(noteId - o.oldId) == 24;
-            var isDoubleNote = isSimilarTime && idMaches && velocity == o.oldVelocity;
-            o.oldTimeStamp = timeStamp;
-            o.oldVelocity = velocity;
-            o.oldId = noteId;
-            return isDoubleNote;
+            return false;
+            //var o = this;
+            //var isSimilarTime = Math.abs(timeStamp - o.oldTimeStamp) < 3;
+            //var idMaches = Math.abs(noteId - o.oldId) == 12 || Math.abs(noteId - o.oldId) == 24;
+            //var isDoubleNote = isSimilarTime && idMaches && velocity == o.oldVelocity;
+            //o.oldTimeStamp = timeStamp;
+            //o.oldVelocity = velocity;
+            //o.oldId = noteId;
+            //return isDoubleNote;
         }
 
         

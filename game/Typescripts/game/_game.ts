@@ -31,7 +31,7 @@
             var o = this;
             o.song = new Song(data);
             o.scene = new Scene(o.song);
-            o.metronome = new Metronome(o.song.midi.timePerBeat, o.song.midi.timePerBar / o.song.midi.timePerBeat);
+            o.metronome = new Metronome(o.song.midi.signatures);
             o.player = new Player(o.song, o.metronome, o.scene);
             o.keyboard = new Keyboard(o.song);
             o.step();

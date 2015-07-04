@@ -83,7 +83,7 @@
             var o = this;
             o.canvas.width = window.innerWidth;
             o.canvas.height = window.innerHeight;
-            o.pixelsPerTime = o.canvas.height / (config.s_quartersPerHeight * o.song.midi.timePerBeat);
+            o.pixelsPerTime = o.canvas.height / (config.s_quartersPerHeight * o.song.midi.signatures[0].msecsPerBeat);
         }
 
         private setupWebGL() {
@@ -112,7 +112,7 @@
                 sustainNotes: o.song.sceneSustainNotes,
                 p_minNote: config.p_minNote,
                 p_maxNote: config.p_maxNote,
-                timePerBar: o.song.midi.timePerBar,
+                signatures: o.song.midi.signatures,
                 playedNoteID: o.song.playedNoteID,
             };
             SceneFns.drawScene(input);

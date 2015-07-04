@@ -6,6 +6,8 @@
         c_songUrl: string;
         p_elapsedTime: number;
         p_initTime: number;
+        p_loopStart: number;
+        p_loopEnd: number;
 
         p_deviceIn: string;
         p_deviceOut: string;

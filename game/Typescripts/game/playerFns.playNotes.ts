@@ -14,7 +14,9 @@
             for (var trackId = 0; trackId < o.notes.length; trackId++) {
                 while (o.isIdBelowCurrentTime(trackId)) {
                     var note = o.notes[trackId][o.ids[trackId]];
-                    o.playNote(note, trackId);
+                    if (!o.isIdWayTooBelowCurrentTime(trackId)) {
+                        o.playNote(note, trackId);
+                    }
                     o.ids[trackId]++;
                 }
             }
@@ -36,6 +38,12 @@
             var o = this;
             return o.notes[trackId][o.ids[trackId]] &&
                 o.notes[trackId][o.ids[trackId]].time < config.p_elapsedTime;
+        }
+
+        private isIdWayTooBelowCurrentTime = (trackId: number) => {
+            var o = this;
+            return o.notes[trackId][o.ids[trackId]] &&
+                o.notes[trackId][o.ids[trackId]].time < config.p_elapsedTime - 100;
         }
 
         private playNote = (note: Parsers.INote, trackId: number) => {

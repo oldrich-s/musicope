@@ -8,6 +8,8 @@
         p_initTime: undefined,
 
         // players
+        p_loopStart: null,
+        p_loopEnd: null,
         p_deviceIn: "0",
         p_deviceOut: "0",
         p_isPaused: false,

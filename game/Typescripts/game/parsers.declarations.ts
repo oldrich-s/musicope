@@ -13,12 +13,18 @@ module Musicope.Game.Parsers {
         time: number;
     }
 
+    export interface ISignature {
+        msecsPerBeat: number;
+        beatsPerBar: number;
+        noteValuePerBeat: number;
+        msecsPerBar: number;
+    }
+
     export interface IParser {
-        timePerBeat: number;
-        timePerBar: number;
-        noteValuePerBeat: number; // denominator in time signature: 2, 4, 8, 16 ...
+        ticksPerBeat: number;
+        signatures: { [msecs: number]: ISignature };
         tracks: INote[][];
         sustainNotes: ISustainNote[];
-    }
+    };
 
 }

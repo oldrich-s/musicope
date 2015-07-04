@@ -33,15 +33,15 @@ module Musicope.IO {
     }
 
     export function getAllFiles(path: string) {
-        var files: string[] = [];
+        var files: { path: string; time: Date; }[] = [];
         fs.readdirSync(path).forEach((v) => {
-            var path2 = p.join(path, v);
+            var path2: string = p.join(path, v);
             var stat = fs.lstatSync(path2);
             if (stat.isDirectory()) {
                 var fls = getAllFiles(path2);
                 files = files.concat(fls);
             } else {
-                files.push(path2);
+                files.push({ path: path2, time: stat.birthtime });
             }
         });
         return files;

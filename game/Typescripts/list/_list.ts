@@ -9,9 +9,12 @@
             var countA = parseInt($(a).find('.vote-count').text());
             var countB = parseInt($(b).find('.vote-count').text());
             if (countB === countA) {
-                var nameA = $(a).find('.item-title').text();
-                var nameB = $(b).find('.item-title').text();
-                return nameA > nameB ? 1 : -1;
+                var timeA = parseInt($(a).find('.item-time').text());
+                var timeB = parseInt($(b).find('.item-time').text());
+                return timeB > timeA ? 1 : -1;
+                //var nameA = $(a).find('.item-title').text();
+                //var nameB = $(b).find('.item-title').text();
+                //return nameA > nameB ? 1 : -1;
             } else {
                 return countB - countA;
             }
@@ -39,10 +42,10 @@
         e.preventDefault();
     }
 
-    function populateDOM(files: string[], scores: any) {
+    function populateDOM(files: { path: string; time: Date; }[], scores: any) {
         files.forEach((file) => {
-            var score = scores[file] || "0";
-            var m = file.match(/^songs\\(.*?)([^\\]+)$/);
+            var score = scores[file.path] || "0";
+            var m = file.path.match(/^songs\\(.*?)([^\\]+)$/);
             var path = m[1];
             var title = m[2].replace(/_/g, " ");
             var template =
@@ -52,8 +55,9 @@
                     .replace("{{titleEnc}}", encodeURIComponent(title))
                     .replace("{{path}}", path)
                     .replace("{{score}}", score)
-                    .replace(/{{urlEnc}}/g, encodeURIComponent(file))
-                    .replace(/{{url}}/g, file);
+                    .replace("{{time}}", '' + file.time.getTime())
+                    .replace(/{{urlEnc}}/g, encodeURIComponent(file.path))
+                    .replace(/{{url}}/g, file.path);
             $(template).appendTo('.song-list');
         });
         sortList();
@@ -82,7 +86,7 @@
 
     export function init() {
         initScores();
-        var files: string[] = IO.getAllFiles("songs");
+        var files = IO.getAllFiles("songs");
         populateDOM(files, scores);
         $('.song-list li:visible:first').addClass('song-list-el-focus');
         $('.vote-up').on('click', voteUp);
