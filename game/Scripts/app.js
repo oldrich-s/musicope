@@ -325,12 +325,12 @@ var Musicope;
                     var key = Number(fkeys.length == 0 ? keys[keys.length - 1] : fkeys[0]);
                     var n = (Musicope.config.p_elapsedTime - key) / song.midi.signatures[key].msecsPerBar;
                     if (state === 0) {
-                        var startTime = key + Math.floor(n + 0.001) * song.midi.signatures[key].msecsPerBar;
+                        var startTime = key + Math.floor(n + 0.01) * song.midi.signatures[key].msecsPerBar - 20;
                         Musicope.Params.setParam("p_loopStart", startTime);
                         state = state + 1;
                     }
                     else if (state === 1) {
-                        var endTime = key + Math.ceil(n + 0.001) * song.midi.signatures[key].msecsPerBar;
+                        var endTime = key + Math.ceil(n + 0.01) * song.midi.signatures[key].msecsPerBar;
                         Musicope.Params.setParam("p_loopEnd", endTime);
                         state = state + 1;
                     }
@@ -1337,8 +1337,8 @@ var Musicope;
                 });
             }
             function drawPianoTimeBarColor(loc) {
-                var color = hexToRgb(Musicope.config.s_colTime, 0.9);
-                var activeColor = hexToRgb(Musicope.config.s_colTime, 0.4);
+                var color = hexToRgb(Musicope.config.s_colTime, 1);
+                var activeColor = hexToRgb(Musicope.config.s_colTime, 1);
                 var y0 = loc.yEndOfPiano;
                 var y1 = loc.yEndOfTimeBar;
                 loc.input.drawRect(0, y0, 1, y1, [1, 2, 2, 1], color, activeColor);
@@ -1346,10 +1346,10 @@ var Musicope;
             function drawPianoTimeBarWhite(loc) {
                 var y0 = loc.yEndOfPiano;
                 var y1 = loc.yEndOfTimeBar;
-                var color = [1, 1, 1, 0.9];
-                var activeColor = [1, 1, 1, 0.4];
+                var color = [1, 1, 1, 1];
+                var activeColor = [1, 1, 1, 1];
                 loc.input.drawRect(0, y0, loc.input.sceneWidth, y1, [2, 1, 1, 2], color, activeColor);
-                loc.input.drawRect(0, y1, loc.input.sceneWidth, 2 * y1 - y0, [3, 3, 3, 3], [0, 1, 0, 0.3], activeColor);
+                loc.input.drawRect(0, y1, loc.input.sceneWidth, 2 * y1 - y0, [3, 3, 3, 3], [0 / 255, 150 / 255, 0 / 255, 1], activeColor);
             }
             function drawPianoBackBlack(loc) {
                 var y1 = loc.yEndOfPiano;
@@ -1444,11 +1444,16 @@ var Musicope;
                         var step = loc.input.signatures[startTime].msecsPerBar;
                         var n = Math.round((endTime - startTime) / step);
                         var newStep = (endTime - startTime) / n;
-                        for (var j = 0; j < n; j++) {
+                        for (var j = (i == 0 ? -2 : 0); j < n; j++) {
                             var time = startTime + j * newStep;
                             var y = loc.yEndOfTimeBar + loc.input.pixelsPerTime * time;
                             var x1 = (whiteNoteIds.length + 1) * loc.whiteWidth;
-                            loc.input.drawRect(0, y, x1, y + 1, [200], color, color);
+                            if (j == 0) {
+                                loc.input.drawRect(0, y - 2, x1, y + 2, [200], color, color);
+                            }
+                            else {
+                                loc.input.drawRect(0, y, x1, y + 1, [200], color, color);
+                            }
                         }
                     }
                     else {
@@ -1490,6 +1495,7 @@ var Musicope;
                 };
                 drawCLines(loc);
                 drawBarLines(loc);
+                drawTimeBar(loc);
                 Musicope.config.s_views.forEach(function (view, i) {
                     if (view === "full") {
                         drawTrack(loc, i);
@@ -1497,7 +1503,6 @@ var Musicope;
                 });
                 drawSustainNotes(loc);
                 drawPiano(loc);
-                drawTimeBar(loc);
                 drawNoteCover(loc);
             }
             SceneFns.drawScene = drawScene;
@@ -1515,8 +1520,8 @@ var Musicope;
                     this.attributes = attributes;
                     var o = this;
                     o.gl = WebGL.getContext(canvas);
-                    o.gl.blendFunc(o.gl.SRC_ALPHA, o.gl.ONE_MINUS_SRC_ALPHA);
-                    o.gl.enable(o.gl.BLEND);
+                    //o.gl.blendFunc(o.gl.SRC_ALPHA, o.gl.ONE_MINUS_SRC_ALPHA);
+                    //o.gl.enable(o.gl.BLEND);
                     o.gl.disable(o.gl.DEPTH_TEST);
                     o.initShaders();
                 }

@@ -15,11 +15,11 @@
                 var key = Number(fkeys.length == 0 ? keys[keys.length - 1] : fkeys[0]);
                 var n = (config.p_elapsedTime - key) / song.midi.signatures[key].msecsPerBar;
                 if (state === 0) {
-                    var startTime = key + Math.floor(n + 0.001) * song.midi.signatures[key].msecsPerBar;
+                    var startTime = key + Math.floor(n + 0.01) * song.midi.signatures[key].msecsPerBar - 20;
                     Params.setParam("p_loopStart", startTime);
                     state = state + 1;
                 } else if (state === 1) {
-                    var endTime = key + Math.ceil(n + 0.001) * song.midi.signatures[key].msecsPerBar;
+                    var endTime = key + Math.ceil(n + 0.01) * song.midi.signatures[key].msecsPerBar;
                     Params.setParam("p_loopEnd", endTime);
                     state = state + 1;
                 } else {

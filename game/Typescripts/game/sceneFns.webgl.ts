@@ -18,8 +18,8 @@
         constructor(canvas: HTMLCanvasElement, private attributes: IAttribute[]) {
             var o = this;
             o.gl = WebGL.getContext(canvas);
-            o.gl.blendFunc(o.gl.SRC_ALPHA, o.gl.ONE_MINUS_SRC_ALPHA);
-            o.gl.enable(o.gl.BLEND);
+            //o.gl.blendFunc(o.gl.SRC_ALPHA, o.gl.ONE_MINUS_SRC_ALPHA);
+            //o.gl.enable(o.gl.BLEND);
             o.gl.disable(o.gl.DEPTH_TEST);
             o.initShaders();
         }

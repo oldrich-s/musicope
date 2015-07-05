@@ -126,8 +126,8 @@
     }
 
     function drawPianoTimeBarColor(loc: Local) {
-        var color = hexToRgb(config.s_colTime, 0.9);
-        var activeColor = hexToRgb(config.s_colTime, 0.4);
+        var color = hexToRgb(config.s_colTime, 1);
+        var activeColor = hexToRgb(config.s_colTime, 1);
         var y0 = loc.yEndOfPiano;
         var y1 = loc.yEndOfTimeBar;
         loc.input.drawRect(0, y0, 1, y1, [1, 2, 2, 1], color, activeColor);
@@ -136,10 +136,10 @@
     function drawPianoTimeBarWhite(loc: Local) {
         var y0 = loc.yEndOfPiano;
         var y1 = loc.yEndOfTimeBar;
-        var color = [1, 1, 1, 0.9];
-        var activeColor = [1, 1, 1, 0.4]
+        var color = [1, 1, 1, 1];
+        var activeColor = [1, 1, 1, 1]
         loc.input.drawRect(0, y0, loc.input.sceneWidth, y1, [2, 1, 1, 2], color, activeColor);
-        loc.input.drawRect(0, y1, loc.input.sceneWidth, 2 * y1 - y0, [3, 3, 3, 3], [0, 1, 0, 0.3], activeColor);
+        loc.input.drawRect(0, y1, loc.input.sceneWidth, 2 * y1 - y0, [3, 3, 3, 3], [0/255, 150/255, 0/255, 1], activeColor);
     }
 
     function drawPianoBackBlack(loc: Local) {
@@ -244,11 +244,15 @@
                 var step = loc.input.signatures[startTime].msecsPerBar;
                 var n = Math.round((endTime - startTime) / step);
                 var newStep = (endTime - startTime) / n;
-                for (var j = 0; j < n; j++) {
+                for (var j = (i == 0 ? -2 : 0); j < n; j++) {
                     var time = startTime + j * newStep;
                     var y = loc.yEndOfTimeBar + loc.input.pixelsPerTime * time;
                     var x1 = (whiteNoteIds.length + 1) * loc.whiteWidth;
-                    loc.input.drawRect(0, y, x1, y + 1, [200], color, color);
+                    if (j == 0) {
+                        loc.input.drawRect(0, y - 2, x1, y + 2, [200], color, color);
+                    } else {
+                        loc.input.drawRect(0, y, x1, y + 1, [200], color, color);
+                    }
                 }
             } else {
                 var step = loc.input.signatures[startTime].msecsPerBar;
@@ -291,12 +295,12 @@
         }
         drawCLines(loc);
         drawBarLines(loc);
+        drawTimeBar(loc);
         config.s_views.forEach((view, i) => {
             if (view === "full") { drawTrack(loc, i); }
         });
         drawSustainNotes(loc);
         drawPiano(loc);
-        drawTimeBar(loc);
         drawNoteCover(loc);
     }
 
