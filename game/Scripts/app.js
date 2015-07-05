@@ -667,6 +667,28 @@ var Musicope;
                         sig.msecsPerBar = sig.msecsPerBeat * sig.beatsPerBar * 4.0 / sig.noteValuePerBeat;
                     });
                 }
+                function signaturesEqual(s1, s2) {
+                    var equal = s1.beatsPerBar == s2.beatsPerBar &&
+                        s1.msecsPerBar == s2.msecsPerBar &&
+                        s1.msecsPerBeat == s2.msecsPerBeat &&
+                        s1.noteValuePerBeat == s2.noteValuePerBeat;
+                    return equal;
+                }
+                function mergeSignatures(o) {
+                    var i = 1;
+                    var keys = Object.keys(o.signatures).sort(function (a, b) { return Number(a) - Number(b); });
+                    var uniqueKeys = keys.map(function (key, i) {
+                        return i == 0 || !signaturesEqual(o.signatures[key], o.signatures[keys[i - 1]]);
+                    });
+                    uniqueKeys.forEach(function (isUnique, i) {
+                        if (!isUnique) {
+                            delete o.signatures[keys[i]];
+                        }
+                    });
+                    if (uniqueKeys.some(function (v) { return !v; })) {
+                        mergeSignatures(o);
+                    }
+                }
                 function parseMidi(midi) {
                     var midiFile = MidiFile(midi);
                     var parser = {
@@ -685,6 +707,7 @@ var Musicope;
                     parseHeader(midiFile, parser);
                     parsePlayerTracks(midiFile, parser);
                     computeMSecPerBars(parser);
+                    mergeSignatures(parser);
                     return parser;
                 }
                 Midi.parseMidi = parseMidi;

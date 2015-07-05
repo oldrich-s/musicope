@@ -87,6 +87,31 @@ module Musicope.Game.Parsers.Midi {
         });
     }
 
+    function signaturesEqual(s1: ISignature, s2: ISignature) {
+        var equal =
+            s1.beatsPerBar == s2.beatsPerBar &&
+            s1.msecsPerBar == s2.msecsPerBar &&
+            s1.msecsPerBeat == s2.msecsPerBeat &&
+            s1.noteValuePerBeat == s2.noteValuePerBeat;
+        return equal;
+    }
+
+    function mergeSignatures(o: IParser) {
+        var i = 1;
+        var keys = Object.keys(o.signatures).sort((a, b) => Number(a) - Number(b));
+        var uniqueKeys = keys.map((key, i) => {
+                return i == 0 || !signaturesEqual(o.signatures[key], o.signatures[keys[i - 1]]);
+        });
+        uniqueKeys.forEach((isUnique, i) => {
+            if (!isUnique) {
+                delete o.signatures[keys[i]];
+            }
+        });
+        if (uniqueKeys.some((v) => { return !v; })) {
+            mergeSignatures(o);
+        }
+    }
+
     export function parseMidi(midi: string): IParser {
         var midiFile = MidiFile(midi);
         var parser: IParser = {
@@ -105,6 +130,7 @@ module Musicope.Game.Parsers.Midi {
         parseHeader(midiFile, parser);
         parsePlayerTracks(midiFile, parser);
         computeMSecPerBars(parser);
+        mergeSignatures(parser);
         return parser;
     }
 
