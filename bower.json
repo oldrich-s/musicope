@@ -1,0 +1,16 @@
+{
+  "name": "test",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~2.1.4",
+    "Framework7": "framework7#~1.3.5",
+    "mousetrap": "~1.5.3",
+    "urijs": "~1.17.0"
+  }
+}

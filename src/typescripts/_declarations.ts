@@ -31,4 +31,8 @@ declare class Template7 {
 interface KnockoutStatic {
     watch: (targetObjectOrFunction, options, evaluatorCallback) => void;
 }
- 
+
+interface IMinMax {
+    min: number;
+    max: number;
+}
