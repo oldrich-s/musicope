@@ -13,7 +13,7 @@
             (<any>navigator).requestMIDIAccess().then((m) => {
                 o.midi = m;
                 o.ready.resolve();
-            },(msg) => {
+            }, (msg) => {
                 o.ready.reject("Failed to get MIDI access - " + msg);
             });
         }
@@ -52,11 +52,14 @@
         }
 
         out = (byte1: number, byte2: number, byte3: number) => {
-            var data = [byte1, byte2];
-            if (typeof byte3 === "number") {
-                data.push(byte3);
+            var o = this;
+            if (o.output) {
+                var data = [byte1, byte2];
+                if (typeof byte3 === "number") {
+                    data.push(byte3);
+                }
+                o.output.send(data);
             }
-            this.output.send(data);
         }
 
     }

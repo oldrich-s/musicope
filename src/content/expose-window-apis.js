@@ -15,4 +15,5 @@ process.once('loaded', function(){
 
   global.host.fs = hostRequire("fs");
   global.host.path = hostRequire('path');
+  global.host.remote = hostRequire('electron').remote;
 });
