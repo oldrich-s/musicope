@@ -298,8 +298,8 @@
         config.s_views.forEach((view, i) => {
             if (view === "full") { drawTrack(loc, i); }
         });
-        drawTimeBar(loc);
         drawSustainNotes(loc);
+        drawTimeBar(loc);
         drawPiano(loc);
         drawNoteCover(loc);
     }

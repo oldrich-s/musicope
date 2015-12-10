@@ -57,14 +57,14 @@
 
             var vertexShader = o.getShader(".vertex");
             var fragmentShader = o.getShader(".fragment");
-            var shaderProgram = this.gl.createProgram();
-            this.gl.attachShader(shaderProgram, vertexShader);
-            this.gl.attachShader(shaderProgram, fragmentShader);
-            this.gl.linkProgram(shaderProgram);
-            if (!this.gl.getProgramParameter(shaderProgram, this.gl.LINK_STATUS)) {
+            var shaderProgram = o.gl.createProgram();
+            o.gl.attachShader(shaderProgram, vertexShader);
+            o.gl.attachShader(shaderProgram, fragmentShader);
+            o.gl.linkProgram(shaderProgram);
+            if (!o.gl.getProgramParameter(shaderProgram, o.gl.LINK_STATUS)) {
                 alert("Unable to initialize the shader program.");
             }
-            this.gl.useProgram(shaderProgram);
+            o.gl.useProgram(shaderProgram);
 
             o.udx = o.gl.getUniformLocation(shaderProgram, "u_dx");
             o.udy = o.gl.getUniformLocation(shaderProgram, "u_dy");
@@ -77,8 +77,6 @@
                 o.gl.enableVertexAttribArray(attr);
             });
         }
-
-
 
         private assignAttribPointers() {
             var o = this;

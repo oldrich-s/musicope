@@ -48,14 +48,20 @@
 
         private playNote = (note: Parsers.INote, trackId: number) => {
             var o = this;
-            var playsUser = config.p_userHands[trackId];
-            if (!playsUser || o.playOutOfReach(note)) {
+            if (!config.p_userHands[trackId] || o.playOutOfReach(note)) {
                 if (note.on) {
                     webMidi.out(144, note.id, Math.min(127, o.getVelocity(trackId, note)));
                     o.scene.setActiveId(note.id);
                 } else {
                     webMidi.out(144, note.id, 0);
                     o.scene.unsetActiveId(note.id);
+                }
+            } else if (config.p_playAllHands) {
+                if (note.on) {
+                    var velocity = Math.min(127, config.p_playAllHands * o.getVelocity(trackId, note));
+                    webMidi.out(144, note.id, velocity);
+                } else {
+                    webMidi.out(144, note.id, 0);
                 }
             }
         }
