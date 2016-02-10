@@ -58,7 +58,7 @@
                 }
             } else if (config.p_playAllHands) {
                 if (note.on) {
-                    var velocity = Math.min(127, config.p_playAllHands * o.getVelocity(trackId, note));
+                    var velocity = Math.min(127, config.p_playAllHands * note.velocity);
                     webMidi.out(144, note.id, velocity);
                 } else {
                     webMidi.out(144, note.id, 0);
