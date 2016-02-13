@@ -1,5 +1,7 @@
 ﻿module Musicope.Game.SceneFns {
 
+    var white = hexToRgb("#ffffff");
+
     export interface Input {
         drawRect(x0: number, y0: number, x1: number, y1: number, ids: number[], color: number[], activeColor: number[]): void;
         pixelsPerTime: number;
@@ -25,7 +27,7 @@
     // http://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
     export function hexToRgb(hex: string, alpha?: number) {
         var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
-        hex = (<any>hex.replace)(shorthandRegex, function (m, r, g, b) { return <string>(r + r + g + g + b + b); });
+        hex = (<any>hex.replace)(shorthandRegex, function(m, r, g, b) { return <string>(r + r + g + g + b + b); });
         var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
         return [parseInt(result[1], 16) / 255, parseInt(result[2], 16) / 255, parseInt(result[3], 16) / 255, alpha || 1];
     }
@@ -139,7 +141,7 @@
         var color = [1, 1, 1, 1];
         var activeColor = [1, 1, 1, 0.5]
         loc.input.drawRect(0, y0, loc.input.sceneWidth, y1, [2, 1, 1, 2], color, activeColor);
-        loc.input.drawRect(0, 2 * y1 - y0 - 2, loc.input.sceneWidth, 2 * y1 - y0, [3, 3, 3, 3], [0/255, 150/255, 0/255, 1], activeColor);
+        loc.input.drawRect(0, 2 * y1 - y0 - 2, loc.input.sceneWidth, 2 * y1 - y0, [3, 3, 3, 3], [0 / 255, 150 / 255, 0 / 255, 1], activeColor);
     }
 
     function drawPianoBackBlack(loc: Local) {
@@ -184,43 +186,39 @@
         } else {
             return color;
         }
-
     }
 
-    function getMinMaxVelocity(notes: INoteScene[]) {
-        var max = 0, min = 200;
-        notes.forEach((note) => {
-            max = Math.max(max, note.velocityOn);
-            min = Math.min(min, note.velocityOn);
-        });
-        return [min, max];
+    function drawBlackNote(loc: Local, trackId: number, note: INoteScene, y0: number, y1: number, color: number[]) {
+        var pos = blackNoteIds.indexOf(note.id);
+        if (pos >= 0) {
+            var f = trackId == 0 ? 3 : 0;
+            var x0 = blackNoteSpots[pos] * loc.whiteWidth - loc.blackWidth + 2;
+            var x1 = x0 + 2 * loc.blackWidth - 3;
+            loc.input.drawRect(x0, y0, x1, y1, [trackId + 202], white, white);
+            loc.input.drawRect(x0 + f, y0, x1 - f, y1, [trackId + 202], color, color);
+        }
     }
 
-    function drawTrack(loc: Local, trackId: number) {
-        var minMaxVel = getMinMaxVelocity(loc.input.tracks[trackId]);
-        var white = hexToRgb("#ffffff");
-        loc.input.tracks[trackId].forEach(function (note) {
-            var y0 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOn + 2;
-            var y1 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOff - 2;
-            var ipos = whiteNoteIds.indexOf(note.id);
-            var color = hexToRgb(colors[note.id % 12]);
-            if (ipos >= 0) {
-                var f = trackId == 0 ? 4 : 0;
-                var x0 = ipos * loc.whiteWidth + 3;
-                var x1 = x0 + loc.whiteWidth - 5;
-                //var color = getColorByVelocity(whiteNoteColor, note.velocityOn, minMaxVel);
-                loc.input.drawRect(x0, y0, x1, y1, [trackId + 200], white, white);
-                loc.input.drawRect(x0 + f, y0, x1 - f, y1, [trackId + 200], color, color);
-            } else {
-                var f = trackId == 0 ? 3 : 0;
-                var pos = blackNoteIds.indexOf(note.id);
-                if (pos >= 0) {
-                    var x0 = blackNoteSpots[pos] * loc.whiteWidth - loc.blackWidth + 2;
-                    var x1 = x0 + 2 * loc.blackWidth - 3;
-                    //var color = getColorByVelocity(blackNoteColor, note.velocityOn, minMaxVel);
-                    loc.input.drawRect(x0, y0, x1, y1, [trackId + 202], white, white);
-                    loc.input.drawRect(x0 + f, y0, x1 - f, y1, [trackId + 202], color, color);
-                }
+    function drawWhiteNote(loc: Local, trackId: number, note: INoteScene, y0: number, y1: number, color: number[]) {
+        var ipos = whiteNoteIds.indexOf(note.id);
+        if (ipos >= 0) {
+            var f = trackId == 0 ? 4 : 0;
+            var x0 = ipos * loc.whiteWidth + 3;
+            var x1 = x0 + loc.whiteWidth - 5;
+            loc.input.drawRect(x0, y0, x1, y1, [trackId + 200], white, white);
+            loc.input.drawRect(x0 + f, y0, x1 - f, y1, [trackId + 200], color, color);
+        }
+    }
+
+    function iterateNotes(loc: Local, fn) {
+        config.s_views.forEach((view, trackId) => {
+            if (view === "full") {
+                loc.input.tracks[trackId].forEach(function(note) {
+                    var y0 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOn + 2;
+                    var y1 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOff - 2;
+                    var color = hexToRgb(colors[note.id % 12]);
+                    fn(loc, trackId, note, y0, y1, color);
+                });
             }
         });
     }
@@ -295,9 +293,8 @@
         }
         drawCLines(loc);
         drawBarLines(loc);
-        config.s_views.forEach((view, i) => {
-            if (view === "full") { drawTrack(loc, i); }
-        });
+        iterateNotes(loc, drawWhiteNote);
+        iterateNotes(loc, drawBlackNote);
         drawSustainNotes(loc);
         drawTimeBar(loc);
         drawPiano(loc);
