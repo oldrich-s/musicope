@@ -6,13 +6,13 @@
   "bundle": "typings/tsd.d.ts",
   "installed": {
     "jquery/jquery.d.ts": {
-      "commit": "eb59a40d3c2f3257e34ec2ede181046230814a41"
+      "commit": "bcd5761826eb567876c197ccc6a87c4d05731054"
     },
     "mousetrap/mousetrap.d.ts": {
-      "commit": "eb59a40d3c2f3257e34ec2ede181046230814a41"
+      "commit": "bcd5761826eb567876c197ccc6a87c4d05731054"
     },
     "urijs/URIjs.d.ts": {
-      "commit": "eb59a40d3c2f3257e34ec2ede181046230814a41"
+      "commit": "bcd5761826eb567876c197ccc6a87c4d05731054"
     }
   }
 }

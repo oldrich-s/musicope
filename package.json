@@ -13,13 +13,17 @@
   "author": "Oldrich Svec",
   "license": "ISC",
   "devDependencies": {
-    "bower": "^1.6.5",
-    "gulp": "^3.9.0",
-    "gulp-atom-electron": "^1.0.0",
-    "gulp-clean": "^0.3.1",
-    "gulp-concat": "^2.6.0",
-    "gulp-typescript": "^2.9.2",
-    "run-sequence": "^1.1.4",
-    "tsd": "^0.6.5"
+    "gulp": "*",
+    "gulp-atom-electron": "*",
+    "gulp-clean": "*",
+    "gulp-concat": "*",
+    "gulp-typescript": "*",
+    "run-sequence": "*"
+  },
+  "dependencies": {
+    "framework7": "*",
+    "jquery": "*",
+    "mousetrap": "*",
+    "urijs": "*"
   }
 }
