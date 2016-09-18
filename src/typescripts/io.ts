@@ -5,25 +5,19 @@ module Musicope.IO {
     var _root: string = host.path.join(host.remote.app.getPath("documents"), "Musicope");
 
     export function readBinaryFileAsString(path: string, root = _root) {
-        var def: JQueryDeferred<string> = $.Deferred();
         var data = host.fs.readFileSync(host.path.join(root, path));
         var str: string = String.fromCharCode.apply(null, new Uint8Array(data));
-        def.resolve(str);
-        return def;
+        return str;
     }
 
     export function readTextFile(path: string, root = _root) {
-        var def: JQueryDeferred<string> = $.Deferred(); 
-        var text = host.fs.readFileSync(host.path.join(root, path), "utf-8");
-        def.resolve(text);
-        return def;
+        var text: string = host.fs.readFileSync(host.path.join(root, path), "utf-8");
+        return text;
     }
 
     export function existsFile(path: string, root = _root) {
-        var def: JQueryDeferred<boolean> = $.Deferred();
-        var fileExists = host.fs.existsSync(host.path.join(root, path));
-        def.resolve(fileExists);
-        return def;
+        var fileExists: boolean = host.fs.existsSync(host.path.join(root, path));
+        return fileExists;
     }
 
     export function writeTextFile(path: string, text: string, root = _root) {

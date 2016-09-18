@@ -55,25 +55,17 @@
     }
 
     function readConfig() {
-        var def = $.Deferred<void>();
-        IO.existsFile(setupJsonPath).then((fileExists) => {
-            if (fileExists) {
-                IO.readTextFile(setupJsonPath).then((text) => {
-                    defaultConfig = JSON.parse(text);
-                    def.resolve();
-                });
-            } else {
-                def.resolve();
-            }
-        });
-        return def;
+        var fileExists = IO.existsFile(setupJsonPath);
+        if (fileExists) {
+            var text = IO.readTextFile(setupJsonPath);
+            defaultConfig = JSON.parse(text);
+        }
     }
 
     export function init() {
-        readConfig().then(() => {
-            setConfigDOM();
-            onDOMChange();
-        });
+        readConfig();
+        setConfigDOM();
+        onDOMChange();
     }
 
 } 

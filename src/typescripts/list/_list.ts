@@ -74,13 +74,11 @@
     }
 
     function initScores() {
-        IO.existsFile(songsJsonPath).then((fileExists) => {
-            if (fileExists) {
-                IO.readTextFile(songsJsonPath).then((text) => {
-                    eval("scores = " + text);
-                });
-            }
-        });
+        var fileExists = IO.existsFile(songsJsonPath);
+        if (fileExists) {
+            var text = IO.readTextFile(songsJsonPath);
+            eval("scores = " + text);
+        }
         startSavingScores();
     }
 

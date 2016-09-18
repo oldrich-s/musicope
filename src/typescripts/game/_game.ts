@@ -16,13 +16,12 @@
             if (!config.c_songUrl) { throw "c_songUrl does not exist!"; }
             else {
                 webMidi.ready.then(() => {
-                    IO.readBinaryFileAsString(config.c_songUrl).then((text) => {
-                        if (text.length == 0) {
-                            throw "error loading midi file";
-                        } else {
-                            o.init(text);
-                        }
-                    });
+                    var text = IO.readBinaryFileAsString(config.c_songUrl);
+                    if (text.length == 0) {
+                        throw "error loading midi file";
+                    } else {
+                        o.init(text);
+                    }
                 });
             }
         }
