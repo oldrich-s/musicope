@@ -25,6 +25,7 @@
         p_waits: [true, true],
         p_maxVelocity: [90, 90],
         p_playAllHands: 0,
+        p_analyzeDuration: 0,
 
         // metronomes
         m_channel: 153,

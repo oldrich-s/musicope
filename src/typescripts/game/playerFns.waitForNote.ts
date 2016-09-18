@@ -35,6 +35,36 @@
             idsBelowCurrentTime.forEach(o.setId);
         }
 
+        modifySpeed = () => {
+            var o = this;
+            if (config.p_analyzeDuration > 0) {
+                var timeOffset = o.computePlayerTimeOffset();
+                var speedDiff = timeOffset > 0 ? -0.1 : 0.1 ;
+                config.p_speed = config.p_speed + speedDiff;
+            }
+        }
+
+        private computePlayerTimeOffset = () => {
+            var o = this;
+            var offset = 0;
+            var offsetn = 1;
+            o.notes.forEach((hand, handId) => {
+                var noteId = o.ids[handId];
+                while (true) {
+                    if (o.notesPressedTime[handId][noteId]) {
+                        var dt = hand[noteId].time - o.notesPressedTime[handId][noteId];
+                        offset += dt;
+                        offsetn++;
+                    }
+                    noteId--;
+                    if (hand[noteId].time < config.p_elapsedTime - config.p_analyzeDuration) {
+                        break;
+                    }
+                }
+            });
+            return offset / offsetn;
+        }
+
         private assignIds = () => {
             var o = this;
             o.ids = o.notes.map(() => { return 0; });
@@ -57,7 +87,7 @@
                     while (o.isIdBelowCurrentTimePlusRadius(i, id)) {
                         var note = o.notes[i][id];
                         if (note.on && !o.notesPressedTime[i][id] && note.id === noteId) {
-                            var radius = Math.abs(o.notes[i][id].time - config.p_elapsedTime) - 50;
+                            var radius = Math.abs(o.notes[i][id].time - config.p_elapsedTime);
                             if (radius < config.p_radiuses[i]) {
                                 o.notesPressedTime[i][id] = config.p_elapsedTime;
                                 return;

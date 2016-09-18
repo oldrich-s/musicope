@@ -24,6 +24,7 @@
         p_waits: boolean[];
         p_maxVelocity: number[];
         p_playAllHands: number;
+        p_analyzeDuration: number;
 
         // metronomes
         m_channel: number;
