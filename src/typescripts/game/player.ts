@@ -63,7 +63,6 @@
             o.scene.redraw(config.p_elapsedTime, config.p_isPaused);
             var isFreeze = o.waitForNote.isFreeze();
             hideTimeBarIfStops(o.scene, isFreeze);
-            o.waitForNote.modifySpeed();
             return o.updateTime(isFreeze);
         }
 

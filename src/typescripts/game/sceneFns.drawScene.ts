@@ -279,9 +279,8 @@
 
     export function drawScene(input: Input) {
         var whiteWidth = Math.floor(input.sceneWidth / whiteNoteIds.length);
-        var maxRadius = Math.max.apply(null, config.p_radiuses);
         var timePerSceneHeigth = input.sceneHeight / input.pixelsPerTime;
-        var timeBarHeight = input.sceneHeight * maxRadius / timePerSceneHeigth;
+        var timeBarHeight = input.sceneHeight * config.p_radius / timePerSceneHeigth;
         var yEndOfTimeBar = Math.floor(config.s_showPiano ? 0.2 * input.sceneHeight : timeBarHeight);
         var loc: Local = {
             input: input,

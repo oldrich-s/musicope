@@ -17,7 +17,7 @@
         p_maxNote: 96,
         p_playOutOfReachNotes: true,
         p_waitForOutOfReachNotes: true,
-        p_radiuses: [200, 200],
+        p_radius: 200,
         p_speed: 1,
         p_sustain: true,
         p_userHands: [false, false],
@@ -25,7 +25,7 @@
         p_waits: [true, true],
         p_maxVelocity: [90, 90],
         p_playAllHands: 0,
-        p_analyzeDuration: 0,
+        p_adaptableSpeed: true,
 
         // metronomes
         m_channel: 153,

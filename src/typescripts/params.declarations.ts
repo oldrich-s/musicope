@@ -16,7 +16,7 @@
         p_maxNote: number;
         p_playOutOfReachNotes: boolean;
         p_waitForOutOfReachNotes: boolean;
-        p_radiuses: number[];
+        p_radius: number;
         p_speed: number;
         p_sustain: boolean;
         p_userHands: boolean[];
@@ -24,7 +24,7 @@
         p_waits: boolean[];
         p_maxVelocity: number[];
         p_playAllHands: number;
-        p_analyzeDuration: number;
+        p_adaptableSpeed: boolean;
 
         // metronomes
         m_channel: number;
