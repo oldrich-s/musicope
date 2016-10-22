@@ -1,4 +1,4 @@
-﻿module Musicope {
+﻿namespace Musicope {
 
     export var game: Game.Game;
     export var app: Framework7;

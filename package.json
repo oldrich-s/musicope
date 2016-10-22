@@ -1,26 +1,21 @@
 {
   "name": "musicope",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "xxx"
-  },
+  "version": "2.0.0",
   "author": "Oldrich Svec",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
+    "@types/jquery": "^2.0.33",
+    "@types/mousetrap": "^1.5.32",
     "gulp": "*",
-    "gulp-atom-electron": "*",
-    "gulp-clean": "*",
     "gulp-concat": "*",
+    "gulp-rimraf": "*",
     "gulp-typescript": "*",
-    "run-sequence": "*"
+    "rcedit": "*",
+    "run-sequence": "*",
+    "typescript": "*"
   },
   "dependencies": {
+    "electron": "*",
     "framework7": "*",
     "jquery": "*",
     "mousetrap": "*",

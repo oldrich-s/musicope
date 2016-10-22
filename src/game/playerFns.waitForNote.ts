@@ -52,10 +52,11 @@
 
         private addNoteOnToKnownNotes = (noteId: number) => {
             var o = this;
+            var firstNullTime = o.getFirstNullPressedTime();
             for (var i = 0; i < config.p_userHands.length; i++) {
                 if (config.p_userHands[i]) {
                     var id = o.ids[i];
-                    while (o.isIdBelowCurrentTimePlusRadius(i, id)) {
+                    while (o.isIdBelowFirstTimePlusThreshold(i, id, firstNullTime)) {
                         var note = o.notes[i][id];
                         if (note.on && !o.notesPressedTime[i][id] && note.id === noteId) {
                             var radius = Math.abs(o.notes[i][id].time - config.p_elapsedTime) - 50;
@@ -71,23 +72,39 @@
             }
         }
 
+        private getFirstNullPressedTime = () => {
+            var o = this;
+            var minTime = 1e6;
+            for (var i = 0; i < config.p_userHands.length; i++) {
+                if (config.p_userHands[i]) {
+                    var id = o.ids[i];
+                    while(o.notes[i][id] && (o.notesPressedTime[i][id] || !o.notes[i][id].on)) { id++; } // chyba
+                    if (o.notes[i][id]) {
+                        minTime = Math.min(o.notes[i][id].time, minTime);
+                    }
+                }
+            }
+            return minTime;
+        }
+
         private modifySpeed = (dt: number) => {
             var o = this;
-            if (config.p_adaptableSpeed && Math.abs(dt) < config.p_radius - 5 ) {
-                if (o.oldDT !== 0) {
-                    var newSpeedDiff = Math.max(1, Math.abs(dt / o.oldDT)) * dt / 50000;
+            if (config.p_adaptableSpeed && Math.abs(dt) < config.p_radius - 100 ) {
+                if (o.oldDT > 0) {
+                   // var scale = Math.abs(dt) / (1 * config.p_radius + o.oldDT);
+                    var newSpeedDiff = dt / 50000;
                     var newSpeed = config.p_speed + newSpeedDiff;
                     Params.setParam("p_speed", newSpeed);
                     console.log(config.p_elapsedTime + '\t' + dt + '\t' + newSpeed + '\t' + newSpeedDiff);
                 }
-                o.oldDT = dt;
+                o.oldDT = Math.abs(dt);
             }
         }
 
-        private isIdBelowCurrentTimePlusRadius = (trackId: number, noteId: number) => {
+        private isIdBelowFirstTimePlusThreshold = (trackId: number, noteId: number, nullTime: number) => {
             var o = this;
             return o.notes[trackId][noteId] &&
-                o.notes[trackId][noteId].time < config.p_elapsedTime + config.p_radius;
+                o.notes[trackId][noteId].time < nullTime + 100;
         }
 
         private resetNotesPressedTime = (idsBelowCurrentTime: number[]) => {

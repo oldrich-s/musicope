@@ -1,0 +1,8 @@
+{
+  "name"    : "musicope",
+  "version" : "2.0.0",
+  "main"    : "electron.js",
+  "dependencies": {
+    "electron-window-state": "*"
+  }
+}

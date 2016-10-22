@@ -1,3 +1,1 @@
 Musicope is an open-source online piano game similar to [Synthesia](http://synthesiagame.com/) or [PianoCrumbs](http://www.pianocrumbs.com/piano/). 
-
-You can download win-32 version of the game in the [release](https://github.com/musicope/game/releases) section. Linux and MacOS versions can be made by replacing [Electron Atom](http://electron.atom.io/) win-32 binaries by their appropriate counterparts.
