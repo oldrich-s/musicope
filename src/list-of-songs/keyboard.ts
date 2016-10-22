@@ -1,4 +1,6 @@
-﻿function enter() {
+﻿import { mainView, correctPosition } from "../app";
+
+function enter() {
     Mousetrap.bind('enter', (e) => {
         var href = $('.song-list-el-focus a').attr('href');
         mainView.router.loadPage(href);

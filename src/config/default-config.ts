@@ -61,3 +61,7 @@ export var defaultConfig: IConfig = {
     s_colOutOfReachNotes: "#ff5252",
     s_colUnPlayedNotesInReach: "#00ff90"
 };
+
+export function set(config) {
+    defaultConfig = config;
+}

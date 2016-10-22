@@ -1,5 +1,8 @@
 ﻿declare var host;
 
+export var songsJsonPath = "songs.json";
+export var setupJsonPath = "setup.json";
+
 var _root: string = host.path.join(host.remote.app.getPath("documents"), "Musicope");
 
 export function readBinaryFileAsString(path: string, root = _root) {

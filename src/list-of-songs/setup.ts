@@ -1,5 +1,5 @@
-﻿import { existsFile, writeTextFile, readTextFile } from "../io/io";
-import { defaultConfig } from "../config/default-config";
+﻿import { existsFile, writeTextFile, readTextFile, setupJsonPath } from "../io/io";
+import { defaultConfig, set as setDefaultConfig } from "../config/default-config";
 
 function getValue(el: JQuery) {
     if (el.attr('type') == 'checkbox') {
@@ -59,7 +59,7 @@ function readConfig() {
     var fileExists = existsFile(setupJsonPath);
     if (fileExists) {
         var text = readTextFile(setupJsonPath);
-        defaultConfig = JSON.parse(text);
+        setDefaultConfig(JSON.parse(text));
     }
 }
 

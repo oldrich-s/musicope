@@ -9,6 +9,7 @@
     "gulp": "*",
     "gulp-concat": "*",
     "gulp-rimraf": "*",
+    "gulp-sourcemaps": "^2.1.1",
     "gulp-typescript": "*",
     "rcedit": "*",
     "run-sequence": "*",
@@ -19,6 +20,7 @@
     "framework7": "*",
     "jquery": "*",
     "mousetrap": "*",
+    "systemjs": "^0.19.39",
     "urijs": "*"
   }
 }

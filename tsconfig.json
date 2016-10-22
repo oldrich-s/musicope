@@ -1,9 +1,19 @@
 {
     "compilerOptions": {
-        "target": "es5"
+        "target": "es5",
+        "module": "system",
+        "moduleResolution": "node",
+        "outFile": "test.js",
+        "sourceMap": true,
+        "pretty": false,
+        "lib": [
+            "es2015.promise",
+            "dom",
+            "es5",
+            "scripthost"
+        ]
     },
-    "include": [
-        "src/**/*.ts",
-        "node_modules/@types/**/*.d.ts"
+    "exclude": [
+        "node_modules"
     ]
 }

@@ -6,8 +6,6 @@
     <link rel="stylesheet" href="vendor.css" />
     <link rel="stylesheet" href="app.css" />
     <link rel="shortcut icon" href="icon.ico" />
-    <script src="vendor.js"></script>
-    <script src="app.js"></script>
 </head>
 <body class="layout-dark">
 
@@ -538,6 +536,16 @@
             </a>
             <div class="elURL" style="display:none;">{{url}}</div>
         </li>
+    </script>
+
+    <script src="vendor.js"></script>
+    <script src="app.js"></script>
+
+    <script>
+        SystemJS.config({
+            baseURL: ''
+        });
+        SystemJS.import('app');
     </script>
 
 </body>

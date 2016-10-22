@@ -28,10 +28,6 @@ declare class Template7 {
     static compile(template: string): (context: any) => string;
 }
 
-interface KnockoutStatic {
-    watch: (targetObjectOrFunction, options, evaluatorCallback) => void;
-}
-
 interface IMinMax {
     min: number;
     max: number;

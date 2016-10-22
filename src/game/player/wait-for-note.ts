@@ -1,5 +1,4 @@
-﻿import { config } from "../../config/config";
-
+﻿import { config, setParam } from "../../config/config";
 import { INote } from "../midi-parser/i-midi-parser";
 
 export class WaitForNote {
@@ -96,7 +95,7 @@ export class WaitForNote {
                 // var scale = Math.abs(dt) / (1 * config.p_radius + o.oldDT);
                 var newSpeedDiff = dt / 50000;
                 var newSpeed = config.p_speed + newSpeedDiff;
-                Params.setParam("p_speed", newSpeed);
+                setParam("p_speed", newSpeed);
                 console.log(config.p_elapsedTime + '\t' + dt + '\t' + newSpeed + '\t' + newSpeedDiff);
             }
             o.oldDT = Math.abs(dt);

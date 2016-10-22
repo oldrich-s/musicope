@@ -5,15 +5,16 @@ var ts = require('gulp-typescript');
 var runSequence = require('run-sequence');
 var rcedit = require('rcedit');
 var exec = require('child_process').exec;
+var sourcemaps = require('gulp-sourcemaps');
 
 var base = 'build/resources/app/';
 
 var vendorScriptFiles = [
+    "node_modules/systemjs/dist/system.src.js",
     'node_modules/jquery/dist/jquery.js',
     'node_modules/framework7/dist/js/framework7.js',
     'node_modules/mousetrap/mousetrap.js',
-    'node_modules/urijs/src/URI.js',
-    'vendor-scripts/**/*.js'
+    'node_modules/urijs/src/URI.js'
 ];
 
 var vendorCSSFiles = [
@@ -46,8 +47,10 @@ gulp.task('static', function (done) {
 
 gulp.task('ts', function () {
     return tsProject.src()
+        .pipe(sourcemaps.init())
         .pipe(tsProject())
         .js.pipe(concat('app.js'))
+        .pipe(sourcemaps.write())
         .pipe(gulp.dest(base))
 });
 

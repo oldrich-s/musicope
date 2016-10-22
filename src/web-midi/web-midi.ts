@@ -2,7 +2,7 @@
 
 class WebMidi {
 
-    ready = $.Deferred<void>();
+    ready: Promise<void>;
 
     private midi;
     private output;
@@ -10,11 +10,13 @@ class WebMidi {
 
     constructor() {
         var o = this;
-        (<any>navigator).requestMIDIAccess().then((m) => {
-            o.midi = m;
-            o.ready.resolve();
-        }, (msg) => {
-            o.ready.reject("Failed to get MIDI access - " + msg);
+        o.ready = new Promise<void>((resolve, reject) => {
+            (<any>navigator).requestMIDIAccess().then((m) => {
+                o.midi = m;
+                resolve();
+            }, (msg) => {
+                reject("Failed to get MIDI access - " + msg);
+            });
         });
     }
 

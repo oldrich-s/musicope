@@ -9,7 +9,7 @@ export interface Input {
     pixelsPerTime: number;
     sceneWidth: number;
     sceneHeight: number;
-    tracks: INoteScene[][];
+    tracks: INoteScene[][];
     sustainNotes: ISustainNoteScene[];
     p_minNote: number;
     p_maxNote: number;

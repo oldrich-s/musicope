@@ -13,6 +13,10 @@ function call(param: string, value: any) {
     }
 }
 
+export function set(c) {
+    config = c;
+}
+
 export function reset() {
     subscriptions = {};
 }

@@ -1,4 +1,4 @@
-﻿import { existsFile, readTextFile, writeTextFile, getAllFiles } from "../io/io";
+﻿import { existsFile, readTextFile, writeTextFile, getAllFiles, songsJsonPath } from "../io/io";
 import { bindKeyboard } from "./keyboard";
 
 var scores = {};
