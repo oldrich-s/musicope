@@ -113,93 +113,15 @@ function getColorByVelocity(color: number[], velocity: number, minMaxVel: number
     }
 }
 
-function drawBlackNote(loc: Local, trackId: number, note: INoteScene, y0: number, y1: number, color: number[]) {
-    var pos = blackNoteIds.indexOf(note.id);
-    if (pos >= 0) {
-        var f = trackId == 0 ? 3 : 0;
-        var x0 = blackNoteSpots[pos] * loc.whiteWidth - loc.blackWidth + 2;
-        var x1 = x0 + 2 * loc.blackWidth - 3;
-        loc.input.drawRect(x0, y0, x1, y1, [trackId + 202], white, white);
-        loc.input.drawRect(x0 + f, y0, x1 - f, y1, [trackId + 202], color, color);
-    }
-}
 
-function drawWhiteNote(loc: Local, trackId: number, note: INoteScene, y0: number, y1: number, color: number[]) {
-    var ipos = whiteNoteIds.indexOf(note.id);
-    if (ipos >= 0) {
-        var f = trackId == 0 ? 4 : 0;
-        var x0 = ipos * loc.whiteWidth + 3;
-        var x1 = x0 + loc.whiteWidth - 5;
-        loc.input.drawRect(x0, y0, x1, y1, [trackId + 200], white, white);
-        loc.input.drawRect(x0 + f, y0, x1 - f, y1, [trackId + 200], color, color);
-    }
-}
 
-function iterateNotes(loc: Local, fn) {
-    config.s_views.forEach((view, trackId) => {
-        if (view === "full") {
-            loc.input.tracks[trackId].forEach(function(note) {
-                var y0 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOn + 2;
-                var y1 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOff - 2;
-                var color = hexToRgb(colors[note.id % 12]);
-                fn(loc, trackId, note, y0, y1, color);
-            });
-        }
-    });
-}
+
 
-function drawBarLines(loc: Local) {
+
 
-    var maxTime = 0;
-    loc.input.tracks.forEach((t) => {
-        if (t.length > 0) {
-            maxTime = Math.max(t[t.length - 1].timeOff, maxTime);
-        }
-    });
 
-    var color = hexToRgb(cLineColor);
-
-    var keys = Object.keys(loc.input.signatures).sort((a, b) => Number(a) - Number(b));
-    keys.forEach((key, i) => {
-        var startTime = Number(key);
-        if (i + 1 < keys.length) {
-            var endTime = Number(keys[i + 1]);
-            var step = loc.input.signatures[startTime].msecsPerBar;
-            var n = Math.round((endTime - startTime) / step);
-            var newStep = (endTime - startTime) / n;
-            for (var j = (i == 0 ? -2 : 0); j < n; j++) {
-                var time = startTime + j * newStep;
-                var y = loc.yEndOfTimeBar + loc.input.pixelsPerTime * time;
-                var x1 = (whiteNoteIds.length + 1) * loc.whiteWidth;
-                if (j == 0) {
-                    loc.input.drawRect(0, y - 2, x1, y + 2, [200], color, color);
-                } else {
-                    loc.input.drawRect(0, y, x1, y + 1, [200], color, color);
-                }
-            }
-        } else {
-            var step = loc.input.signatures[startTime].msecsPerBar;
-            var n = Math.ceil((maxTime - startTime) / step);
-            for (var j = 0; j < n; j++) {
-                var time = startTime + j * step;
-                var y = loc.yEndOfTimeBar + loc.input.pixelsPerTime * time;
-                var x1 = (whiteNoteIds.length + 1) * loc.whiteWidth;
-                loc.input.drawRect(0, y, x1, y + 1, [200], color, color);
-            }
-        }
-    });
-}
-
-function drawCLines(loc: Local) {
-    var color = hexToRgb(cLineColor);
-    whiteNoteIds.forEach((id, i) => {
-        if (id % 12 == 0) {
-            var x0 = i * loc.whiteWidth;
-            var y0 = loc.yEndOfPiano;
-            var y1 = loc.input.sceneHeight;
-            loc.input.drawRect(x0, y0, x0 + 1, y1, [id], color, color);
-        }
-    });
+function drawTooLateZone() {
+    //drawRect(0, pianoHeight - timebarHeight, 1, pianoHeight, [1, 2, 2, 1], tooLateZoneColor, tooLateZoneColor);
 }
 
 export function drawScene(input: Input) {
@@ -215,15 +137,13 @@ export function drawScene(input: Input) {
         yEndOfPiano: yEndOfTimeBar - timeBarHeight,
         xRemainder: input.sceneWidth - whiteWidth * whiteNoteIds.length,
     }
-    drawCLines(loc);
-    drawBarLines(loc);
     iterateNotes(loc, drawWhiteNote);
     iterateNotes(loc, drawBlackNote);
     drawSustainNotes(loc);
 
-    drawPiano(loc.input.drawRect, 88, loc.input.sceneWidth, yEndOfTimeBar, whiteWidth, 1.7 * loc.blackWidth, loc.input.playedNoteID.min, loc.input.playedNoteID.max);
-    //drawTimeBar(loc);
-    //drawPiano(loc);
+    drawPiano(loc.input.drawRect, 76, loc.input.sceneWidth, yEndOfTimeBar, whiteWidth, 1.7 * loc.blackWidth, loc.input.playedNoteID.min, loc.input.playedNoteID.max);
+
+
     drawNoteCover(loc);
 }
 

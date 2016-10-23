@@ -1,12 +1,12 @@
 import { config } from "../../config/config";
 import { whiteNoteIds, blackNoteIds, noteRanges, blackNoteSpots } from "./note-ids";
-import { hexToRgb } from "./utils";
+import { hexToRgb, IDrawRect, rel2abs } from "./utils";
 
-var aboveNotesMargin = 2;
-var belowNotesMargin = 12;
-var timebarHeight = 25;
-var whiteKeySpacing = 1;
-var relBlackKeyBottomEdge = 0.4;
+var aboveNotesMargin = rel2abs(0.01);
+var belowNotesMargin = rel2abs(0.06);
+var timebarHeight = rel2abs(0.08);
+var whiteKeySpacing = rel2abs(0.005);
+var blackKeyBottomEdge = rel2abs(0.4);
 
 var backgroundColor = hexToRgb("#000000");
 var whiteKeyColor = hexToRgb("#ffffff");
@@ -19,25 +19,25 @@ var blackKeyColor_pressed = hexToRgb("#3faeff");
 var timebar_backgroundColor = hexToRgb("#ffffff");
 var timebar_activeColor = hexToRgb("#0094ff");
 
-function drawPianoTimeBarColor(drawRect, pianoHeight: number) {
-    drawRect(0, pianoHeight - timebarHeight, 1, pianoHeight, [1, 2, 2, 1], timebar_activeColor, timebar_activeColor);
+function drawPianoTimeBarColor(drawRect: IDrawRect, pianoHeight: number) {
+    drawRect(0, pianoHeight - timebarHeight(pianoHeight), 1, pianoHeight, [1, 2, 2, 1], timebar_activeColor, timebar_activeColor);
 }
 
-function drawPianoTimeBarWhite(drawRect, pianoHeight: number, pianoWidth: number) {
-    drawRect(0, pianoHeight - timebarHeight, pianoWidth, pianoHeight, [2, 1, 1, 2], timebar_backgroundColor, timebar_backgroundColor);
+function drawPianoTimeBarWhite(drawRect: IDrawRect, pianoHeight: number, pianoWidth: number) {
+    drawRect(0, pianoHeight - timebarHeight(pianoHeight), pianoWidth, pianoHeight, [2, 1, 1, 2], timebar_backgroundColor, timebar_backgroundColor);
 }
 
-function drawTimeBar(drawRect, pianoHeight: number, pianoWidth: number) {
+function drawTimeBar(drawRect: IDrawRect, pianoHeight: number, pianoWidth: number) {
     drawPianoTimeBarWhite(drawRect, pianoHeight, pianoWidth);
     drawPianoTimeBarColor(drawRect, pianoHeight);
 }
 
-function drawBlackNotes(drawRect, whiteKeyWidth: number, blackKeyWidth: number, pianoHeight: number) {
+function drawBlackNotes(drawRect: IDrawRect, whiteKeyWidth: number, blackKeyWidth: number, pianoHeight: number) {
     blackNoteIds.forEach((id, i) => {
         var x0 = blackNoteSpots[i] * whiteKeyWidth - blackKeyWidth / 2;
         var x1 = x0 + blackKeyWidth;
-        var y0 = Math.floor(pianoHeight * relBlackKeyBottomEdge);
-        var y1 = pianoHeight - timebarHeight - aboveNotesMargin;
+        var y0 = blackKeyBottomEdge(pianoHeight);
+        var y1 = pianoHeight - timebarHeight(pianoHeight) - aboveNotesMargin(pianoHeight);
         drawRect(x0, y0, x1, y1, [id], blackKeyColor, blackKeyColor_pressed);
     });
 }
@@ -56,22 +56,22 @@ function getColorForWhitePianoNotes(id: number, minNoteId: number, maxNoteId: nu
     }
 }
 
-function drawWhiteNotes(drawRect, whiteKeyWidth: number, pianoHeight: number, minNoteId: number, maxNoteId: number, pianoKeys: number) {
+function drawWhiteNotes(drawRect: IDrawRect, whiteKeyWidth: number, pianoHeight: number, minNoteId: number, maxNoteId: number, pianoKeys: number) {
     whiteNoteIds.forEach((id, i) => {
         var x0 = i * whiteKeyWidth;
-        var x1 = x0 + whiteKeyWidth - whiteKeySpacing;
-        var y0 = belowNotesMargin;
-        var y1 = pianoHeight - aboveNotesMargin - timebarHeight;
+        var x1 = x0 + whiteKeyWidth - whiteKeySpacing(pianoHeight);
+        var y0 = belowNotesMargin(pianoHeight);
+        var y1 = pianoHeight - aboveNotesMargin(pianoHeight) - timebarHeight(pianoHeight);
         var color = getColorForWhitePianoNotes(id, minNoteId, maxNoteId, pianoKeys);
         drawRect(x0, y0, x1, y1, [id], color, whiteKeyColor_pressed);
     });
 }
 
-function drawBackground(drawRect, pianoWidth: number, pianoHeight: number) {
+function drawBackground(drawRect: IDrawRect, pianoWidth: number, pianoHeight: number) {
     drawRect(0, 0, pianoWidth, pianoHeight, [150], backgroundColor, backgroundColor);
 }
 
-export function drawPiano(drawRect, pianoKeys: number, pianoWidth: number, pianoHeight: number, whiteKeyWidth: number, blackKeyWidth: number, minNoteId: number, maxNoteId: number) {
+export function drawPiano(drawRect: IDrawRect, pianoKeys: number, pianoWidth: number, pianoHeight: number, whiteKeyWidth: number, blackKeyWidth: number, minNoteId: number, maxNoteId: number) {
     if (config.s_showPiano) {
         drawBackground(drawRect, pianoWidth, pianoHeight);
         drawWhiteNotes(drawRect, whiteKeyWidth, pianoHeight, minNoteId, maxNoteId, pianoKeys);
