@@ -1,6 +1,7 @@
 ﻿import { ISignature } from "../midi-parser/i-midi-parser";
 import { config } from "../../config/config";
 import { INoteScene, ISustainNoteScene } from "../song/i-song";
+import { drawPiano } from "./draw-piano";
 
 var white = hexToRgb("#ffffff");
 
@@ -83,84 +84,6 @@ function drawNoteCover(loc: Local) {
         var color = [0, 0, 0, 1];
         var activeColor = [0, 0, 0, 0.5];
         loc.input.drawRect(0, y0, loc.input.sceneWidth + 1, y1, [1], color, activeColor);
-    }
-}
-
-function drawPianoBlackNotes(loc: Local) {
-    blackNoteIds.forEach((id, i) => {
-        var x0 = blackNoteSpots[i] * loc.whiteWidth - loc.blackWidth + 2;
-        var x1 = x0 + 2 * loc.blackWidth - 3;
-        var y0 = Math.floor(loc.yEndOfPiano * 0.4);
-        var y1 = loc.yEndOfPiano - 2;
-        var activeColor = hexToRgb(config.s_colPianoBlack);
-        loc.input.drawRect(x0, y0, x1, y1, [id], [0, 0, 0, 1], activeColor);
-    });
-}
-
-function getColorForWhitePianoNotes(id: number, loc: Local) {
-    var unPressedColor = [1, 1, 1, 1];
-    var neverPlayedNote = id < loc.input.playedNoteID.min || id > loc.input.playedNoteID.max;
-    var outOfReachNote = id < loc.input.p_minNote || id > loc.input.p_maxNote;
-    var color;
-    if (neverPlayedNote && !outOfReachNote) {
-        var notPlayedColor = hexToRgb(config.s_colUnPlayedNotesInReach);
-        color = notPlayedColor;
-    } else if (neverPlayedNote) {
-        var notPlayedColor = hexToRgb(config.s_colUnPlayedNotes);
-        color = notPlayedColor;
-    } else if (outOfReachNote) {
-        var outOfReachColor = hexToRgb(config.s_colOutOfReachNotes);
-        color = outOfReachColor;
-    } else {
-        color = unPressedColor;
-    }
-    return color;
-}
-
-function drawPianoWhiteNotes(loc: Local) {
-    whiteNoteIds.forEach((id, i) => {
-        var x0 = i * loc.whiteWidth;
-        var x1 = x0 + loc.whiteWidth - 1;
-        var y0 = 12;
-        var y1 = loc.yEndOfPiano - 2;
-        var color = getColorForWhitePianoNotes(id, loc);
-        var activeColor = hexToRgb(config.s_colPianoWhite);
-        loc.input.drawRect(x0, y0, x1, y1, [id], color, activeColor);
-    });
-}
-
-function drawPianoTimeBarColor(loc: Local) {
-    var color = hexToRgb(config.s_colTime, 1);
-    var activeColor = hexToRgb(config.s_colTime, 0.5);
-    var y0 = loc.yEndOfPiano;
-    var y1 = loc.yEndOfTimeBar;
-    loc.input.drawRect(0, y0, 1, y1, [1, 2, 2, 1], color, activeColor);
-}
-
-function drawPianoTimeBarWhite(loc: Local) {
-    var y0 = loc.yEndOfPiano;
-    var y1 = loc.yEndOfTimeBar;
-    var color = [1, 1, 1, 1];
-    var activeColor = [1, 1, 1, 0.5]
-    loc.input.drawRect(0, y0, loc.input.sceneWidth, y1, [2, 1, 1, 2], color, activeColor);
-    loc.input.drawRect(0, 2 * y1 - y0 - 2, loc.input.sceneWidth, 2 * y1 - y0, [3, 3, 3, 3], [0 / 255, 150 / 255, 0 / 255, 1], activeColor);
-}
-
-function drawPianoBackBlack(loc: Local) {
-    var y1 = loc.yEndOfPiano;
-    loc.input.drawRect(0, 0, loc.input.sceneWidth + 1, y1, [150], [0, 0, 0, 1], [0, 0, 0, 1]);
-}
-
-function drawTimeBar(loc: Local) {
-    drawPianoTimeBarWhite(loc);
-    drawPianoTimeBarColor(loc);
-}
-
-function drawPiano(loc: Local) {
-    if (config.s_showPiano) {
-        drawPianoBackBlack(loc);
-        drawPianoWhiteNotes(loc);
-        drawPianoBlackNotes(loc);
     }
 }
 
@@ -297,8 +220,10 @@ export function drawScene(input: Input) {
     iterateNotes(loc, drawWhiteNote);
     iterateNotes(loc, drawBlackNote);
     drawSustainNotes(loc);
-    drawTimeBar(loc);
-    drawPiano(loc);
+
+    drawPiano(loc.input.drawRect, 88, loc.input.sceneWidth, yEndOfTimeBar, whiteWidth, 1.7 * loc.blackWidth, loc.input.playedNoteID.min, loc.input.playedNoteID.max);
+    //drawTimeBar(loc);
+    //drawPiano(loc);
     drawNoteCover(loc);
 }
 

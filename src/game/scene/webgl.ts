@@ -127,6 +127,7 @@ export class WebGL {
         attribute float a_id;
         attribute vec4 a_activeColor;
         varying lowp vec4 v_color;
+        
         void main() {
             int id = int(a_id);
 
