@@ -1,12 +1,12 @@
 import { config } from "../../config/config";
 import { whiteNoteIds, blackNoteIds, noteRanges, blackNoteSpots } from "./note-ids";
-import { hexToRgb, IDrawRect, rel2abs } from "./utils";
+import { hexToRgb, IDrawRect } from "./utils";
 
-var aboveNotesMargin = rel2abs(0.01);
-var belowNotesMargin = rel2abs(0.06);
-var timebarHeight = rel2abs(0.08);
-var whiteKeySpacing = rel2abs(0.005);
-var blackKeyBottomEdge = rel2abs(0.4);
+var aboveNotesMargin = pianoHeight => Math.ceil(0.01 * pianoHeight);
+var belowNotesMargin = pianoHeight => Math.ceil(0.06 * pianoHeight);
+var timebarHeight = pianoHeight => Math.ceil(0.08 * pianoHeight);
+var whiteKeySpacing = pianoHeight => Math.ceil(0.005 * pianoHeight);
+var blackKeyBottomEdge = pianoHeight => Math.ceil(0.4 * pianoHeight);
 
 var backgroundColor = hexToRgb("#000000");
 var whiteKeyColor = hexToRgb("#ffffff");

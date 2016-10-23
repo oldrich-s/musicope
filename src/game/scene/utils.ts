@@ -8,6 +8,3 @@ export function hexToRgb(hex: string, alpha?: number) {
 
 export type IDrawRect = (x0: number, y0: number, x1: number, y1: number, ids: number[], color: number[], activeColor: number[]) => void;
 
-export function rel2abs(rel: number) {
-    return (height: number) => Math.ceil(height * rel);
-}

@@ -1,10 +1,10 @@
-import { hexToRgb, IDrawRect, rel2abs } from "./utils";
+import { hexToRgb, IDrawRect } from "./utils";
 import { whiteNoteIds, blackNoteIds, blackNoteSpots } from "./note-ids";
 
 var octaveLineColor = hexToRgb("#808080");
 var leftTrackNoteBackgroundColor = hexToRgb("#ffffff");
 
-var leftTrackColorPadding = rel2abs(0.1);
+var leftTrackColorPadding = blackKeyWidth => Math.ceil(0.1 * blackKeyWidth);
 
 function drawBlackNote(drawRect: IDrawRect, noteID: number, isLeftTrack: boolean, whiteKeyWidth: number, blackKeyWidth: number, y0: number, y1: number, color: number[]) {
     var pos = blackNoteIds.indexOf(noteID);
