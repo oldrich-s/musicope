@@ -2,87 +2,109 @@ import { hexToRgb, IDrawRect } from "./utils";
 import { whiteNoteIds, blackNoteIds, blackNoteSpots } from "./note-ids";
 
 var octaveLineColor = hexToRgb("#808080");
-var leftTrackNoteBackgroundColor = hexToRgb("#ffffff");
+var leftTrackWhiteNoteBackgroundColor = hexToRgb("#ffffff");
+var leftTrackBlackNoteBackgroundColor = hexToRgb("#ffffff");
+var tooLateZoneColor = hexToRgb("#FF4136", 0.5);
 
-var leftTrackColorPadding = blackKeyWidth => Math.ceil(0.1 * blackKeyWidth);
+var colors = [
+    "#FA0B0C",
+    "#F44712",
+    "#F88010",
+    "#F5D23B",
+    "#B5B502",
+    "#149033",
+    "#1B9081",
+    "#7D6AFD",
+    "#A840FD",
+    "#7F087C",
+    "#A61586",
+    "#D71386"
+].map(hexToRgb);
+
+var leftTrackColorPadding = blackKeyWidth => Math.ceil(0.15 * blackKeyWidth);
 
 function drawBlackNote(drawRect: IDrawRect, noteID: number, isLeftTrack: boolean, whiteKeyWidth: number, blackKeyWidth: number, y0: number, y1: number, color: number[]) {
     var pos = blackNoteIds.indexOf(noteID);
-    var x0 = blackNoteSpots[pos] * whiteKeyWidth - blackKeyWidth / 2;
-    var x1 = x0 + blackKeyWidth;
-    if (isLeftTrack) {
-        var padding = leftTrackColorPadding(blackKeyWidth);
-        drawRect(x0, y0, x1, y1, [202], leftTrackNoteBackgroundColor, leftTrackNoteBackgroundColor);
-        drawRect(x0 + padding, y0, x1 - padding, y1, [202], color, color);
-    } else {
-        drawRect(x0, y0, x1, y1, [203], color, color);
+    if (pos >= 0) {
+        var x0 = blackNoteSpots[pos] * whiteKeyWidth - blackKeyWidth / 2;
+        var x1 = x0 + blackKeyWidth;
+        if (isLeftTrack) {
+            let padding = leftTrackColorPadding(blackKeyWidth);
+            drawRect(x0, y0, x1, y1, [202], leftTrackBlackNoteBackgroundColor, leftTrackBlackNoteBackgroundColor);
+            drawRect(x0 + padding, y0, x1 - padding, y1, [202], color, color);
+        } else {
+            drawRect(x0, y0, x1, y1, [203], color, color);
+        }
     }
 }
 
-function drawWhiteNote(loc: Local, trackId: number, note: INoteScene, y0: number, y1: number, color: number[]) {
-    var ipos = whiteNoteIds.indexOf(note.id);
-    var f = trackId == 0 ? 4 : 0;
-    var x0 = ipos * whiteKeyWidth;
-    var x1 = x0 + loc.whiteWidth - 5;
-    loc.input.drawRect(x0, y0, x1, y1, [trackId + 200], white, white);
-    loc.input.drawRect(x0 + f, y0, x1 - f, y1, [trackId + 200], color, color);
-
-}
-
-function iterateNotes(fn) {
-    config.s_views.forEach((view, trackId) => {
-        if (view === "full") {
-            loc.input.tracks[trackId].forEach(function (note) {
-                var y0 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOn + 2;
-                var y1 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOff - 2;
-                var color = hexToRgb(colors[note.id % 12]);
-                fn(loc, trackId, note, y0, y1, color);
-            });
-        }
-    });
-}
-
-function drawBarLines() {
-
-    var maxTime = 0;
-    loc.input.tracks.forEach((t) => {
-        if (t.length > 0) {
-            maxTime = Math.max(t[t.length - 1].timeOff, maxTime);
-        }
-    });
-
-    var color = hexToRgb(cLineColor);
-
-    var keys = Object.keys(loc.input.signatures).sort((a, b) => Number(a) - Number(b));
-    keys.forEach((key, i) => {
-        var startTime = Number(key);
-        if (i + 1 < keys.length) {
-            var endTime = Number(keys[i + 1]);
-            var step = loc.input.signatures[startTime].msecsPerBar;
-            var n = Math.round((endTime - startTime) / step);
-            var newStep = (endTime - startTime) / n;
-            for (var j = (i == 0 ? -2 : 0); j < n; j++) {
-                var time = startTime + j * newStep;
-                var y = loc.yEndOfTimeBar + loc.input.pixelsPerTime * time;
-                var x1 = (whiteNoteIds.length + 1) * loc.whiteWidth;
-                if (j == 0) {
-                    loc.input.drawRect(0, y - 2, x1, y + 2, [200], color, color);
-                } else {
-                    loc.input.drawRect(0, y, x1, y + 1, [200], color, color);
-                }
-            }
+function drawWhiteNote(drawRect: IDrawRect, noteID: number, isLeftTrack: boolean, whiteKeyWidth: number, blackKeyWidth: number, y0: number, y1: number, color: number[]) {
+    var ipos = whiteNoteIds.indexOf(noteID);
+    if (ipos >= 0) {
+        var x0 = ipos * whiteKeyWidth + 2;
+        var x1 = x0 + whiteKeyWidth - 2 * 2;
+        if (isLeftTrack) {
+            let padding = leftTrackColorPadding(whiteKeyWidth);
+            drawRect(x0, y0, x1, y1, [200], leftTrackWhiteNoteBackgroundColor, leftTrackWhiteNoteBackgroundColor);
+            drawRect(x0 + padding, y0, x1 - padding, y1, [200], color, color);
         } else {
-            var step = loc.input.signatures[startTime].msecsPerBar;
-            var n = Math.ceil((maxTime - startTime) / step);
-            for (var j = 0; j < n; j++) {
-                var time = startTime + j * step;
-                var y = loc.yEndOfTimeBar + loc.input.pixelsPerTime * time;
-                var x1 = (whiteNoteIds.length + 1) * loc.whiteWidth;
-                loc.input.drawRect(0, y, x1, y + 1, [200], color, color);
-            }
+            drawRect(x0, y0, x1, y1, [200], color, color);
         }
+    }
+}
+
+function iterateNotes(drawRect: IDrawRect, whiteKeyWidth: number, blackKeyWidth: number, tracks: any[][], start_y: number, pixelsPerTime: number, drawNote) {
+    tracks.forEach((track, trackID) => {
+        track.forEach(function (note) {
+            var y0 = start_y + pixelsPerTime * note.timeOn + 2;
+            var y1 = start_y + pixelsPerTime * note.timeOff - 2;
+            var color = colors[note.id % 12];
+            drawNote(drawRect, note.id, trackID === 0, whiteKeyWidth, blackKeyWidth, y0, y1, color);
+        });
     });
 }
+
+// function drawBarLines() {
+
+//     var maxTime = 0;
+//     loc.input.tracks.forEach((t) => {
+//         if (t.length > 0) {
+//             maxTime = Math.max(t[t.length - 1].timeOff, maxTime);
+//         }
+//     });
+
+//     var color = hexToRgb(cLineColor);
+
+//     var keys = Object.keys(loc.input.signatures).sort((a, b) => Number(a) - Number(b));
+//     keys.forEach((key, i) => {
+//         var startTime = Number(key);
+//         if (i + 1 < keys.length) {
+//             var endTime = Number(keys[i + 1]);
+//             var step = loc.input.signatures[startTime].msecsPerBar;
+//             var n = Math.round((endTime - startTime) / step);
+//             var newStep = (endTime - startTime) / n;
+//             for (var j = (i == 0 ? -2 : 0); j < n; j++) {
+//                 var time = startTime + j * newStep;
+//                 var y = loc.yEndOfTimeBar + loc.input.pixelsPerTime * time;
+//                 var x1 = (whiteNoteIds.length + 1) * loc.whiteWidth;
+//                 if (j == 0) {
+//                     loc.input.drawRect(0, y - 2, x1, y + 2, [200], color, color);
+//                 } else {
+//                     loc.input.drawRect(0, y, x1, y + 1, [200], color, color);
+//                 }
+//             }
+//         } else {
+//             var step = loc.input.signatures[startTime].msecsPerBar;
+//             var n = Math.ceil((maxTime - startTime) / step);
+//             for (var j = 0; j < n; j++) {
+//                 var time = startTime + j * step;
+//                 var y = loc.yEndOfTimeBar + loc.input.pixelsPerTime * time;
+//                 var x1 = (whiteNoteIds.length + 1) * loc.whiteWidth;
+//                 loc.input.drawRect(0, y, x1, y + 1, [200], color, color);
+//             }
+//         }
+//     });
+// }
 
 function drawOctaveLines(drawRect: IDrawRect, whiteKeyWidth: number, pianoHeight: number, sceneHeight: number) {
     whiteNoteIds.forEach((id, i) => {
@@ -93,6 +115,13 @@ function drawOctaveLines(drawRect: IDrawRect, whiteKeyWidth: number, pianoHeight
     });
 }
 
-export function drawBarzone() {
+function drawTooLateZone(drawRect: IDrawRect, pianoHeight: number, pianoWidth: number, start_y: number) {
+    drawRect(0, pianoHeight, pianoWidth, start_y, [11], tooLateZoneColor, tooLateZoneColor);
+}
 
+export function drawBarzone(drawRect: IDrawRect, whiteKeyWidth: number, blackKeyWidth: number, sceneHeight: number, tracks, start_y: number, pixelsPerTime: number, pianoHeight: number, pianoWidth: number) {
+    drawOctaveLines(drawRect, whiteKeyWidth, pianoHeight, sceneHeight);
+    iterateNotes(drawRect, whiteKeyWidth, blackKeyWidth, tracks, start_y, pixelsPerTime, drawWhiteNote);
+    iterateNotes(drawRect, whiteKeyWidth, blackKeyWidth, tracks, start_y, pixelsPerTime, drawBlackNote);
+    drawTooLateZone(drawRect, pianoHeight, pianoWidth, start_y);
 }

@@ -2,7 +2,8 @@
 import { Song } from "../song/song";
 
 import { WebGL } from "./webgl";
-import { hexToRgb, drawScene, Input } from "./draw-scene";
+import { drawScene } from "./draw-scene";
+import { hexToRgb, IDrawRect } from "./utils";
 
 function concat(arrays: Float32Array[]) {
     var result = (() => {
@@ -63,7 +64,7 @@ export class Scene {
 
     private subscribeToParamsChange() {
         var o = this;
-        subscribe("scene.Basic", "^s_noteCoverRelHeight$",(name, value) => {
+        subscribe("scene.Basic", "^s_noteCoverRelHeight$", (name, value) => {
             o.setupScene();
         });
     }
@@ -104,22 +105,13 @@ export class Scene {
     private setupScene() {
         var o = this;
         var bag: Float32Array[] = [];
+
+        function drawRect(x0, y0, x1, y1, ids, color, activeColor) {
+            bag.push(o.rect(x0, y0, x1, y1, ids, [color], [activeColor]));
+        }
+
+        drawScene(drawRect, o.canvas.width, o.canvas.height, o.pixelsPerTime, o.song.sceneTracks, o.song.playedNoteID.min, o.song.playedNoteID.max);
         
-        var input: Input = {
-            drawRect: (x0, y0, x1, y1, ids, color, activeColor) => {
-                bag.push(o.rect(x0, y0, x1, y1, ids, [color], [activeColor]));
-            },
-            pixelsPerTime: o.pixelsPerTime,
-            sceneWidth: o.canvas.width,
-            sceneHeight: o.canvas.height,
-            tracks: o.song.sceneTracks,
-            sustainNotes: o.song.sceneSustainNotes,
-            p_minNote: config.p_minNote,
-            p_maxNote: config.p_maxNote,
-            signatures: o.song.midi.signatures,
-            playedNoteID: o.song.playedNoteID,
-        };
-        drawScene(input);
         var bufferData = concat(bag);
         o.webgl.setBuffer(bufferData);
     }
@@ -134,11 +126,11 @@ export class Scene {
         if (ids.length === 1) { ids = [ids[0], ids[0], ids[0], ids[0]]; }
         var out = new Float32Array(
             [fx(x0), fy(y0), colors[0][0], colors[0][1], colors[0][2], colors[0][3], ids[0], activeColors[0][0], activeColors[0][1], activeColors[0][2], activeColors[0][3],
-                fx(x1), fy(y0), colors[1][0], colors[1][1], colors[1][2], colors[1][3], ids[1], activeColors[1][0], activeColors[1][1], activeColors[1][2], activeColors[1][3],
-                fx(x1), fy(y1), colors[2][0], colors[2][1], colors[2][2], colors[2][3], ids[2], activeColors[2][0], activeColors[2][1], activeColors[2][2], activeColors[2][3],
-                fx(x0), fy(y0), colors[0][0], colors[0][1], colors[0][2], colors[0][3], ids[0], activeColors[0][0], activeColors[0][1], activeColors[0][2], activeColors[0][3],
-                fx(x1), fy(y1), colors[2][0], colors[2][1], colors[2][2], colors[2][3], ids[2], activeColors[2][0], activeColors[2][1], activeColors[2][2], activeColors[2][3],
-                fx(x0), fy(y1), colors[3][0], colors[3][1], colors[3][2], colors[3][3], ids[3], activeColors[3][0], activeColors[3][1], activeColors[3][2], activeColors[3][3]]);
+            fx(x1), fy(y0), colors[1][0], colors[1][1], colors[1][2], colors[1][3], ids[1], activeColors[1][0], activeColors[1][1], activeColors[1][2], activeColors[1][3],
+            fx(x1), fy(y1), colors[2][0], colors[2][1], colors[2][2], colors[2][3], ids[2], activeColors[2][0], activeColors[2][1], activeColors[2][2], activeColors[2][3],
+            fx(x0), fy(y0), colors[0][0], colors[0][1], colors[0][2], colors[0][3], ids[0], activeColors[0][0], activeColors[0][1], activeColors[0][2], activeColors[0][3],
+            fx(x1), fy(y1), colors[2][0], colors[2][1], colors[2][2], colors[2][3], ids[2], activeColors[2][0], activeColors[2][1], activeColors[2][2], activeColors[2][3],
+            fx(x0), fy(y1), colors[3][0], colors[3][1], colors[3][2], colors[3][3], ids[3], activeColors[3][0], activeColors[3][1], activeColors[3][2], activeColors[3][3]]);
         return out;
     }
 
