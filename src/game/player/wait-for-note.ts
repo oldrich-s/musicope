@@ -85,7 +85,7 @@ export class WaitForNote {
 
     private modifySpeed = (dt: number) => {
         var o = this;
-        if (config.p_adaptableSpeed && dt < config.p_wait_ms - 100) {
+        if (config.p_adaptableSpeed) {
             if (o.oldDT > 0) {
                 // var scale = Math.abs(dt) / (1 * config.p_radius + o.oldDT);
                 var newSpeedDiff = dt / 50000;
