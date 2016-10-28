@@ -17,7 +17,7 @@ export var defaultConfig: IConfig = {
     p_maxNote: 96,
     p_playOutOfReachNotes: true,
     p_waitForOutOfReachNotes: true,
-    p_radius: 200,
+    p_wait_ms: 200,
     p_speed: 1,
     p_sustain: true,
     p_userHands: [false, false],

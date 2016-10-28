@@ -29,20 +29,20 @@ import { IDrawRect } from "./utils";
 //     });
 // }
 
-export function drawScene(drawRect: IDrawRect, sceneWidth: number, sceneHeight: number, pixelsPerTime: number, tracks: any[][], minPlayedNote: number, maxPlayedNote: number) {
+export function drawScene(drawRect: IDrawRect, sceneWidth: number, sceneHeight: number, pixelsPerTime: number, tracks: any[][], minPlayedNote: number, maxPlayedNote: number, signatures: { [msecs: number]: ISignature }) {
     var whiteKeyWidth = Math.floor(sceneWidth / whiteNoteIds.length);
     var blackKeyWidth = Math.round(0.45 * whiteKeyWidth);
     var pianoHeight = Math.ceil(0.2 * sceneHeight);
-    var start_y = pianoHeight + pixelsPerTime * 500;
+    var start_y = pianoHeight + pixelsPerTime * config.p_wait_ms;
 
-    var timePerSceneHeigth = sceneHeight / pixelsPerTime;
-    var timeBarHeight = sceneHeight * config.p_radius / timePerSceneHeigth;
+    // var timePerSceneHeigth = sceneHeight / pixelsPerTime;
+    // var timeBarHeight = sceneHeight * config.p_wait_ms / timePerSceneHeigth;
     
     // var loc: Local = {
     //     xRemainder: input.sceneWidth - whiteWidth * whiteNoteIds.length,
     // }
 
-    drawBarzone(drawRect, whiteKeyWidth, blackKeyWidth, sceneHeight, tracks, start_y, pixelsPerTime, pianoHeight, sceneWidth);
+    drawBarzone(drawRect, whiteKeyWidth, blackKeyWidth, sceneHeight, tracks, start_y, pixelsPerTime, pianoHeight, sceneWidth, signatures);
     drawPiano(drawRect, 88, sceneWidth, pianoHeight, whiteKeyWidth, blackKeyWidth, minPlayedNote, maxPlayedNote);
 
 }

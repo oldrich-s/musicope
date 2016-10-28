@@ -14,7 +14,7 @@ export interface IConfig {
     p_maxNote: number;
     p_playOutOfReachNotes: boolean;
     p_waitForOutOfReachNotes: boolean;
-    p_radius: number;
+    p_wait_ms: number;
     p_speed: number;
     p_sustain: boolean;
     p_userHands: boolean[];

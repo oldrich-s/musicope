@@ -7,9 +7,7 @@ export class WaitForNote {
     private notesPressedTime: number[][];
     private oldDT = 0;
 
-    constructor(
-        private notes: INote[][],
-        private onNoteOn: (func: (noteId: number) => void) => void) {
+    constructor(private notes: INote[][], private onNoteOn: (func: (noteId: number) => void) => void) {
         var o = this;
         o.assignIds();
         o.assignNotesPressedTime();
@@ -60,12 +58,9 @@ export class WaitForNote {
                 while (o.isIdBelowFirstTimePlusThreshold(i, id, firstNullTime)) {
                     var note = o.notes[i][id];
                     if (note.on && !o.notesPressedTime[i][id] && note.id === noteId) {
-                        var radius = Math.abs(o.notes[i][id].time - config.p_elapsedTime) - 50;
-                        if (radius < config.p_radius) {
-                            o.notesPressedTime[i][id] = config.p_elapsedTime;
-                            o.modifySpeed(o.notes[i][id].time - config.p_elapsedTime)
-                            return;
-                        }
+                        o.notesPressedTime[i][id] = config.p_elapsedTime;
+                        o.modifySpeed(o.notes[i][id].time - config.p_elapsedTime)
+                        return;
                     }
                     id++;
                 }
@@ -90,7 +85,7 @@ export class WaitForNote {
 
     private modifySpeed = (dt: number) => {
         var o = this;
-        if (config.p_adaptableSpeed && Math.abs(dt) < config.p_radius - 100) {
+        if (config.p_adaptableSpeed && dt < config.p_wait_ms - 100) {
             if (o.oldDT > 0) {
                 // var scale = Math.abs(dt) / (1 * config.p_radius + o.oldDT);
                 var newSpeedDiff = dt / 50000;
@@ -127,7 +122,7 @@ export class WaitForNote {
     private isIdBelowCurrentTimeMinusRadius = (trackId: number, noteId: number) => {
         var o = this;
         return o.notes[trackId][noteId] &&
-            o.notes[trackId][noteId].time < config.p_elapsedTime - config.p_radius;
+            o.notes[trackId][noteId].time < config.p_elapsedTime - config.p_wait_ms;
     }
 
     private isNoteUnpressed = (trackId: number, noteId: number) => {

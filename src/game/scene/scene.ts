@@ -27,13 +27,9 @@ export class Scene {
     private canvas: HTMLCanvasElement;
     private webgl: WebGL;
 
-    private pausedColor: Int32Array;
-    private unpausedColor: Int32Array;
-
     constructor(private song: Song) {
         var o = this;
         o.subscribeToParamsChange();
-        o.setBackgrColors();
         o.canvas = <any>$(".canvas")[0];
         o.setCanvasDim();
         o.setupWebGL();
@@ -56,7 +52,6 @@ export class Scene {
 
     redraw(time: number, isPaused: boolean) {
         var o = this;
-        o.setPausedState(isPaused);
         var dx = 2 * time / o.song.timePerSong;
         var dy = -time * o.pixelsPerTime / o.canvas.height * 2;
         o.webgl.redraw(dx, dy, o.activeIds);
@@ -67,21 +62,6 @@ export class Scene {
         subscribe("scene.Basic", "^s_noteCoverRelHeight$", (name, value) => {
             o.setupScene();
         });
-    }
-
-    private setBackgrColors() {
-        var o = this;
-        o.pausedColor = new Int32Array(hexToRgb(config.s_colPaused));
-        o.unpausedColor = new Int32Array(hexToRgb(config.s_colUnPaused));
-    }
-
-    private setPausedState(isPaused: boolean) {
-        var o = this;
-        if (isPaused) {
-            o.webgl.setClearColor(o.pausedColor);
-        } else {
-            o.webgl.setClearColor(o.unpausedColor);
-        }
     }
 
     private setCanvasDim() {
@@ -110,7 +90,7 @@ export class Scene {
             bag.push(o.rect(x0, y0, x1, y1, ids, [color], [activeColor]));
         }
 
-        drawScene(drawRect, o.canvas.width, o.canvas.height, o.pixelsPerTime, o.song.sceneTracks, o.song.playedNoteID.min, o.song.playedNoteID.max);
+        drawScene(drawRect, o.canvas.width, o.canvas.height, o.pixelsPerTime, o.song.sceneTracks, o.song.playedNoteID.min, o.song.playedNoteID.max, o.song.midi.signatures);
         
         var bufferData = concat(bag);
         o.webgl.setBuffer(bufferData);
