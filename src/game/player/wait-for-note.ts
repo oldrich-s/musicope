@@ -5,7 +5,8 @@ export class WaitForNote {
 
     private ids: number[];
     private notesPressedTime: number[][];
-    private oldDT = 0;
+    private old_real_time = null;
+    private old_error = 0;
 
     constructor(private notes: INote[][], private onNoteOn: (func: (noteId: number) => void) => void) {
         var o = this;
@@ -59,7 +60,7 @@ export class WaitForNote {
                     var note = o.notes[i][id];
                     if (note.on && !o.notesPressedTime[i][id] && note.id === noteId) {
                         o.notesPressedTime[i][id] = config.p_elapsedTime;
-                        o.modifySpeed(o.notes[i][id].time - config.p_elapsedTime)
+                        o.modifySpeed(o.notes[i][id].time, config.p_elapsedTime);
                         return;
                     }
                     id++;
@@ -83,17 +84,19 @@ export class WaitForNote {
         return minTime;
     }
 
-    private modifySpeed = (dt: number) => {
+    private modifySpeed = (real_time: number, game_time: number) => {
         var o = this;
         if (config.p_adaptableSpeed) {
-            if (o.oldDT > 0) {
-                // var scale = Math.abs(dt) / (1 * config.p_radius + o.oldDT);
-                var newSpeedDiff = dt / 50000;
-                var newSpeed = config.p_speed + newSpeedDiff;
-                setParam("p_speed", newSpeed);
-                console.log(config.p_elapsedTime + '\t' + dt + '\t' + newSpeed + '\t' + newSpeedDiff);
+            if (o.old_real_time !== null && Math.abs(real_time - o.old_real_time) > 50) {
+                var Kp = 1 / 50000;
+                var Kd = 1 / 10;
+                var error = real_time - game_time;
+                var de_dt = (error - o.old_error) / (real_time - o.old_real_time);
+                var du = Kp * error + Kd * de_dt;
+                setParam("p_speed", config.p_speed + du);
+                o.old_error = error;
             }
-            o.oldDT = Math.abs(dt);
+            o.old_real_time = real_time;
         }
     }
 
