@@ -57,16 +57,16 @@ export class WaitForNote {
 
     private addNoteOnToKnownNotes = (noteId: number) => {
         var o = this;
-        for (var i = 0; i < config.p_userHands.length; i++) {
-            var firstNullTime = o.getFirstNullPressedTime(i);
-            if (config.p_userHands[i]) {
-                var id = o.ids[i];
-                while (o.isIdBelowFirstTimePlusThreshold(i, id, firstNullTime)) {
-                    var note = o.notes[i][id];
-                    if (note.on && !o.notesPressedTime[i][id] && note.id === noteId) {
-                        o.notesPressedTime[i][id] = config.p_elapsedTime;
-                        o.modifySpeed(parseFloat(<any>o.notes[i][id].time), parseFloat(<any>config.p_elapsedTime));
-                        o.scene.addUID(note.sceneNote.uid, i);
+        for (var handID = 0; handID < config.p_userHands.length; handID++) {
+            var firstNullTime = o.getFirstNullPressedTime(handID);
+            if (config.p_userHands[handID]) {
+                var id = o.ids[handID];
+                while (o.isIdBelowFirstTimePlusThreshold(handID, id, firstNullTime)) {
+                    var note = o.notes[handID][id];
+                    if (note.on && !o.notesPressedTime[handID][id] && note.id === noteId) {
+                        o.notesPressedTime[handID][id] = config.p_elapsedTime;
+                        o.modifySpeed(parseFloat(<any>o.notes[handID][id].time), parseFloat(<any>config.p_elapsedTime));
+                        o.scene.addUID(note.sceneNote.uid, handID);
                         return;
                     }
                     id++;

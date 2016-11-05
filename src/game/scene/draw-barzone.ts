@@ -124,7 +124,7 @@ function drawTooLateZone(drawRect: IDrawRect, pianoHeight: number, pianoWidth: n
 function labelNotes(tracks: any[][]) {
     tracks.forEach((track) => {
         var sorted = track.sort((a,b) => a.timeOn - b.timeOn);
-        sorted.forEach((note, i) => note.uid = i);
+        sorted.forEach((note, i) => note.uid = i + 1);
     });
 }
 

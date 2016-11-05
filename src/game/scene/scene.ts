@@ -68,13 +68,13 @@ export class Scene {
         if (o.latestID[handID] === -1) {
             o.latestID[handID] = uid;
         }
-        if (uid === o.latestID[handID]) {
+        if (uid === o.latestID[handID] + 1) {
             o.latestID[handID] = o.latestID[handID] + 1;
-            while (o.ids[handID].length > 0 && o.ids[handID][0] === o.latestID) {
+            while (o.ids[handID].length > 0 && o.ids[handID][0] === o.latestID[handID] + 1) {
                 o.latestID[handID] = o.latestID[handID] + 1;
                 o.ids[handID].shift();
             }
-        } else if (uid > o.activeIds[0]) {
+        } else if (uid > o.latestID[handID] + 1) {
             o.ids[handID].push(uid);
             o.ids[handID] = o.ids[handID].sort();
         } else {
@@ -84,9 +84,9 @@ export class Scene {
             throw "addUID2";
         }
         var offset = handID * 10;
-        o.activeIds[offset][0] = o.latestID[handID];
+        o.activeIds[offset] = o.latestID[handID];
         for (var i = 1; i < 10; i++) {
-            o.activeIds[offset + i] = o.ids[handID][i] || 0;
+            o.activeIds[offset + i] = o.ids[handID][i - 1] || 0;
         }
     }
 

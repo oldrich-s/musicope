@@ -142,9 +142,9 @@ export class WebGL {
             vec4 outc = a_color;
             if (id > 20 && id < 127 && u_active[id] > 0) {
                 outc = a_activeColor;
-            } else if (id >= 100000 && id - 100000 < u_active[0]) {
+            } else if (id >= 100000 && id - 100000 <= u_active[0]) {
                 outc = a_activeColor;
-            } else if (id >= 200000 && id - 200000 < u_active[10]) {
+            } else if (id >= 200000 && id - 200000 <= u_active[10]) {
                 outc = a_activeColor;
             } else {
                 for (int j = 1; j < 10; j++) {
