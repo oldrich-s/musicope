@@ -57,8 +57,8 @@ export class WaitForNote {
 
     private addNoteOnToKnownNotes = (noteId: number) => {
         var o = this;
-        var firstNullTime = o.getFirstNullPressedTime();
         for (var i = 0; i < config.p_userHands.length; i++) {
+            var firstNullTime = o.getFirstNullPressedTime(i);
             if (config.p_userHands[i]) {
                 var id = o.ids[i];
                 while (o.isIdBelowFirstTimePlusThreshold(i, id, firstNullTime)) {
@@ -75,16 +75,15 @@ export class WaitForNote {
         }
     }
 
-    private getFirstNullPressedTime = () => {
+    private getFirstNullPressedTime = (trackID: number) => {
         var o = this;
         var minTime = 1e6;
-        for (var i = 0; i < config.p_userHands.length; i++) {
-            if (config.p_userHands[i]) {
-                var id = o.ids[i];
-                while (o.notes[i][id] && (o.notesPressedTime[i][id] || !o.notes[i][id].on)) { id++; } // chyba
-                if (o.notes[i][id]) {
-                    minTime = Math.min(o.notes[i][id].time, minTime);
-                }
+        if (config.p_userHands[trackID]) {
+            var id = o.ids[trackID];
+            while (o.notes[trackID][id] && (o.notesPressedTime[trackID][id] || !o.notes[trackID][id].on)) { id++; }
+            // chyba |^
+            if (o.notes[trackID][id]) {
+                minTime = Math.min(o.notes[trackID][id].time, minTime);
             }
         }
         return minTime;
