@@ -19,8 +19,19 @@ function computeCleanedPlayerTracks(sceneTracks: INoteScene[][]) {
     var playerTracks = sceneTracks.map((sceneNotes) => {
         var notesPlayer: INote[] = [];
         sceneNotes.forEach((note) => {
-            notesPlayer.push({ on: true, time: note.timeOn, id: note.id, velocity: note.velocityOn });
-            notesPlayer.push({ on: false, time: note.timeOff, id: note.id, velocity: note.velocityOff });
+            notesPlayer.push({
+                on: true,
+                time: note.timeOn,
+                id: note.id,
+                velocity: note.velocityOn,
+                sceneNote: note
+            });
+            notesPlayer.push({
+                on: false,
+                time: note.timeOff,
+                id: note.id,
+                velocity: note.velocityOff
+            });
         });
         return notesPlayer.sort((a, b) => {
             var dt = a.time - b.time;

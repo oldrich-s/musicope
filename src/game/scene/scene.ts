@@ -21,15 +21,16 @@ function concat(arrays: Float32Array[]) {
 
 export class Scene {
 
-    private pixelsPerTime: number;
     private activeIds = new Int32Array(127);
+    private pixelsPerTime: number;
 
     private canvas: HTMLCanvasElement;
     private webgl: WebGL;
 
-    private uid = 0;
+    private latestID = 0;
+    private ids = [];
 
-    constructor(private song: Song) {
+    public constructor(private song: Song) {
         var o = this;
         o.subscribeToParamsChange();
         o.canvas = <any>$(".canvas")[0];
@@ -38,25 +39,54 @@ export class Scene {
         o.setupScene();
     }
 
-    setActiveId(id: number) {
+    public setPianoActiveId(id: number) {
         this.activeIds[id] = 1;
     }
 
-    unsetActiveId(id: number) {
+    public unsetPianoActiveId(id: number) {
         this.activeIds[id] = 0;
     }
 
-    unsetAllActiveIds() {
-        for (var i = 0; i < this.activeIds.length; i++) {
-            this.activeIds[i] = 0;
+    public reset() {
+        var o = this;
+        for (var i = 0; i < o.activeIds.length; i++) {
+            o.activeIds[i] = 0;
         }
+        o.latestID = -1;
+        o.ids = [];
     }
 
-    redraw(time: number, isPaused: boolean) {
+    public redraw(time: number, isPaused: boolean) {
         var o = this;
         var dx = 2 * time / o.song.timePerSong;
         var dy = -time * o.pixelsPerTime / o.canvas.height * 2;
-        o.webgl.redraw(dx, dy, o.uid, o.activeIds);
+        o.webgl.redraw(dx, dy, o.activeIds);
+    }
+
+    public addUID(uid: number) {
+        var o = this;
+        if (o.latestID === -1) {
+            o.latestID = uid;
+        }
+        if (uid === o.latestID) {
+            o.latestID = o.latestID + 1;
+            while (o.ids.length > 0 && o.ids[0] === o.latestID) {
+                o.latestID = o.latestID + 1;
+                o.ids.shift();
+            }
+        } else if (uid > o.activeIds[0]) {
+            o.ids.push(uid);
+            o.ids = o.ids.sort();
+        } else {
+            throw "addUID";
+        }
+        if (o.ids.length > 20) {
+            throw "addUID2";
+        }
+        o.activeIds[0] = o.latestID;
+        for (var i = 1; i < 21; i++) {
+            o.activeIds[i + 1] = o.ids[i] || 0;
+        }
     }
 
     private subscribeToParamsChange = () => {

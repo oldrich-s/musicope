@@ -55,10 +55,10 @@ export class PlayNotes {
         if (!config.p_userHands[trackId] || o.playOutOfReach(note)) {
             if (note.on) {
                 webMidi.out(144, note.id, Math.min(127, o.getVelocity(trackId, note)));
-                o.scene.setActiveId(note.id);
+                o.scene.setPianoActiveId(note.id);
             } else {
                 webMidi.out(144, note.id, 0);
-                o.scene.unsetActiveId(note.id);
+                o.scene.unsetPianoActiveId(note.id);
             }
         } else if (config.p_playAllHands) {
             if (note.on) {

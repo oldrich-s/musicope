@@ -11,17 +11,6 @@ import { PlayNotes } from "./play-notes";
 import { PlaySustains } from "./play-sustains";
 import { WaitForNote } from "./wait-for-note";
 
-
-function hideTimeBarIfStops(scene: Scene, isFreeze: boolean) {
-    if (isFreeze) {
-        scene.setActiveId(2);
-        scene.setActiveId(1);
-    } else {
-        scene.unsetActiveId(2);
-        scene.unsetActiveId(1);
-    }
-}
-
 function driverOnNotesToOff() {
     for (var i = 0; i < 128; i++) {
         webMidi.out(144, i, 0);
@@ -74,7 +63,6 @@ export class Player {
         o.metronome.play(config.p_elapsedTime);
         o.scene.redraw(config.p_elapsedTime, config.p_isPaused);
         var isFreeze = o.waitForNote.isFreeze();
-        hideTimeBarIfStops(o.scene, isFreeze);
         return o.updateTime(isFreeze);
     }
 
@@ -87,7 +75,7 @@ export class Player {
 
     private reset = () => {
         var o = this;
-        o.scene.unsetAllActiveIds();
+        o.scene.reset();
         o.metronome.reset();
         var idsBelowCurrentTime = getIdsBelowCurrentTime(o.song.midi.tracks);
         o.waitForNote.reset(idsBelowCurrentTime);
@@ -100,7 +88,7 @@ export class Player {
         o.fromDevice = new FromDevice(o.scene, o.song.midi.tracks);
         o.playNotes = new PlayNotes(o.scene, o.song.midi.tracks);
         o.playSustains = new PlaySustains(o.song.midi.sustainNotes);
-        o.waitForNote = new WaitForNote(o.song.midi.tracks, o.fromDevice.onNoteOn);
+        o.waitForNote = new WaitForNote(o.scene, o.song.midi.tracks, o.fromDevice.onNoteOn);
     }
 
     private updateTime = (isFreeze: boolean) => {

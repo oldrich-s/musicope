@@ -1,4 +1,5 @@
 ﻿import { config, setParam } from "../../config/config";
+import { Scene } from "../scene/scene";
 import { INote } from "../midi-parser/i-midi-parser";
 
 declare var host;
@@ -10,7 +11,7 @@ export class WaitForNote {
     private old_real_time = null;
     private old_error = 0;
 
-    constructor(private notes: INote[][], private onNoteOn: (func: (noteId: number) => void) => void) {
+    constructor(private scene: Scene, private notes: INote[][], private onNoteOn: (func: (noteId: number) => void) => void) {
         var o = this;
         o.assignIds();
         o.assignNotesPressedTime();
@@ -65,7 +66,7 @@ export class WaitForNote {
                     if (note.on && !o.notesPressedTime[i][id] && note.id === noteId) {
                         o.notesPressedTime[i][id] = config.p_elapsedTime;
                         o.modifySpeed(parseFloat(<any>o.notes[i][id].time), parseFloat(<any>config.p_elapsedTime));
-                        o.scene.setUID(note.sceneNote.uid);
+                        o.scene.addUID(note.sceneNote.uid);
                         return;
                     }
                     id++;

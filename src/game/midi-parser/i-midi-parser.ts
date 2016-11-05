@@ -5,6 +5,7 @@ export interface INote {
     time: number;
     id: number;
     velocity: number;
+    sceneNote?: any;
 }
 
 export interface ISustainNote {

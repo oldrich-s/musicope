@@ -5,9 +5,9 @@ import { ISignature } from "../midi-parser/i-midi-parser";
 var octaveLineColor = hexToRgb("#808080");
 var leftTrackWhiteNoteBackgroundColor = hexToRgb("#ffffff");
 var leftTrackBlackNoteBackgroundColor = hexToRgb("#ffffff");
-var tooLateZoneColor = hexToRgb("#ffffff", 0.5);
+var tooLateZoneColor = hexToRgb("#ffffff");
 var barLineColor = hexToRgb("#808080");
-var notePlayedColor = hexToRgb("#404040");
+var notePlayedColor = hexToRgb("#404040", 0.01);
 
 var colors = [
     "#FA0B0C",
@@ -25,6 +25,7 @@ var colors = [
 ].map(hexToRgb);
 
 var leftTrackColorPadding = blackKeyWidth => Math.ceil(0.15 * blackKeyWidth);
+var tooLateZoneWidth = pianoHeight => Math.ceil(0.01 * pianoHeight);
 
 function drawBlackNote(drawRect: IDrawRect, noteID: number, noteUID: number, isLeftTrack: boolean, whiteKeyWidth: number, blackKeyWidth: number, y0: number, y1: number, color: number[]) {
     var pos = blackNoteIds.indexOf(noteID);
@@ -68,7 +69,6 @@ function iterateNotes(drawRect: IDrawRect, whiteKeyWidth: number, blackKeyWidth:
 }
 
 function drawBarLines(drawRect: IDrawRect, tracks: any[][], pixelsPerTime: number, whiteKeyWidth: number, pianoHeight: number, signatures: { [msecs: number]: ISignature }) {
-
     var maxTime = 0;
     tracks.forEach((t) => {
         if (t.length > 0) {
@@ -117,7 +117,7 @@ function drawOctaveLines(drawRect: IDrawRect, whiteKeyWidth: number, pianoHeight
 }
 
 function drawTooLateZone(drawRect: IDrawRect, pianoHeight: number, pianoWidth: number, start_y: number) {
-    drawRect(0, pianoHeight, pianoWidth, start_y, [11], tooLateZoneColor, tooLateZoneColor);
+    drawRect(0, start_y - tooLateZoneWidth(pianoHeight), pianoWidth, start_y, [11], tooLateZoneColor, tooLateZoneColor);
 }
 
 function labelNotes(tracks: any[][]) {

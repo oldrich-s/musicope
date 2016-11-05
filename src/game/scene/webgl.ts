@@ -11,7 +11,6 @@ export class WebGL {
     private attrLength: number;
     private udx;
     private udy;
-    private u_activeID;
     private uactive;
 
     constructor(canvas: HTMLCanvasElement, private attributes: IAttribute[]) {
@@ -23,12 +22,11 @@ export class WebGL {
         o.initShaders();
     }
 
-    redraw(dx: number, dy: number, activeID: number, pressedNotes: Int32Array) {
+    redraw(dx: number, dy: number, pressedNotes: Int32Array) {
         var o = this;
         o.gl.clear(o.gl.COLOR_BUFFER_BIT);
         o.gl.uniform1f(o.udx, dx);
         o.gl.uniform1f(o.udy, dy);
-        o.gl.uniform1i(o.u_activeID, activeID);
         o.gl.uniform1iv(o.uactive, pressedNotes);
         o.gl.drawArrays(o.gl.TRIANGLES, 0, o.attrLength);
     }
@@ -68,7 +66,6 @@ export class WebGL {
 
         o.udx = o.gl.getUniformLocation(shaderProgram, "u_dx");
         o.udy = o.gl.getUniformLocation(shaderProgram, "u_dy");
-        o.u_activeID = o.gl.getUniformLocation(shaderProgram, "u_activeID");
         o.uactive = o.gl.getUniformLocation(shaderProgram, "u_active");
 
         o.attributeLocs = <any>o.attributes.map((attr) => {
@@ -124,8 +121,7 @@ export class WebGL {
     private vertexShader = `
         uniform float u_dy;
         uniform float u_dx;
-        uniform int u_activeID;
-        uniform bool u_active[127];
+        uniform int u_active[127];
         attribute vec2 a_position;
         attribute vec4 a_color;
         attribute float a_id;
@@ -144,8 +140,19 @@ export class WebGL {
             }
 
             vec4 outc = a_color;
-            if ( (id < 127 && u_active[id]) || (id > 199 && id - 200 < u_activeID) ) {
+            if (id > 20 && id < 127 && u_active[id] > 0) {
                 outc = a_activeColor;
+            } else if (id > 199 && id - 200 < u_active[0]) {
+                outc = a_activeColor;
+            } else {
+                for (int j = 1; j < 21; j++) {
+                    if (u_active[j] == id) {
+                        outc = a_activeColor;
+                        break;
+                    } else if (u_active[j] == 0) {
+                        break;
+                    }
+                }
             }
             v_color = outc;
         }
