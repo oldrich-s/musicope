@@ -37,6 +37,7 @@ export class Scene {
         o.setCanvasDim();
         o.setupWebGL();
         o.setupScene();
+        o.setupHandsVisibility();
     }
 
     public setPianoActiveId(id: number) {
@@ -49,7 +50,7 @@ export class Scene {
 
     public reset() {
         var o = this;
-        for (var i = 0; i < o.activeIds.length; i++) {
+        for (var i = 21; i < o.activeIds.length; i++) {
             o.activeIds[i] = 0;
         }
         o.latestID = [-1, -1];
@@ -66,7 +67,7 @@ export class Scene {
     public addUID(uid: number, handID: number) {
         var o = this;
         if (o.latestID[handID] === -1) {
-            o.latestID[handID] = uid;
+            o.latestID[handID] = uid - 1;
         }
         if (uid === o.latestID[handID] + 1) {
             o.latestID[handID] = o.latestID[handID] + 1;
@@ -95,6 +96,15 @@ export class Scene {
         subscribe("scene.Basic", "^s_noteCoverRelHeight$", (name, value) => {
             o.setupScene();
         });
+        subscribe("scene-userhands", "^p_userHands$", (name, value) => {
+            o.setupHandsVisibility();
+        });
+    }
+
+    private setupHandsVisibility = () => {
+        var o = this;
+        o.activeIds[0] = config.p_userHands[0] ? 0 : 90000;
+        o.activeIds[10] = config.p_userHands[1] ? 0 : 90000;
     }
 
     private setCanvasDim() {
