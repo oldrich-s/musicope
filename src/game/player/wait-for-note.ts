@@ -66,7 +66,7 @@ export class WaitForNote {
                     if (note.on && !o.notesPressedTime[i][id] && note.id === noteId) {
                         o.notesPressedTime[i][id] = config.p_elapsedTime;
                         o.modifySpeed(parseFloat(<any>o.notes[i][id].time), parseFloat(<any>config.p_elapsedTime));
-                        o.scene.addUID(note.sceneNote.uid);
+                        o.scene.addUID(note.sceneNote.uid, i);
                         return;
                     }
                     id++;

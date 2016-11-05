@@ -27,8 +27,8 @@ export class Scene {
     private canvas: HTMLCanvasElement;
     private webgl: WebGL;
 
-    private latestID = 0;
-    private ids = [];
+    private latestID = [0, 0];
+    private ids = [[], []];
 
     public constructor(private song: Song) {
         var o = this;
@@ -52,8 +52,8 @@ export class Scene {
         for (var i = 0; i < o.activeIds.length; i++) {
             o.activeIds[i] = 0;
         }
-        o.latestID = -1;
-        o.ids = [];
+        o.latestID = [-1, -1];
+        o.ids = [[], []];
     }
 
     public redraw(time: number, isPaused: boolean) {
@@ -63,29 +63,30 @@ export class Scene {
         o.webgl.redraw(dx, dy, o.activeIds);
     }
 
-    public addUID(uid: number) {
+    public addUID(uid: number, handID: number) {
         var o = this;
-        if (o.latestID === -1) {
-            o.latestID = uid;
+        if (o.latestID[handID] === -1) {
+            o.latestID[handID] = uid;
         }
-        if (uid === o.latestID) {
-            o.latestID = o.latestID + 1;
-            while (o.ids.length > 0 && o.ids[0] === o.latestID) {
-                o.latestID = o.latestID + 1;
-                o.ids.shift();
+        if (uid === o.latestID[handID]) {
+            o.latestID[handID] = o.latestID[handID] + 1;
+            while (o.ids[handID].length > 0 && o.ids[handID][0] === o.latestID) {
+                o.latestID[handID] = o.latestID[handID] + 1;
+                o.ids[handID].shift();
             }
         } else if (uid > o.activeIds[0]) {
-            o.ids.push(uid);
-            o.ids = o.ids.sort();
+            o.ids[handID].push(uid);
+            o.ids[handID] = o.ids[handID].sort();
         } else {
             throw "addUID";
         }
-        if (o.ids.length > 20) {
+        if (o.ids[handID].length > 9) {
             throw "addUID2";
         }
-        o.activeIds[0] = o.latestID;
-        for (var i = 1; i < 21; i++) {
-            o.activeIds[i + 1] = o.ids[i] || 0;
+        var offset = handID * 10;
+        o.activeIds[offset][0] = o.latestID[handID];
+        for (var i = 1; i < 10; i++) {
+            o.activeIds[offset + i] = o.ids[handID][i] || 0;
         }
     }
 
@@ -123,7 +124,7 @@ export class Scene {
         }
 
         drawScene(drawRect, o.canvas.width, o.canvas.height, o.pixelsPerTime, o.song.sceneTracks, o.song.playedNoteID.min, o.song.playedNoteID.max, o.song.midi.signatures);
-        
+
         var bufferData = concat(bag);
         o.webgl.setBuffer(bufferData);
     }

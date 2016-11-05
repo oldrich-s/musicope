@@ -7,7 +7,8 @@ var leftTrackWhiteNoteBackgroundColor = hexToRgb("#ffffff");
 var leftTrackBlackNoteBackgroundColor = hexToRgb("#ffffff");
 var tooLateZoneColor = hexToRgb("#ffffff");
 var barLineColor = hexToRgb("#808080");
-var notePlayedColor = hexToRgb("#404040", 0.01);
+var notePlayedColor = hexToRgb("#ffffff", 0.1);
+var notePlayedColor2 = hexToRgb("#ffffff", 0.001);
 
 var colors = [
     "#FA0B0C",
@@ -34,10 +35,10 @@ function drawBlackNote(drawRect: IDrawRect, noteID: number, noteUID: number, isL
         var x1 = x0 + blackKeyWidth;
         if (isLeftTrack) {
             let padding = leftTrackColorPadding(blackKeyWidth);
-            drawRect(x0, y0, x1, y1, [200 + noteUID], leftTrackBlackNoteBackgroundColor, notePlayedColor);
-            drawRect(x0 + padding, y0, x1 - padding, y1, [200 + noteUID], color, notePlayedColor);
+            drawRect(x0, y0, x1, y1, [100000 + noteUID], leftTrackBlackNoteBackgroundColor, notePlayedColor);
+            drawRect(x0 + padding, y0, x1 - padding, y1, [100000 + noteUID], color, notePlayedColor2);
         } else {
-            drawRect(x0, y0, x1, y1, [200 + noteUID], color, notePlayedColor);
+            drawRect(x0, y0, x1, y1, [200000 + noteUID], color, notePlayedColor);
         }
     }
 }
@@ -49,10 +50,10 @@ function drawWhiteNote(drawRect: IDrawRect, noteID: number, noteUID: number, isL
         var x1 = x0 + whiteKeyWidth - 2 * 2;
         if (isLeftTrack) {
             let padding = leftTrackColorPadding(whiteKeyWidth);
-            drawRect(x0, y0, x1, y1, [200 + noteUID], leftTrackWhiteNoteBackgroundColor, notePlayedColor);
-            drawRect(x0 + padding, y0, x1 - padding, y1, [200 + noteUID], color, notePlayedColor);
+            drawRect(x0, y0, x1, y1, [100000 + noteUID], leftTrackWhiteNoteBackgroundColor, notePlayedColor);
+            drawRect(x0 + padding, y0, x1 - padding, y1, [100000 + noteUID], color, notePlayedColor2);
         } else {
-            drawRect(x0, y0, x1, y1, [200 + noteUID], color, notePlayedColor);
+            drawRect(x0, y0, x1, y1, [200000 + noteUID], color, notePlayedColor);
         }
     }
 }
@@ -121,9 +122,10 @@ function drawTooLateZone(drawRect: IDrawRect, pianoHeight: number, pianoWidth: n
 }
 
 function labelNotes(tracks: any[][]) {
-    var merged: any[] = [].concat.apply([], tracks);
-    var sorted = merged.sort((a,b) => a.timeOn - b.timeOn);
-    sorted.forEach((note, i) => note.uid = i);
+    tracks.forEach((track) => {
+        var sorted = track.sort((a,b) => a.timeOn - b.timeOn);
+        sorted.forEach((note, i) => note.uid = i);
+    });
 }
 
 export function drawBarzone(drawRect: IDrawRect, whiteKeyWidth: number, blackKeyWidth: number, sceneHeight: number, tracks: any[][], start_y: number, pixelsPerTime: number, pianoHeight: number, pianoWidth: number, signatures: { [msecs: number]: ISignature }) {
