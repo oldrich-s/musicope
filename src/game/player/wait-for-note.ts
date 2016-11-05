@@ -1,6 +1,8 @@
 ﻿import { config, setParam } from "../../config/config";
 import { INote } from "../midi-parser/i-midi-parser";
 
+declare var host;
+
 export class WaitForNote {
 
     private ids: number[];
@@ -13,6 +15,8 @@ export class WaitForNote {
         o.assignIds();
         o.assignNotesPressedTime();
         onNoteOn(o.addNoteOnToKnownNotes);
+        host.fs.appendFileSync("log.txt", "fuck you nodejs!!!");
+        host.fs.unlinkSync("log.txt");
     }
 
     isFreeze = () => {
@@ -60,7 +64,8 @@ export class WaitForNote {
                     var note = o.notes[i][id];
                     if (note.on && !o.notesPressedTime[i][id] && note.id === noteId) {
                         o.notesPressedTime[i][id] = config.p_elapsedTime;
-                        o.modifySpeed(o.notes[i][id].time, config.p_elapsedTime);
+                        o.modifySpeed(parseFloat(<any>o.notes[i][id].time), parseFloat(<any>config.p_elapsedTime));
+                        o.scene.setUID(note.sceneNote.uid);
                         return;
                     }
                     id++;
@@ -86,13 +91,16 @@ export class WaitForNote {
 
     private modifySpeed = (real_time: number, game_time: number) => {
         var o = this;
-        if (config.p_adaptableSpeed) {
-            if (o.old_real_time !== null && Math.abs(real_time - o.old_real_time) > 50) {
+        var allHands = config.p_userHands.indexOf(false) === -1;
+        if (config.p_adaptableSpeed && allHands && game_time > 0) {
+            var error = real_time - game_time;
+            if (o.old_real_time !== null && Math.abs(real_time - o.old_real_time) > 200) {
                 var Kp = 1 / 50000;
                 var Kd = 1 / 10;
-                var error = real_time - game_time;
-                var de_dt = (error - o.old_error) / (real_time - o.old_real_time);
+                var derror = Math.max(error - o.old_error, -400);
+                var de_dt = derror / (real_time - o.old_real_time);
                 var du = Kp * error + Kd * de_dt;
+                host.fs.appendFile('log.txt', error + ", " + de_dt + ", " + du + ", " + Date.now() + ", " + real_time + ", " + game_time + ", " + (config.p_speed + du) + "\n");
                 setParam("p_speed", config.p_speed + du);
                 o.old_error = error;
             }

@@ -4,12 +4,12 @@
   "author": "Oldrich Svec",
   "license": "MIT",
   "devDependencies": {
-    "@types/jquery": "^2.0.33",
-    "@types/mousetrap": "^1.5.32",
+    "@types/jquery": "*",
+    "@types/mousetrap": "*",
     "gulp": "*",
     "gulp-concat": "*",
     "gulp-rimraf": "*",
-    "gulp-sourcemaps": "^2.1.1",
+    "gulp-sourcemaps": "*",
     "gulp-typescript": "*",
     "rcedit": "*",
     "run-sequence": "*",
@@ -20,7 +20,7 @@
     "framework7": "*",
     "jquery": "*",
     "mousetrap": "*",
-    "systemjs": "^0.19.39",
+    "systemjs": "*",
     "urijs": "*"
   }
 }

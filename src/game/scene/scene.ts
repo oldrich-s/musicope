@@ -27,6 +27,8 @@ export class Scene {
     private canvas: HTMLCanvasElement;
     private webgl: WebGL;
 
+    private uid = 0;
+
     constructor(private song: Song) {
         var o = this;
         o.subscribeToParamsChange();
@@ -54,10 +56,10 @@ export class Scene {
         var o = this;
         var dx = 2 * time / o.song.timePerSong;
         var dy = -time * o.pixelsPerTime / o.canvas.height * 2;
-        o.webgl.redraw(dx, dy, o.activeIds);
+        o.webgl.redraw(dx, dy, o.uid, o.activeIds);
     }
 
-    private subscribeToParamsChange() {
+    private subscribeToParamsChange = () => {
         var o = this;
         subscribe("scene.Basic", "^s_noteCoverRelHeight$", (name, value) => {
             o.setupScene();

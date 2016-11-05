@@ -7,7 +7,8 @@ var rcedit = require('rcedit');
 var exec = require('child_process').exec;
 var sourcemaps = require('gulp-sourcemaps');
 
-var base = 'build/resources/app/';
+var buildRoot = 'build/';
+var appRoot = buildRoot + 'resources/app/';
 
 var vendorScriptFiles = [
     "node_modules/systemjs/dist/system.src.js",
@@ -24,25 +25,29 @@ var vendorCSSFiles = [
 
 var tsProject = ts.createProject("tsconfig.json");
 
-gulp.task('clean', function () {
-    return gulp.src(base).pipe(rimraf());
-})
+gulp.task('clean-app', function () {
+    return gulp.src(appRoot).pipe(rimraf());
+});
+
+gulp.task('clean-build', function () {
+    return gulp.src(buildRoot).pipe(rimraf());
+});
 
 gulp.task('vendor-scripts', function () {
     return gulp.src(vendorScriptFiles)
         .pipe(concat('vendor.js'))
-        .pipe(gulp.dest(base));
+        .pipe(gulp.dest(appRoot));
 });
 
 gulp.task('vendor-css', function () {
     return gulp.src(vendorCSSFiles)
         .pipe(concat('vendor.css'))
-        .pipe(gulp.dest(base));
+        .pipe(gulp.dest(appRoot));
 });
 
 gulp.task('static', function (done) {
     return gulp.src('src/static/**/*.*')
-        .pipe(gulp.dest(base));
+        .pipe(gulp.dest(appRoot));
 });
 
 gulp.task('ts', function () {
@@ -51,16 +56,16 @@ gulp.task('ts', function () {
         .pipe(tsProject())
         .js.pipe(concat('app.js'))
         .pipe(sourcemaps.write())
-        .pipe(gulp.dest(base))
+        .pipe(gulp.dest(appRoot))
 });
 
 gulp.task('copy-electron', function () {
     return gulp.src('node_modules/electron/dist/**/*')
-        .pipe(gulp.dest('build'));
+        .pipe(gulp.dest(buildRoot));
 });
 
 gulp.task('rcedit', function (cb) {
-    rcedit("build/electron.exe", {
+    rcedit(buildRoot + "electron.exe", {
         "icon": "src/static/icon.ico"
     }, cb);
 });
@@ -90,9 +95,9 @@ gulp.task("rename-electron", function (cb) {
 });
 
 gulp.task('app', function () {
-    return runSequence('clean', ['vendor-scripts', 'vendor-css', 'ts', 'static']);
+    return runSequence('clean-app', ['vendor-scripts', 'vendor-css', 'ts', 'static']);
 });
 
 gulp.task('default', function () {
-    return runSequence('app', 'copy-electron', 'rcedit', "rename-electron", 'electron-install-npm', 'move-node_modules');
+    return runSequence('clean-build', 'app', 'copy-electron', 'rcedit', "rename-electron", 'electron-install-npm', 'move-node_modules');
 });
