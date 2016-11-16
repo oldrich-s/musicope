@@ -61,6 +61,8 @@ export class Scene {
         var o = this;
         var dx = 2 * time / o.song.timePerSong;
         var dy = -time * o.pixelsPerTime / o.canvas.height * 2;
+        var dy2 = Math.ceil(dy / 1.1) * 1.1;
+        //console.log(dy, dy2);
         o.webgl.redraw(dx, dy, o.activeIds);
     }
 
@@ -133,7 +135,7 @@ export class Scene {
             bag.push(o.rect(x0, y0, x1, y1, ids, [color], [activeColor]));
         }
 
-        drawScene(drawRect, o.canvas.width, o.canvas.height, o.pixelsPerTime, o.song.sceneTracks, o.song.playedNoteID.min, o.song.playedNoteID.max, o.song.midi.signatures);
+        drawScene(drawRect, o.canvas.width, o.canvas.height, o.pixelsPerTime, o.song.sceneTracks, o.song.playedNoteID.min, o.song.playedNoteID.max, o.song.midi.signatures, o.song.sceneSustainNotes);
 
         var bufferData = concat(bag);
         o.webgl.setBuffer(bufferData);

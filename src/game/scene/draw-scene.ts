@@ -6,8 +6,6 @@ import { drawPiano } from "./draw-piano";
 import { drawBarzone } from "./draw-barzone";
 import { IDrawRect } from "./utils";
 
-
-
 // function drawNoteCover(loc: Local) {
 //     if (config.s_noteCoverRelHeight > 0.0) {
 //         var y0 = loc.yEndOfTimeBar;
@@ -17,19 +15,8 @@ import { IDrawRect } from "./utils";
 //         loc.input.drawRect(0, y0, loc.input.sceneWidth + 1, y1, [1], color, activeColor);
 //     }
 // }
-// function drawSustainNotes(loc: Local) {
-//     var color = hexToRgb(config.s_colSustain);
-//     loc.input.sustainNotes.forEach((note) => {
-//         var y0 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOn + 1;
-//         var y1 = loc.yEndOfTimeBar + loc.input.pixelsPerTime * note.timeOff - 2;
-//         var ipos = whiteNoteIds.length;
-//         var x0 = ipos * loc.whiteWidth + 3;
-//         var x1 = x0 + loc.whiteWidth - 5;
-//         loc.input.drawRect(x0, y0, x1, y1, [200], color, color);
-//     });
-// }
 
-export function drawScene(drawRect: IDrawRect, sceneWidth: number, sceneHeight: number, pixelsPerTime: number, tracks: any[][], minPlayedNote: number, maxPlayedNote: number, signatures: { [msecs: number]: ISignature }) {
+export function drawScene(drawRect: IDrawRect, sceneWidth: number, sceneHeight: number, pixelsPerTime: number, tracks: any[][], minPlayedNote: number, maxPlayedNote: number, signatures: { [msecs: number]: ISignature }, sustainNotes: any[]) {
     var whiteKeyWidth = Math.floor(sceneWidth / whiteNoteIds.length);
     var blackKeyWidth = Math.round(0.45 * whiteKeyWidth);
     var pianoHeight = Math.ceil(0.2 * sceneHeight);
@@ -42,7 +29,7 @@ export function drawScene(drawRect: IDrawRect, sceneWidth: number, sceneHeight: 
     //     xRemainder: input.sceneWidth - whiteWidth * whiteNoteIds.length,
     // }
 
-    drawBarzone(drawRect, whiteKeyWidth, blackKeyWidth, sceneHeight, tracks, start_y, pixelsPerTime, pianoHeight, sceneWidth, signatures);
+    drawBarzone(drawRect, whiteKeyWidth, blackKeyWidth, sceneHeight, tracks, start_y, pixelsPerTime, pianoHeight, sceneWidth, signatures, sustainNotes);
     drawPiano(drawRect, 88, sceneWidth, pianoHeight, whiteKeyWidth, blackKeyWidth, minPlayedNote, maxPlayedNote);
 
 }
