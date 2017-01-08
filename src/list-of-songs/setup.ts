@@ -56,11 +56,11 @@ function setConfigDOM() {
 }
 
 function readConfig() {
-    var fileExists = existsFile(setupJsonPath);
-    if (fileExists) {
-        var text = readTextFile(setupJsonPath);
-        setDefaultConfig(JSON.parse(text));
+    if (!existsFile(setupJsonPath)) {
+        writeTextFile(setupJsonPath, "{}");
     }
+    var text = readTextFile(setupJsonPath);
+    setDefaultConfig(JSON.parse(text));
 }
 
 export function init() {

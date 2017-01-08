@@ -1,4 +1,4 @@
-﻿import { existsFile, readTextFile, writeTextFile, getAllFiles, songsJsonPath } from "../io/io";
+﻿import { existsFile, readTextFile, writeTextFile, getAllFiles, songsJsonPath, ensureDirectoryExistence } from "../io/io";
 import { bindKeyboard } from "./keyboard";
 
 var scores = {};
@@ -75,16 +75,17 @@ function startSavingScores() {
 }
 
 function initScores() {
-    var fileExists = existsFile(songsJsonPath);
-    if (fileExists) {
-        var text = readTextFile(songsJsonPath);
-        eval("scores = " + text);
+    if (!existsFile(songsJsonPath)) {
+        writeTextFile(songsJsonPath, "{}");
     }
+    var text = readTextFile(songsJsonPath);
+    eval("scores = " + text);
     startSavingScores();
 }
 
 export function init() {
     initScores();
+    ensureDirectoryExistence("songs");
     var files = getAllFiles("songs");
     populateDOM(files, scores);
     $('.song-list li:visible:first').addClass('song-list-el-focus');

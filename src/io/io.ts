@@ -5,6 +5,16 @@ export var setupJsonPath = "setup.json";
 
 var _root: string = host.path.join(host.remote.app.getPath("documents"), "Musicope");
 
+export function ensureDirectoryExistence(path: string, root = _root) {
+    var filePath = host.path.join(root, path);
+    var dirname = host.path.dirname(filePath);
+    if (host.fs.existsSync(dirname)) {
+        return true;
+    }
+    ensureDirectoryExistence(dirname);
+    host.fs.mkdirSync(dirname);
+}
+
 export function readBinaryFileAsString(path: string, root = _root) {
     var data = host.fs.readFileSync(host.path.join(root, path));
     var str: string = String.fromCharCode.apply(null, new Uint8Array(data));
@@ -22,6 +32,7 @@ export function existsFile(path: string, root = _root) {
 }
 
 export function writeTextFile(path: string, text: string, root = _root) {
+    ensureDirectoryExistence(path, root);
     host.fs.writeFile(host.path.join(root, path), text);
 }
 
