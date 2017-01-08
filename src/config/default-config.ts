@@ -8,8 +8,8 @@ export var defaultConfig: IConfig = {
     p_initTime: undefined,
 
     // players
-    p_loopStart: null,
-    p_loopEnd: null,
+    p_loopStart: undefined,
+    p_loopEnd: undefined,
     p_deviceIn: "0",
     p_deviceOut: "0",
     p_isPaused: false,

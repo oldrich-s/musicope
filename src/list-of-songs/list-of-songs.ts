@@ -1,4 +1,4 @@
-﻿import { existsFile, readTextFile, writeTextFile, getAllFiles, songsJsonPath, ensureDirectoryExistence } from "../io/io";
+﻿import { copySongFiles, createDir, existsPath, readTextFile, writeTextFile, getAllFiles, scoresJsonPath } from "../io/io";
 import { bindKeyboard } from "./keyboard";
 
 var scores = {};
@@ -69,23 +69,26 @@ function startSavingScores() {
         if (scoresDirty) {
             var text = JSON.stringify(scores, null, 4);
             scoresDirty = false;
-            writeTextFile(songsJsonPath, text);
+            writeTextFile(scoresJsonPath, text);
         }
     }, 1000);
 }
 
 function initScores() {
-    if (!existsFile(songsJsonPath)) {
-        writeTextFile(songsJsonPath, "{}");
+    if (!existsPath(scoresJsonPath)) {
+        writeTextFile(scoresJsonPath, "{}");
     }
-    var text = readTextFile(songsJsonPath);
+    var text = readTextFile(scoresJsonPath);
     eval("scores = " + text);
     startSavingScores();
 }
 
 export function init() {
     initScores();
-    ensureDirectoryExistence("songs");
+    if (!existsPath("songs")) {
+        createDir("songs");
+        copySongFiles("songs");
+    }
     var files = getAllFiles("songs");
     populateDOM(files, scores);
     $('.song-list li:visible:first').addClass('song-list-el-focus');

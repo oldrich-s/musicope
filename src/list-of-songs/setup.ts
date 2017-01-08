@@ -1,4 +1,4 @@
-﻿import { existsFile, writeTextFile, readTextFile, setupJsonPath } from "../io/io";
+﻿import { existsPath, writeTextFile, readTextFile, setupJsonPath } from "../io/io";
 import { defaultConfig, set as setDefaultConfig } from "../config/default-config";
 
 function getValue(el: JQuery) {
@@ -56,8 +56,8 @@ function setConfigDOM() {
 }
 
 function readConfig() {
-    if (!existsFile(setupJsonPath)) {
-        writeTextFile(setupJsonPath, "{}");
+    if (!existsPath(setupJsonPath)) {
+        writeTextFile(setupJsonPath, JSON.stringify(defaultConfig, null, 2));
     }
     var text = readTextFile(setupJsonPath);
     setDefaultConfig(JSON.parse(text));
