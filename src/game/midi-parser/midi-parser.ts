@@ -42,18 +42,35 @@ function processMeta(o: IParser, v, msecs: number) {
     }
 }
 
-function findMSecPerBeat(o: IParser, msecs: number) {
-    var keys = Object.keys(o.signatures).sort((a, b) => Number(b) - Number(a));
-    var fkeys = keys.filter((s) => { return Number(s) < msecs + 10; });
-    return o.signatures[fkeys[0]].msecsPerBeat;
+function evolveTimeRec(msecs: number, dticks: number, keys: number[], id: number, o: IParser) {
+    var msecsPerBeat = o.signatures[keys[id]].msecsPerBeat;
+    var new_msecs = msecs + msecsPerBeat * dticks / o.ticksPerBeat;
+    if (id - 1 >= 0 && new_msecs > keys[id - 1]) {
+        var d_key_msec = keys[id - 1] - msecs + 1;
+        var dticks1 = dticks - d_key_msec * o.ticksPerBeat / msecsPerBeat;
+        return evolveTimeRec(msecs + d_key_msec, dticks1, keys, id - 1, o)
+    } else {
+        return new_msecs;
+    }
+}
+
+function findId(keys: number[], msecs: number) {
+    for (var i = 0; i < keys.length; i++) {
+        if (keys[i] < msecs + 1) {
+            return i;
+        }
+    }
 }
 
 function parsePlayerTrack(o: IParser, track: any[]) {
     var msecs = 0;
     o.tracks.push([]);
     track.forEach((v) => {
-        var msecsPerBeat = findMSecPerBeat(o, msecs);
-        msecs = msecs + msecsPerBeat * v.deltaTime / o.ticksPerBeat;
+
+        var keys = Object.keys(o.signatures).map(Number).sort((a, b) => b - a);
+        var id = findId(keys, msecs);
+        msecs = evolveTimeRec(msecs, v.deltaTime, keys, id, o)
+
         if (v.type == "meta") {
             processMeta(o, v, msecs);
         } else if (v.type == "channel") {
