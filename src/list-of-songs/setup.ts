@@ -1,11 +1,13 @@
-﻿import { existsPath, writeTextFile, readTextFile, setupJsonPath } from "../io/io";
+﻿import * as $ from 'jquery'
+
+import { existsPath, writeTextFile, readTextFile, setupJsonPath } from "../io/io";
 import { defaultConfig, set as setDefaultConfig } from "../config/default-config";
 
 function getValue(el: JQuery) {
     if (el.attr('type') == 'checkbox') {
         return (<any>el[0]).checked;
     } else {
-        var v = el.val();
+        var v = el.val() as string;
         var fl = parseFloat(v);
         return fl === NaN ? v : fl;
     }

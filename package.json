@@ -1,26 +1,33 @@
 {
   "name": "musicope",
-  "version": "2.0.0",
+  "version": "2.1.0",
+  "description": "Musicope - the piano game",
   "author": "Oldrich Svec",
   "license": "MIT",
+  "main": "main.js",
+  "build": {
+    "appId": "musicope",
+    "productName": "musicope"
+  },
+  "scripts": {
+    "tsc": "tsc",
+    "start": "electron main.js",
+    "build": "tsc && build --dir"
+  },
   "devDependencies": {
-    "@types/jquery": "*",
-    "@types/mousetrap": "*",
-    "gulp": "*",
-    "gulp-concat": "*",
-    "gulp-rimraf": "*",
-    "gulp-sourcemaps": "*",
-    "gulp-typescript": "*",
-    "rcedit": "*",
-    "run-sequence": "*",
-    "typescript": "*"
+    "@types/jquery": "latest",
+    "@types/mousetrap": "latest",
+    "electron": "latest",
+    "electron-builder": "^19.37.1"
   },
   "dependencies": {
-    "electron": "*",
-    "framework7": "*",
-    "jquery": "*",
-    "mousetrap": "*",
-    "systemjs": "*",
-    "urijs": "*"
+    "@types/node": "^8.0.34",
+    "electron-window-state": "latest",
+    "framework7": "latest",
+    "jquery": "latest",
+    "mousetrap": "latest",
+    "requirejs": "^2.3.5",
+    "typescript": "latest",
+    "urijs": "latest"
   }
 }

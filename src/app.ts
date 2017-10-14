@@ -1,4 +1,7 @@
-﻿import { Game } from "./game/game";
+﻿import * as $ from 'jquery'
+import * as Framework7 from 'framework7'
+
+import { Game } from "./game/game";
 import { defaultConfig } from "./config/default-config";
 import { reset, config, set as setConfig } from "./config/config";
 import { bindKeyboard } from "./list-of-songs/keyboard";

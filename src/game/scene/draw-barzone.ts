@@ -13,17 +13,17 @@ var sustainColor = hexToRgb("#00ff90");
 
 var colors = [
     "#FA0B0C",
-    "#F44712",
-    "#F88010",
-    "#F5D23B",
-    "#B5B502",
-    "#149033",
-    "#1B9081",
-    "#7D6AFD",
-    "#A840FD",
-    "#7F087C",
-    "#A61586",
-    "#D71386"
+	"#F44712",
+	"#F88010",
+	"#F5D23B",
+	"#B5B502",
+	"#149033",
+	"#1B9081",
+	"#7D6AFD",
+	"#A840FD",
+	"#7F087C",
+	"#fc028b",
+	"#D71386"
 ].map(hexToRgb);
 
 var leftTrackColorPadding = blackKeyWidth => Math.ceil(0.15 * blackKeyWidth);
@@ -86,7 +86,7 @@ function drawBarLines(drawRect: IDrawRect, tracks: any[][], pixelsPerTime: numbe
         var startTime = Number(key);
         if (i + 1 < keys.length) {
             var endTime = Number(keys[i + 1]);
-            var step = signatures[startTime].msecsPerBar;
+            var step = signatures[startTime].msecsPerBeat;
             var n = Math.round((endTime - startTime) / step);
             var newStep = (endTime - startTime) / n;
             for (var j = (i == 0 ? -2 : 0); j < n; j++) {
@@ -100,7 +100,7 @@ function drawBarLines(drawRect: IDrawRect, tracks: any[][], pixelsPerTime: numbe
                 }
             }
         } else {
-            var step = signatures[startTime].msecsPerBar;
+            var step = signatures[startTime].msecsPerBeat;
             var n = Math.ceil((maxTime - startTime) / step);
             for (var j = 0; j < n; j++) {
                 var time = startTime + j * step;
@@ -150,5 +150,5 @@ export function drawBarzone(drawRect: IDrawRect, whiteKeyWidth: number, blackKey
     drawSustainNotes(drawRect, sustainNotes, start_y, pixelsPerTime, whiteKeyWidth);
     iterateNotes(drawRect, whiteKeyWidth, blackKeyWidth, tracks, start_y, pixelsPerTime, drawWhiteNote);
     iterateNotes(drawRect, whiteKeyWidth, blackKeyWidth, tracks, start_y, pixelsPerTime, drawBlackNote);
-    drawTooLateZone(drawRect, pianoHeight, pianoWidth, start_y);
+   // drawTooLateZone(drawRect, pianoHeight, pianoWidth, start_y);
 }

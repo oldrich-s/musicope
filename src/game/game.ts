@@ -1,4 +1,6 @@
-﻿import { config } from "../config/config";
+﻿import * as $ from 'jquery'
+
+import { config } from "../config/config";
 import { webMidi } from "../web-midi/web-midi";
 import { readBinaryFileAsString } from "../io/io";
 

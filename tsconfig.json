@@ -1,19 +1,7 @@
 {
     "compilerOptions": {
-        "target": "es5",
-        "module": "system",
-        "moduleResolution": "node",
-        "outFile": "test.js",
-        "sourceMap": true,
-        "pretty": false,
-        "lib": [
-            "es2015.promise",
-            "dom",
-            "es5",
-            "scripthost"
-        ]
-    },
-    "exclude": [
-        "node_modules"
-    ]
+        "target": "es6",
+        "module": "amd",
+        "outDir": "scripts"
+    }
 }

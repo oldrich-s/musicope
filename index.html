@@ -538,14 +538,19 @@
         </li>
     </script>
 
-    <script src="vendor.js"></script>
-    <script src="app.js"></script>
+    <script src="node_modules/requirejs/require.js"></script>
 
     <script>
-        SystemJS.config({
-            baseURL: ''
+        requirejs.config({
+            paths: {
+                "jquery": "node_modules/jquery/dist/jquery.min",
+                "framework7": "node_modules/framework7/dist/js/framework7.min",
+                "mousetrap": "node_modules/mousetrap/mousetrap.min",
+                "urijs": "node_modules/urijs/src/URI.min"
+            }
         });
-        SystemJS.import('app');
+
+        require(['framework7', './scripts/app']);
     </script>
 
 </body>

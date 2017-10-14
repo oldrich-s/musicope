@@ -1,4 +1,6 @@
-﻿import { IParser, ISignature } from "./i-midi-parser";
+﻿import * as $ from 'jquery'
+
+import { IParser, ISignature } from "./i-midi-parser";
 import { MidiFile } from "./midifile";
 
 function processMessage(o: IParser, v, time) {

@@ -1,4 +1,6 @@
-﻿import { copySongFiles, createDir, existsPath, readTextFile, writeTextFile, getAllFiles, scoresJsonPath } from "../io/io";
+﻿import * as $ from 'jquery'
+
+import { copySongFiles, createDir, existsPath, readTextFile, writeTextFile, getAllFiles, scoresJsonPath } from "../io/io";
 import { bindKeyboard } from "./keyboard";
 
 var scores = {};
@@ -23,7 +25,7 @@ function sortList() {
     els.detach().appendTo('.song-list');
 }
 
-function voteUp(e: JQueryEventObject) {
+function voteUp(e: JQuery.Event) {
     var id = decodeURIComponent($(this).parents('li').children('.elURL').text().trim());
     var old = parseInt(scores[id] || '0');
     scores[id] = old + 1;
@@ -33,7 +35,7 @@ function voteUp(e: JQueryEventObject) {
     e.preventDefault();
 }
 
-function voteDown(e: JQueryEventObject) {
+function voteDown(e: JQuery.Event) {
     var id = decodeURIComponent($(this).parents('li').children('.elURL').text().trim());
     var old = parseInt(scores[id] || '0');
     scores[id] = old - 1;

@@ -1,4 +1,6 @@
-﻿import { config, subscribe } from "../../config/config";
+﻿import * as $ from 'jquery'
+
+import { config, subscribe } from "../../config/config";
 import { Song } from "../song/song";
 
 import { WebGL } from "./webgl";

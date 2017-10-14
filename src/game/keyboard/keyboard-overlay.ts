@@ -1,4 +1,6 @@
-﻿var oldTimeOut: number;
+﻿import * as $ from 'jquery'
+
+var oldTimeOut: NodeJS.Timer;
 
 export function display(description: string, value: any) {
     var str;

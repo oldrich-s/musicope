@@ -8,7 +8,7 @@ export class WaitForNote {
 
     private ids: number[];
     private notesPressedTime: number[][];
-    private old_real_time = null;
+    private old_real_time = 0;
     private old_error = 0;
 
     constructor(private scene: Scene, private notes: INote[][], private onNoteOn: (func: (noteId: number) => void) => void) {
@@ -96,7 +96,7 @@ export class WaitForNote {
         if (config.p_adaptableSpeed && allHands && game_time > 0) {
             var error = real_time - game_time;
             if (o.old_real_time !== null && Math.abs(real_time - o.old_real_time) > 200) {
-                var Kp = 1 / 50000;
+                var Kp = 1 / 10000;
                 var Kd = 1 / 10;
                 var derror = Math.max(error - o.old_error, -400);
                 var de_dt = derror / (real_time - o.old_real_time);
@@ -104,8 +104,8 @@ export class WaitForNote {
                 host.fs.appendFile('log.txt', error + ", " + de_dt + ", " + du + ", " + Date.now() + ", " + real_time + ", " + game_time + ", " + (config.p_speed + du) + "\n");
                 setParam("p_speed", config.p_speed + du);
                 o.old_error = error;
+                o.old_real_time = real_time;
             }
-            o.old_real_time = real_time;
         }
     }
 

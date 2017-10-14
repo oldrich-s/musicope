@@ -108,7 +108,7 @@ export class Player {
 
         if (!doFreezeTime) {
             var newElapsedTime = config.p_elapsedTime + config.p_speed * duration;
-            if (config.p_loopEnd !== null && newElapsedTime > config.p_loopEnd) {
+            if (config.p_loopEnd && newElapsedTime > config.p_loopEnd) {
                 newElapsedTime = config.p_loopStart;
                 setParam("p_elapsedTime", newElapsedTime);
             } else {
@@ -117,6 +117,6 @@ export class Player {
         }
 
         return isSongEnd;
-    }
+    }   
 
 }

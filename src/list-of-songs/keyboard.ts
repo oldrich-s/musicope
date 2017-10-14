@@ -1,4 +1,6 @@
-﻿import { mainView, correctPosition } from "../app";
+﻿import * as $ from 'jquery'
+
+import { mainView, correctPosition } from "../app";
 
 function enter() {
     Mousetrap.bind('enter', (e) => {

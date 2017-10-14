@@ -1,4 +1,6 @@
-﻿import { Song } from "../song/song";
+﻿import * as $ from 'jquery'
+
+import { Song } from "../song/song";
 import { actions } from "./actions";
 import { display } from "./keyboard-overlay";
 

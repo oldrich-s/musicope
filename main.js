@@ -29,7 +29,7 @@ app.on('ready', function () {
     height: mainWindowState.height,
     webPreferences: {
       nodeIntegration: false,
-      preload: path.join(__dirname, 'expose-window-apis.js')
+      preload: path.join(__dirname, 'expose.js')
     }
   });
 
