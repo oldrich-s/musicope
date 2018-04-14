@@ -1,5 +1,4 @@
 const express = require('express')
-const staticCompiler = require('express-static-compiler')
 const ts = require('typescript')
 const fs = require('fs')
 const path = require('path')

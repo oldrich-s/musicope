@@ -8,12 +8,13 @@
   },
   "author": "Oldrich Svec",
   "license": "MIT",
-  "dependencies": {
+  "devDependencies": {
     "@types/express": "^4.11.1",
     "@types/jquery": "^3.3.1",
-    "@types/mousetrap": "^1.6.0",
+    "@types/mousetrap": "^1.6.0"
+  },
+  "dependencies": {
     "express": "^4.16.3",
-    "express-static-compiler": "^1.0.9",
     "typescript": "^2.8.1"
   }
 }
