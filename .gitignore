@@ -1,2 +1,4 @@
-static/songs
-node_modules/
+static/songs/**/*
+node_modules/**/*
+
+!static/songs/put_your_songs_here.txt
