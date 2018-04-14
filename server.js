@@ -62,8 +62,10 @@ server.use((req, res) => {
         const tsdata = fs.readFileSync(file, 'utf-8')
         const jsdata = transpileText(tsdata, file)
         res.send(jsdata)
-    } else {
+    } else if(req.path.length <= 1) {
         res.redirect('/web/list-of-songs/')
+    } else {
+        res.status(404).send('not_found')
     }
 })
 
