@@ -2,10 +2,6 @@
   "name": "musicope",
   "version": "3.0.0",
   "description": "Computer game similar to Synthesia",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/musicope/game"

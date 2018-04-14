@@ -3,7 +3,7 @@ const staticCompiler = require('express-static-compiler')
 const ts = require('typescript')
 const fs = require('fs')
 const path = require('path')
-
+    
 function listFilesRec(_itemAbs) {
     const root = path.join(__dirname, 'static', 'songs')
     const itemAbs = _itemAbs || root
@@ -55,8 +55,7 @@ server.post('/writetextfile', (req, res) => {
         })
 })
 
-server.use(express.static('static', {
-}))
+server.use(express.static('static'))
 
 server.use((req, res) => {
     const file = path.join(__dirname, 'static', req.path + '.ts')
@@ -65,7 +64,7 @@ server.use((req, res) => {
         const jsdata = transpileText(tsdata, file)
         res.send(jsdata)
     } else {
-        res.status(404).send('not-found: ' + file)
+        res.redirect('/web/list-of-songs/')
     }
 })
 
