@@ -14,27 +14,23 @@ async function main() {
     const file = url.searchParams.get('url')
 
     if (file) {
-        const match = file.replace(/_/g, ' ').match(/^.*\/songs\/(.+)\/([^\/]+)\.mid$/)
-
-        if (match) {
-            document.body.appendChild(
-                dom.div({ style: { position: 'absolute', color: 'white', className: 'title' } }, [
-                    dom.div({}, [
-                        dom.span({ style: { marginRight: '10px' } }, match[1]),
-                        '/',
-                        dom.span({ style: { color: 'yellow', marginLeft: '10px' } }, match[2])
-                    ]),
-                    dom.div({ className: 'canvasInfo', style: { fontSize: '20pt', marginTop: '10px' } }, [
-                        dom.span({ className: 'canvasInfoDesc' }),
-                        dom.span({ className: 'canvasInfoValue', style: { color: 'red' } })
-                    ])
+        const path = file.substring(0, file.lastIndexOf("/") + 1)
+        const filename = file.substring(file.lastIndexOf("/") + 1, file.length)
+        document.body.appendChild(
+            dom.div({ style: { position: 'absolute', color: 'white', className: 'title' } }, [
+                dom.div({}, [
+                    dom.span({}, path),
+                    dom.span({ style: { color: 'yellow' } }, filename)
+                ]),
+                dom.div({ className: 'canvasInfo', style: { fontSize: '20pt', marginTop: '10px' } }, [
+                    dom.span({ className: 'canvasInfoDesc' }),
+                    dom.span({ className: 'canvasInfoValue', style: { color: 'red' } })
                 ])
-            )
-            document.body.appendChild(dom.canvas({ className: 'canvas' }))
-
-            config.c_songUrl = file
-            const game = new Game()
-        }
+            ])
+        )
+        document.body.appendChild(dom.canvas({ className: 'canvas' }))
+        config.c_songUrl = file
+        const game = new Game()
     } else {
         document.body.innerText = 'url missing'
     }
