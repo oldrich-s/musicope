@@ -86,7 +86,7 @@ function startSavingScores() {
 }
 
 async function initScores() {
-    const sc = await readTextFile('/scores.json')
+    const sc = await readTextFile('/scores.json').catch(e => '{}')
     scores = (sc && JSON.parse(sc)) || {}
     startSavingScores()
 }
