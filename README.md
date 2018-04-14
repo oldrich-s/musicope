@@ -5,6 +5,7 @@ To run the game:
 * clone this repository
 * navigate to the cloned folder
 * copy `mid` files into the `static/songs` folder
+* modify `\static\web\config\default-config.ts` according to your needs
 * run `npm install`
 * run `npm start`
 * open your browser (e.g. Google Chrome) and navigate to http://localhost
