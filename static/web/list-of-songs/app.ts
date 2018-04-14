@@ -5,7 +5,6 @@ import * as Mousetrap from 'mousetrap'
 import { defaultConfig } from "../config/default-config"
 import { reset, config, setParam as setConfig } from "../config/config"
 import { bindKeyboard } from "./keyboard"
-import { init as setupInit } from "./setup"
 import { init as listInit } from "./list-of-songs"
 
 export var app: Framework7
