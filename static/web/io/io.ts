@@ -5,7 +5,13 @@ export async function readBinaryFileAsString(url: string) {
 }
 
 export async function readTextFile(url: string) {
-    const text = await fetch(url).then(v => v.text())
+    const text = await fetch(url).then(v => {
+        if (v.ok) {
+            return v.text()
+        } else {
+            throw v.text()
+        }
+    })
     return text
 }
 
