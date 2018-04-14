@@ -2,6 +2,7 @@ Musicope is an open-source online piano game similar to [Synthesia](http://synth
 
 To run the game:
 
+* install NodeJS
 * clone this repository
 * navigate to the cloned folder
 * copy `mid` files into the `static/songs` folder
