@@ -1,33 +1,23 @@
 {
   "name": "musicope",
-  "version": "2.1.0",
-  "description": "Musicope - the piano game",
+  "version": "3.0.0",
+  "description": "Computer game similar to Synthesia",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/musicope/game"
+  },
   "author": "Oldrich Svec",
   "license": "MIT",
-  "main": "main.js",
-  "build": {
-    "appId": "musicope",
-    "productName": "musicope"
-  },
-  "scripts": {
-    "tsc": "tsc",
-    "start": "electron main.js",
-    "build": "tsc && build --dir"
-  },
-  "devDependencies": {
-    "@types/jquery": "latest",
-    "@types/mousetrap": "latest",
-    "electron": "latest",
-    "electron-builder": "^19.37.1"
-  },
   "dependencies": {
-    "@types/node": "^8.0.34",
-    "electron-window-state": "latest",
-    "framework7": "latest",
-    "jquery": "latest",
-    "mousetrap": "latest",
-    "requirejs": "^2.3.5",
-    "typescript": "latest",
-    "urijs": "latest"
+    "@types/express": "^4.11.1",
+    "@types/jquery": "^3.3.1",
+    "@types/mousetrap": "^1.6.0",
+    "express": "^4.16.3",
+    "express-static-compiler": "^1.0.9",
+    "typescript": "^2.8.1"
   }
 }

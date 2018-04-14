@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="/vendor/framework7/css/framework7.ios.min.css" />
+    <link rel="stylesheet" href="/vendor/framework7/css/framework7.ios.colors.min.css" />
+    <link rel="stylesheet" href="/web/list-of-songs/app.css" />
+
+    <title>Musicope</title>
+
+    <script type="text/javascript" src="/vendor/requirejs/require.min.js"></script>
+    <script>
+        requirejs.config({
+            paths: {
+                jquery: "/vendor/jquery/jquery.min",
+                framework7: "/vendor/framework7/framework7.min",
+                mousetrap: "/vendor/mousetrap/mousetrap"
+            },
+            shim: {
+                framework7: {
+                    exports: "Framework7"
+                },
+            }
+        });
+        require(['/web/list-of-songs/index']);
+    </script>
+</head>
+
+<body class="layout-dark">
+</body>
+
+</html>
