@@ -1,0 +1,8 @@
+version: '3'
+services:
+  musicope:
+    build: .
+    ports: 
+      - "80:80"
+    volumes:
+      - $HOME/mid/:/app/static/songs/
