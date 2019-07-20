@@ -69,4 +69,4 @@ server.use((req, res) => {
     }
 })
 
-server.listen('7778')
+server.listen('80')
