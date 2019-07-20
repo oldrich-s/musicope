@@ -3,3 +3,4 @@ node_modules/**/*
 static/scores.json
 
 !static/songs/put_your_songs_here.txt
+/.idea/
