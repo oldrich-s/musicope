@@ -1,7 +1,7 @@
 # Welcome to musicope
 Musicope is an open-source online piano game similar to [Synthesia](http://synthesiagame.com/) or [PianoCrumbs](http://www.pianocrumbs.com/piano/). 
 
-[![Mutable.ai Auto Wiki](https://img.shields.io/badge/Auto_Wiki-Mutable.ai-blue)]https://wiki.mutable.ai/oldrich-s/musicope)
+[![Mutable.ai Auto Wiki](https://img.shields.io/badge/Auto_Wiki-Mutable.ai-blue)](https://wiki.mutable.ai/oldrich-s/musicope)
 
 ## Installation
 ### Dependencies
