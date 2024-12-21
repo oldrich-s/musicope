@@ -30,7 +30,15 @@ class WebMidi {
 
     inOpen = (callback: (timestamp: number, data1: number, data2: number, data3: number) => void) => {
         const o = this
-        o.input = o.midi.inputs.get('input-' + config.p_deviceIn)
+        // First try to get by configured device ID
+        o.input = o.midi.inputs.get(config.p_deviceIn)
+        
+        // If not found, get the first available input
+        if (!o.input) {
+            const inputs = Array.from(o.midi.inputs.values())
+            o.input = inputs[0]
+        }
+
         if (o.input) {
             o.input.onmidimessage = (e: any) => {
                 callback(e.timeStamp, e.data[0], e.data[1], e.data[2])
@@ -40,9 +48,13 @@ class WebMidi {
 
     outOpen = () => {
         const o = this
-        o.output = o.midi.outputs.get('output-' + config.p_deviceOut)
+        // First try to get by configured device ID
+        o.output = o.midi.outputs.get(config.p_deviceOut)
+        
+        // If not found, get the first available output
         if (!o.output) {
-            o.output = o.midi.outputs.get(0)
+            const outputs = Array.from(o.midi.outputs.values())
+            o.output = outputs[0]
         }
     }
 
