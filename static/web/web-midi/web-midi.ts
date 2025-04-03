@@ -7,6 +7,7 @@ class WebMidi {
     private midi: any
     private output: any
     private input: any
+    private cb: any
 
     constructor() {
         const o = this
@@ -30,18 +31,32 @@ class WebMidi {
 
     inOpen = (callback: (timestamp: number, data1: number, data2: number, data3: number) => void) => {
         const o = this
+        o.cb = callback
+        o.refresh()
+    }
+
+    refresh = () => {
+        const o = this
         // First try to get by configured device ID
+        o.midi.inputs.forEach((value, key) => {
+          console.log("key:"+key)
+          console.log("id: "+value.id)
+          console.log("name: "+value.name)
+        })
         o.input = o.midi.inputs.get(config.p_deviceIn)
         
         // If not found, get the first available input
         if (!o.input) {
             const inputs = Array.from(o.midi.inputs.values())
-            o.input = inputs[0]
+            o.input = inputs[config.p_deviceIn]
+            if (!o.input) {
+                o.input = inputs[0]
+            }
         }
 
         if (o.input) {
             o.input.onmidimessage = (e: any) => {
-                callback(e.timeStamp, e.data[0], e.data[1], e.data[2])
+                o.cb(e.timeStamp, e.data[0], e.data[1], e.data[2])
             }
         }
     }
