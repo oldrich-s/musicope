@@ -13,6 +13,7 @@ import { right } from "./keys/right"
 import { space } from "./keys/space"
 import { up } from "./keys/up"
 import { w } from "./keys/w"
+import { i } from "./keys/i"
 
 import { IKeyboardAction } from './i-actions'
 
@@ -33,3 +34,4 @@ right(actions)
 space(actions)
 up(actions)
 w(actions)
+i(actions)
